@@ -11,6 +11,9 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true
 })
 export class Signup {
+  private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+  private readonly passwordRequirementsMessage = 'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.';
+
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   user = {
@@ -40,6 +43,11 @@ export class Signup {
       return;
     }
 
+    if (!this.passwordRegex.test(this.user.password)) {
+      this.toastr.error(this.passwordRequirementsMessage);
+      return;
+    }
+
     const payload: any = {
       username: this.user.username,
       email: this.user.email.trim().toLowerCase(),
@@ -63,8 +71,20 @@ export class Signup {
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastr.error(err.status === 400 ? 'User already exists or invalid data' : 'Something went wrong');
+          this.toastr.error(this.getSignupErrorMessage(err));
         }
       });
+  }
+
+  private getSignupErrorMessage(err: any): string {
+    if (typeof err?.error === 'string' && err.error.trim()) {
+      return err.error;
+    }
+
+    if (typeof err?.error?.message === 'string' && err.error.message.trim()) {
+      return err.error.message;
+    }
+
+    return err?.status === 400 ? 'User already exists or invalid data' : 'Something went wrong';
   }
 }

@@ -23,8 +23,9 @@
         </div>
         <div>
           <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">PASSWORD</label>
-          <input type="password" name="password" required
+          <input type="password" name="password" required minlength="8"
                  [(ngModel)]="user.password" class="input-titan w-full">
+          <p class="mt-2 text-[10px] text-on-surface-variant">Use 8+ characters with uppercase, lowercase, number, and symbol.</p>
         </div>
         <div>
           <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">CONFIRM PASSWORD</label>
@@ -81,3 +82,4 @@
     </div>
   </div>
 </div>
+
