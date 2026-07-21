@@ -1,49 +1,151 @@
-<div class="profile-container">
-  <div *ngIf="isLoading" class="loading-spinner">
-    Loading Profile...
+<div class="profile-page">
+  <div *ngIf="isLoading" class="loading-state">
+    <span class="material-symbols-outlined">person</span>
+    <p class="font-label-caps text-on-surface-variant">Loading profile</p>
   </div>
-  
-  <div *ngIf="!isLoading" class="profile-header">
-    <img [src]="profile.avatarUrl ? profile.avatarUrl : 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'" alt="Avatar" class="avatar">
-    
-    <div *ngIf="!isEditing" style="display:flex; flex-direction:column; align-items:center; width: 100%;">
-      <h1 class="username">{{ profile.username || profile.email }}</h1>
-      <div class="headline" *ngIf="profile.headline">{{ profile.headline }}</div>
-      <div class="location" *ngIf="profile.location">
-        <svg fill="currentColor" width="16" height="16" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        {{ profile.location }}
+
+  <div *ngIf="!isLoading" class="space-y-6">
+    <section class="profile-hero">
+      <div class="profile-identity">
+        <div class="avatar-wrap">
+          <img [src]="profile.avatarUrl || fallbackAvatar" alt="Profile avatar" class="avatar" />
+          <div class="avatar-fallback">{{ getInitials() }}</div>
+        </div>
+
+        <div class="min-w-0">
+          <span class="font-label-caps text-secondary-fixed-dim">MEMBER PROFILE</span>
+          <h1 class="font-headline-lg text-primary mt-2">{{ getDisplayName() }}</h1>
+          <p class="font-body-md text-on-surface-variant mt-2">{{ profile.headline || 'Build your training profile and keep your progress in one place.' }}</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="profile-chip"><span class="material-symbols-outlined text-sm">mail</span>{{ profile.email || 'No email' }}</span>
+            <span class="profile-chip" *ngIf="profile.location"><span class="material-symbols-outlined text-sm">location_on</span>{{ profile.location }}</span>
+            <span class="profile-chip" [class.profile-chip-ready]="profile.onboardingComplete"><span class="material-symbols-outlined text-sm">verified</span>{{ profile.onboardingComplete ? 'Onboarding complete' : 'Onboarding pending' }}</span>
+          </div>
+        </div>
       </div>
-      
-      <p class="bio" *ngIf="profile.bio">{{ profile.bio }}</p>
-      
-      <button class="edit-btn" (click)="toggleEdit()">Edit Profile</button>
+
+      <button class="btn-primary text-xs" (click)="toggleEdit()" *ngIf="!isEditing">
+        <span class="material-symbols-outlined text-sm">edit</span>
+        Edit Profile
+      </button>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span class="material-symbols-outlined">monitor_weight</span>
+        <strong>{{ profile.weightKg || '--' }}</strong>
+        <small>Weight kg</small>
+      </div>
+      <div class="stat-card">
+        <span class="material-symbols-outlined">height</span>
+        <strong>{{ profile.heightCm || '--' }}</strong>
+        <small>Height cm</small>
+      </div>
+      <div class="stat-card">
+        <span class="material-symbols-outlined">speed</span>
+        <strong>{{ getBmi() }}</strong>
+        <small>{{ getBmiLabel() }}</small>
+      </div>
+      <div class="stat-card">
+        <span class="material-symbols-outlined">fitness_center</span>
+        <strong>{{ dashboard?.workout?.sessionsThisWeek || 0 }}</strong>
+        <small>Sessions this week</small>
+      </div>
+    </section>
+
+    <div class="profile-layout">
+      <main class="space-y-6 min-w-0">
+        <section class="profile-panel" *ngIf="!isEditing">
+          <div class="section-heading">
+            <div>
+              <span class="font-label-caps text-secondary-fixed-dim">ABOUT</span>
+              <h2 class="font-headline-md text-primary">Profile Details</h2>
+            </div>
+          </div>
+
+          <p class="bio-text">{{ profile.bio || 'No bio added yet. Add a short note about your goals, training style, or current focus.' }}</p>
+
+          <div class="detail-grid mt-5">
+            <div class="detail-item"><span>Goal</span><strong>{{ formatLabel(profile.fitnessGoal) }}</strong></div>
+            <div class="detail-item"><span>Activity</span><strong>{{ formatLabel(profile.activityLevel) }}</strong></div>
+            <div class="detail-item"><span>Gender</span><strong>{{ formatLabel(profile.gender) }}</strong></div>
+            <div class="detail-item"><span>Latest check-in</span><strong>{{ formatDate(dashboard?.measurement?.latestDate) }}</strong></div>
+          </div>
+        </section>
+
+        <form *ngIf="isEditing" class="profile-panel edit-form" (ngSubmit)="saveProfile()">
+          <div class="section-heading">
+            <div>
+              <span class="font-label-caps text-secondary-fixed-dim">EDIT MODE</span>
+              <h2 class="font-headline-md text-primary">Update Profile</h2>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Headline</span>
+              <input type="text" class="input-titan w-full" name="headline" [(ngModel)]="profile.headline" placeholder="Focused on strength and consistency">
+            </label>
+            <label>
+              <span>Location</span>
+              <input type="text" class="input-titan w-full" name="location" [(ngModel)]="profile.location" placeholder="City, Country">
+            </label>
+            <label class="form-wide">
+              <span>Bio</span>
+              <textarea class="input-titan w-full" name="bio" [(ngModel)]="profile.bio" placeholder="Tell people what you are working toward..."></textarea>
+            </label>
+            <label class="form-wide">
+              <span>Avatar URL</span>
+              <input type="text" class="input-titan w-full" name="avatarUrl" [(ngModel)]="profile.avatarUrl" placeholder="https://...">
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary text-xs">
+              <span class="material-symbols-outlined text-sm">save</span>
+              Save Changes
+            </button>
+            <button type="button" class="btn-outline text-xs" (click)="toggleEdit()">Cancel</button>
+          </div>
+        </form>
+
+        <section class="profile-panel">
+          <div class="section-heading">
+            <div>
+              <span class="font-label-caps text-secondary-fixed-dim">NUTRITION TARGETS</span>
+              <h2 class="font-headline-md text-primary">Daily Goals</h2>
+            </div>
+          </div>
+
+          <div class="target-list mt-5">
+            <div class="target-row"><span>Calories</span><strong>{{ profile.dailyCalorieGoal || dashboard?.nutrition?.calorieGoal || 0 }} kcal</strong></div>
+            <div class="target-row"><span>Protein</span><strong>{{ profile.dailyProteinGoal || dashboard?.nutrition?.proteinGoal || 0 }} g</strong></div>
+            <div class="target-row"><span>Carbs</span><strong>{{ profile.dailyCarbsGoal || dashboard?.nutrition?.carbsGoal || 0 }} g</strong></div>
+            <div class="target-row"><span>Fat</span><strong>{{ profile.dailyFatGoal || dashboard?.nutrition?.fatGoal || 0 }} g</strong></div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="space-y-6 min-w-0">
+        <section class="profile-panel compact-panel">
+          <span class="font-label-caps text-secondary-fixed-dim">THIS WEEK</span>
+          <div class="quick-stats mt-4">
+            <div><strong>{{ getWeeklyMinutesLabel() }}</strong><span>Training time</span></div>
+            <div><strong>{{ dashboard?.workout?.totalCaloriesBurnedThisWeek || 0 }}</strong><span>Kcal burned</span></div>
+            <div><strong>{{ dashboard?.nutrition?.mealCount || 0 }}</strong><span>Meals today</span></div>
+          </div>
+        </section>
+
+        <section class="profile-panel compact-panel">
+          <span class="font-label-caps text-secondary-fixed-dim">BODY MEASUREMENTS</span>
+          <div class="target-list mt-4">
+            <div class="target-row"><span>Weight</span><strong>{{ dashboard?.measurement?.weightKg || profile.weightKg || '--' }} kg</strong></div>
+            <div class="target-row"><span>Body fat</span><strong>{{ dashboard?.measurement?.bodyFatPercent || '--' }}%</strong></div>
+            <div class="target-row"><span>Waist</span><strong>{{ dashboard?.measurement?.waistCm || '--' }} cm</strong></div>
+            <div class="target-row"><span>Chest</span><strong>{{ dashboard?.measurement?.chestCm || '--' }} cm</strong></div>
+          </div>
+        </section>
+      </aside>
     </div>
-
-    <form *ngIf="isEditing" class="edit-form" (ngSubmit)="saveProfile()">
-      <div class="form-group">
-        <label>Headline</label>
-        <input type="text" class="form-control" name="headline" [(ngModel)]="profile.headline" placeholder="E.g., Senior Software Engineer">
-      </div>
-
-      <div class="form-group">
-        <label>Location</label>
-        <input type="text" class="form-control" name="location" [(ngModel)]="profile.location" placeholder="E.g., San Francisco, CA">
-      </div>
-
-      <div class="form-group">
-        <label>Bio</label>
-        <textarea class="form-control" name="bio" [(ngModel)]="profile.bio" placeholder="Tell us about yourself..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Avatar URL</label>
-        <input type="text" class="form-control" name="avatarUrl" [(ngModel)]="profile.avatarUrl" placeholder="Image URL">
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="save-btn">Save Changes</button>
-        <button type="button" class="cancel-btn" (click)="toggleEdit()">Cancel</button>
-      </div>
-    </form>
   </div>
 </div>

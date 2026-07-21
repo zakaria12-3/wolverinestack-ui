@@ -3,11 +3,331 @@
   min-height: 80vh;
 }
 
+.member-dashboard {
+  padding: 0.25rem 0 2rem;
+}
+
+.dashboard-hero,
+.metric-card,
+.profile-summary,
+.coach-card {
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+.metric-card,
+.profile-summary,
+.coach-card {
+  background: rgba(18, 18, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.dashboard-hero {
+  background:
+    linear-gradient(135deg, rgba(255, 184, 0, 0.08), transparent 34%),
+    rgba(18, 18, 42, 0.96);
+}
+
+.status-pill {
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #c5c9ac;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-pill-active {
+  color: #FFB800;
+  border-color: rgba(255, 184, 0, 0.28);
+  background: rgba(255, 184, 0, 0.1);
+}
+
+.hero-stat,
+.mini-stat,
+.info-tile,
+.profile-stat {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(42, 42, 66, 0.72);
+  border-radius: 8px;
+  padding: 0.9rem;
+  text-align: center;
+}
+
+.hero-stat span,
+.mini-stat span,
+.info-tile span,
+.profile-stat span {
+  display: block;
+  color: #fff;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  line-height: 1;
+}
+
+.hero-stat small,
+.mini-stat small,
+.info-tile small,
+.profile-stat small {
+  display: block;
+  margin-top: 0.45rem;
+  color: #c5c9ac;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-heading.compact {
+  align-items: center;
+}
+
+.calorie-ring {
+  width: 13.5rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  padding: 0.75rem;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 32px rgba(255, 184, 0, 0.12);
+}
+
+.calorie-ring-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: #0D0D1A;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.calorie-ring-inner strong {
+  color: #fff;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 3rem;
+  line-height: 1;
+  margin-top: 0.2rem;
+}
+
+.calorie-ring-inner small {
+  color: #c5c9ac;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 0.35rem;
+}
+
+.macro-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.8fr) minmax(100px, auto);
+  gap: 0.65rem 1rem;
+  align-items: center;
+}
+
+.macro-row .progress-bar {
+  grid-column: 1 / -1;
+  height: 0.45rem;
+}
+
+.macro-label,
+.macro-value {
+  color: #e5e2e1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.macro-value {
+  text-align: right;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  margin-right: 0.45rem;
+}
+
+.dot-gold { background: #FFB800; }
+.dot-orange { background: #FF8C00; }
+.dot-light { background: #e5e2e1; }
+
+.session-row,
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(42, 42, 66, 0.56);
+  border-radius: 8px;
+  padding: 0.9rem;
+}
+
+.detail-row span {
+  color: #c5c9ac;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detail-row strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.empty-state {
+  margin-top: 1.25rem;
+  min-height: 13rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #c5c9ac;
+  text-align: center;
+}
+
+.empty-state.compact {
+  min-height: 10rem;
+}
+
+.empty-state .material-symbols-outlined {
+  color: #FFB800;
+  font-size: 2.4rem;
+}
+
+.profile-summary {
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 184, 0, 0.09), transparent 40%),
+    rgba(18, 18, 42, 0.92);
+}
+
+.avatar-badge {
+  width: 5.25rem;
+  height: 5.25rem;
+  margin: 0 auto;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #FFB800;
+  color: #2b1a00;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 8px rgba(255, 184, 0, 0.11);
+}
+
+.icon-action {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  color: #e5e2e1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-action:hover {
+  border-color: rgba(255, 184, 0, 0.4);
+  color: #FFB800;
+}
+
+.coach-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.coach-card::after {
+  content: '';
+  position: absolute;
+  right: -2rem;
+  top: -2rem;
+  width: 8rem;
+  height: 8rem;
+  border: 1px solid rgba(255, 184, 0, 0.16);
+  transform: rotate(24deg);
+}
+
+.suggestion-box {
+  margin-top: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 140, 0, 0.2);
+  background: rgba(255, 140, 0, 0.08);
+  padding: 1rem;
+}
+
+.suggestion-box p {
+  margin-top: 0.45rem;
+  color: #e5e2e1;
+  line-height: 1.5;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.55; }
 }
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (max-width: 720px) {
+  .member-dashboard {
+    padding-bottom: 1rem;
+  }
+
+  .dashboard-hero,
+  .metric-card,
+  .profile-summary,
+  .coach-card {
+    padding: 1rem;
+  }
+
+  .section-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .calorie-ring {
+    width: min(13rem, 72vw);
+  }
+
+  .macro-row {
+    grid-template-columns: 1fr;
+  }
+
+  .macro-value {
+    text-align: left;
+  }
 }
