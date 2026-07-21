@@ -41,7 +41,7 @@ export class QuizPass implements OnInit {
   ngOnInit() {
     const jobId = this.route.snapshot.paramMap.get('id');
 
-    this.http.get(`http://localhost:8027/candidate/jobs/${jobId}/quiz`)
+    this.http.get(`https://wolverinestack-api.onrender.com/candidate/jobs/${jobId}/quiz`)
       .subscribe({
         next: (res: any) => {
           console.log("QUIZ RECEIVED:", res);
@@ -64,7 +64,7 @@ export class QuizPass implements OnInit {
   submitQuiz() {
     const jobId = this.route.snapshot.paramMap.get('id');
     this.http.post(
-      `http://localhost:8027/candidate/jobs/${jobId}/quiz/submit`,
+      `https://wolverinestack-api.onrender.com/candidate/jobs/${jobId}/quiz/submit`,
       this.answers
     ).subscribe((score: any) => {
 

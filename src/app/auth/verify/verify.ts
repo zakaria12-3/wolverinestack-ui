@@ -78,7 +78,7 @@ export class Verify {
 
     console.log("VERIFY PAYLOAD:", payload);
 
-    this.http.post('http://localhost:8027/auth/verify', payload,{responseType: 'text'})
+    this.http.post('https://wolverinestack-api.onrender.com/auth/verify', payload,{responseType: 'text'})
 
       .subscribe({
         next: () => {
@@ -99,7 +99,7 @@ export class Verify {
       return;
     }
 
-    this.http.post('http://localhost:8027/auth/resend', {
+    this.http.post('https://wolverinestack-api.onrender.com/auth/resend', {
       email: this.user.email
     }).subscribe({
       next: () => {

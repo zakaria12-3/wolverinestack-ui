@@ -57,7 +57,7 @@ export class MealPlanner implements OnInit {
   loadPlan() {
     if (!this.planDate) return;
     this.isLoading = true;
-    this.http.get(`http://localhost:8027/nutrition/meal-plan?date=${this.planDate}`, this.getHeaders())
+    this.http.get(`https://wolverinestack-api.onrender.com/nutrition/meal-plan?date=${this.planDate}`, this.getHeaders())
       .subscribe((data: any) => {
         this.plan = data;
         this.isLoading = false;
@@ -74,7 +74,7 @@ export class MealPlanner implements OnInit {
     const meals = this.plan?.meals || [];
     meals.push({ ...this.newMeal });
 
-    this.http.post('http://localhost:8027/nutrition/meal-plan', 
+    this.http.post('https://wolverinestack-api.onrender.com/nutrition/meal-plan', 
       { date: this.planDate, meals }, 
       this.getHeaders()
     ).subscribe({
@@ -91,7 +91,7 @@ export class MealPlanner implements OnInit {
   removeMeal(index: number) {
     const meals = this.plan?.meals || [];
     meals.splice(index, 1);
-    this.http.post('http://localhost:8027/nutrition/meal-plan',
+    this.http.post('https://wolverinestack-api.onrender.com/nutrition/meal-plan',
       { date: this.planDate, meals },
       this.getHeaders()
     ).subscribe({
@@ -104,7 +104,7 @@ export class MealPlanner implements OnInit {
 
   getAiSuggestions() {
     this.isLoading = true;
-    this.http.get(`http://localhost:8027/ai/meal-suggestions?date=${this.planDate}`, this.getHeaders())
+    this.http.get(`https://wolverinestack-api.onrender.com/ai/meal-suggestions?date=${this.planDate}`, this.getHeaders())
       .subscribe({
         next: (res: any) => {
           this.aiSuggestions = res;

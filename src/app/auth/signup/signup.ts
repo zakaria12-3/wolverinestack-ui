@@ -54,7 +54,7 @@ export class Signup {
 
     this.isLoading = true;
 
-    this.http.post('http://localhost:8027/auth/signup', payload)
+    this.http.post('https://wolverinestack-api.onrender.com/auth/signup', payload)
       .subscribe({
         next: () => {
           this.isLoading = false;

@@ -74,7 +74,7 @@ export class OnboardingComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.http.post('http://localhost:8027/auth/onboarding/suggest-goals', this.metrics)
+    this.http.post('https://wolverinestack-api.onrender.com/auth/onboarding/suggest-goals', this.metrics)
       .subscribe({
         next: (res: any) => {
           this.suggestions = res;
@@ -130,7 +130,7 @@ export class OnboardingComponent implements OnInit {
       calculateTdee: true
     };
 
-    this.http.post('http://localhost:8027/auth/onboarding', payload)
+    this.http.post('https://wolverinestack-api.onrender.com/auth/onboarding', payload)
       .subscribe({
         next: (res: any) => {
           this.isLoading = false;

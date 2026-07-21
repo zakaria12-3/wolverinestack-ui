@@ -39,7 +39,7 @@ export class TrainerClients implements OnInit {
 
   loadClients() {
     this.isLoading = true;
-    this.http.get('http://localhost:8027/trainer/clients', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/trainer/clients', this.getHeaders())
       .subscribe((data: any) => {
         this.clients = data || [];
         this.isLoading = false;

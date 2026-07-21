@@ -38,14 +38,14 @@ export class Admindashboard implements OnInit {
   }
 
   refreshAll() {
-    this.http.get('http://localhost:8027/admin/users', this.getHeaders()).subscribe((res: any) => {
+    this.http.get('https://wolverinestack-api.onrender.com/admin/users', this.getHeaders()).subscribe((res: any) => {
       this.users = res.filter((u: any) => u.role === 'ROLE_MEMBER' || u.role === 'MEMBER');
       this.trainers = res.filter((u: any) => u.role === 'ROLE_TRAINER' || u.role === 'TRAINER');
       this.stats.totalUsers = this.users.length;
       this.stats.totalTrainers = this.trainers.length;
     });
 
-    this.http.get('http://localhost:8027/member/plans', this.getHeaders()).subscribe((res: any) => {
+    this.http.get('https://wolverinestack-api.onrender.com/member/plans', this.getHeaders()).subscribe((res: any) => {
       this.plans = res || [];
       this.stats.totalPlans = this.plans.length;
     });
@@ -57,7 +57,7 @@ export class Admindashboard implements OnInit {
 
   deleteUser(id: number) {
     this.promptConfirm('Are you sure you want to delete this user?', () => {
-      this.http.delete(`http://localhost:8027/admin/users/${id}`, this.getHeaders()).subscribe(() => {
+      this.http.delete(`https://wolverinestack-api.onrender.com/admin/users/${id}`, this.getHeaders()).subscribe(() => {
         this.refreshAll();
       });
     });
@@ -65,20 +65,20 @@ export class Admindashboard implements OnInit {
 
   toggleUserStatus(user: any) {
     const newStatus = !user.enabled;
-    this.http.put(`http://localhost:8027/admin/users/${user.id}/status?enabled=${newStatus}`, {}, this.getHeaders()).subscribe(() => {
+    this.http.put(`https://wolverinestack-api.onrender.com/admin/users/${user.id}/status?enabled=${newStatus}`, {}, this.getHeaders()).subscribe(() => {
       user.enabled = newStatus;
     });
   }
 
   changeRole(user: any, role: string) {
-    this.http.put(`http://localhost:8027/admin/users/${user.id}/role?role=${role}`, {}, this.getHeaders()).subscribe(() => {
+    this.http.put(`https://wolverinestack-api.onrender.com/admin/users/${user.id}/role?role=${role}`, {}, this.getHeaders()).subscribe(() => {
       user.role = role;
     });
   }
 
   deletePlan(id: number) {
     this.promptConfirm('Delete this workout plan?', () => {
-      this.http.delete(`http://localhost:8027/admin/plans/${id}`, this.getHeaders()).subscribe(() => {
+      this.http.delete(`https://wolverinestack-api.onrender.com/admin/plans/${id}`, this.getHeaders()).subscribe(() => {
         this.refreshAll();
       });
     });

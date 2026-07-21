@@ -45,14 +45,14 @@ export class TrainerDashboard implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    this.http.get('http://localhost:8027/trainer/clients', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/trainer/clients', this.getHeaders())
       .subscribe((data: any) => {
         this.clients = data || [];
         this.stats.totalClients = this.clients.length;
         this.cdr.detectChanges();
       });
 
-    this.http.get('http://localhost:8027/member/plans', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/member/plans', this.getHeaders())
       .subscribe((data: any) => {
         this.plans = data || [];
         this.stats.activePlans = this.plans.length;

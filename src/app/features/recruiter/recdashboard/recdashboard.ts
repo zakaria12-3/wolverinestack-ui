@@ -39,7 +39,7 @@ export class Recdashboard implements OnInit {
 
 
   ngOnInit() {
-    this.http.get('http://localhost:8027/recruiter/jobs')
+    this.http.get('https://wolverinestack-api.onrender.com/recruiter/jobs')
       .subscribe((data: any) => {
         this.jobs = data;
         this.cdr.detectChanges();
@@ -58,7 +58,7 @@ export class Recdashboard implements OnInit {
     const token = localStorage.getItem('token');
 
     this.http.delete(
-      `http://localhost:8027/recruiter/jobs/${id}`,
+      `https://wolverinestack-api.onrender.com/recruiter/jobs/${id}`,
 
     ).subscribe(() => {
       this.jobs = this.jobs.filter(j => j.id !== id);
@@ -79,7 +79,7 @@ export class Recdashboard implements OnInit {
   confirmDelete() {
     if (!this.selectedJobId) return;
 
-    this.http.delete(`http://localhost:8027/recruiter/jobs/${this.selectedJobId}`,{ responseType: 'text'})
+    this.http.delete(`https://wolverinestack-api.onrender.com/recruiter/jobs/${this.selectedJobId}`,{ responseType: 'text'})
       .subscribe({
         next: () => {
           this.jobs = this.jobs.filter(j => j.id !== this.selectedJobId);

@@ -31,7 +31,7 @@ export class JobCreate {
 
   }
   createJob() {
-    this.http.post('http://localhost:8027/recruiter/jobs', this.job)
+    this.http.post('https://wolverinestack-api.onrender.com/recruiter/jobs', this.job)
       .subscribe({
         next: () => {
           this.toastr.success("Job created!");

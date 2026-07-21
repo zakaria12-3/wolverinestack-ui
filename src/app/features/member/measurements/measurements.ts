@@ -54,14 +54,14 @@ export class BodyMeasurements implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    this.http.get('http://localhost:8027/measurements/summary', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/measurements/summary', this.getHeaders())
       .subscribe((data: any) => {
         this.summary = data;
         this.isLoading = false;
         this.cdr.detectChanges();
       });
 
-    this.http.get('http://localhost:8027/measurements', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/measurements', this.getHeaders())
       .subscribe((data: any) => {
         this.measurements = data || [];
         this.cdr.detectChanges();
@@ -75,7 +75,7 @@ export class BodyMeasurements implements OnInit {
     }
 
     this.isLoading = true;
-    this.http.post('http://localhost:8027/measurements', this.newMeasurement, this.getHeaders())
+    this.http.post('https://wolverinestack-api.onrender.com/measurements', this.newMeasurement, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Measurement saved! 📏');
@@ -94,7 +94,7 @@ export class BodyMeasurements implements OnInit {
   }
 
   deleteMeasurement(id: number) {
-    this.http.delete(`http://localhost:8027/measurements/${id}`, this.getHeaders())
+    this.http.delete(`https://wolverinestack-api.onrender.com/measurements/${id}`, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.info('Measurement removed');

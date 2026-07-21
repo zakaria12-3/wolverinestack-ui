@@ -49,7 +49,7 @@ export class Applications implements OnInit {
     ngOnInit() {
       this.jobId = Number(this.route.snapshot.paramMap.get('jobId'));
 
-      this.http.get(`http://localhost:8027/recruiter/jobs/${this.jobId}/applications`)
+      this.http.get(`https://wolverinestack-api.onrender.com/recruiter/jobs/${this.jobId}/applications`)
         .subscribe((data: any) => {
           this.applications = data;
 
@@ -69,7 +69,7 @@ export class Applications implements OnInit {
   }
 
   loadApplications() {
-    this.http.get(`http://localhost:8027/recruiter/jobs/${this.jobId}/applications`)
+    this.http.get(`https://wolverinestack-api.onrender.com/recruiter/jobs/${this.jobId}/applications`)
       .subscribe((data: any) => {
         this.applications = data;
       });
@@ -78,7 +78,7 @@ export class Applications implements OnInit {
 
   accept(id: number) {
     this.http.put(
-      `http://localhost:8027/recruiter/applications/${id}/status`,
+      `https://wolverinestack-api.onrender.com/recruiter/applications/${id}/status`,
       null,
       { params: { status: 'ACCEPTED' } }
     ).subscribe(() => this.loadApplications());
@@ -86,7 +86,7 @@ export class Applications implements OnInit {
 
   reject(id: number) {
     this.http.put(
-      `http://localhost:8027/recruiter/applications/${id}/status`,
+      `https://wolverinestack-api.onrender.com/recruiter/applications/${id}/status`,
       null,
       { params: { status: 'REJECTED' } }
     ).subscribe(() => this.loadApplications());

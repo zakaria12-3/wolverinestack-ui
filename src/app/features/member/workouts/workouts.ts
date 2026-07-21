@@ -61,7 +61,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   loadPlans() {
-    this.http.get('http://localhost:8027/member/plans', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/member/plans', this.getHeaders())
       .subscribe((data: any) => {
         this.plans = data || [];
         this.cdr.detectChanges();
@@ -69,7 +69,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   loadSessions() {
-    this.http.get('http://localhost:8027/member/sessions', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/member/sessions', this.getHeaders())
       .subscribe((data: any) => {
         this.sessions = data || [];
         this.cdr.detectChanges();
@@ -78,7 +78,7 @@ export class WorkoutTracking implements OnInit {
 
   loadPlanDetails(id: number) {
     this.isLoading = true;
-    this.http.get(`http://localhost:8027/member/plans/${id}`, this.getHeaders())
+    this.http.get(`https://wolverinestack-api.onrender.com/member/plans/${id}`, this.getHeaders())
       .subscribe((data: any) => {
         this.selectedPlan = data;
         this.viewMode = 'plans';
@@ -88,7 +88,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   startPlan(planId: number) {
-    this.http.post(`http://localhost:8027/member/plans/${planId}/start`, {}, this.getHeaders())
+    this.http.post(`https://wolverinestack-api.onrender.com/member/plans/${planId}/start`, {}, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Plan started!');
@@ -99,7 +99,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   startNewSession(planId?: number) {
-    this.http.post('http://localhost:8027/member/sessions/start', 
+    this.http.post('https://wolverinestack-api.onrender.com/member/sessions/start', 
       planId ? { planId } : {}, 
       this.getHeaders()
     ).subscribe({
@@ -125,7 +125,7 @@ export class WorkoutTracking implements OnInit {
     }
 
     this.http.post(
-      `http://localhost:8027/member/sessions/${this.activeSession.id}/exercises`,
+      `https://wolverinestack-api.onrender.com/member/sessions/${this.activeSession.id}/exercises`,
       this.currentExercise,
       this.getHeaders()
     ).subscribe({
@@ -143,7 +143,7 @@ export class WorkoutTracking implements OnInit {
     if (!this.activeSession?.id) return;
 
     this.http.put(
-      `http://localhost:8027/member/sessions/${this.activeSession.id}/complete`,
+      `https://wolverinestack-api.onrender.com/member/sessions/${this.activeSession.id}/complete`,
       {},
       this.getHeaders()
     ).subscribe({

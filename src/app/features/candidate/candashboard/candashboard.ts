@@ -42,7 +42,7 @@ constructor(
   }
 
   loadJobs() {
-    this.http.get<any[]>('http://localhost:8027/candidate/jobs').subscribe(res => {
+    this.http.get<any[]>('https://wolverinestack-api.onrender.com/candidate/jobs').subscribe(res => {
       this.jobs = res;
       this.cdr.detectChanges();
     });
@@ -67,7 +67,7 @@ constructor(
       return;
     }
 
-    this.http.post('http://localhost:8027/candidate/apply', formData)
+    this.http.post('https://wolverinestack-api.onrender.com/candidate/apply', formData)
       .subscribe({
         next: (response: any) => {const job = this.jobs.find(j => j.id === jobId);
           if (job) job.applied = true;

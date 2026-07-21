@@ -63,7 +63,7 @@ export class NutritionTracking implements OnInit {
 
   loadProgress() {
     this.isLoading = true;
-    this.http.get('http://localhost:8027/nutrition/daily-progress', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/nutrition/daily-progress', this.getHeaders())
       .subscribe((data: any) => {
         this.progress = data;
         this.meals = data?.meals || [];
@@ -74,7 +74,7 @@ export class NutritionTracking implements OnInit {
 
   loadWeeklyReport() {
     this.isLoading = true;
-    this.http.get('http://localhost:8027/nutrition/weekly-report', this.getHeaders())
+    this.http.get('https://wolverinestack-api.onrender.com/nutrition/weekly-report', this.getHeaders())
       .subscribe((data: any) => {
         this.weeklyReport = data;
         this.isLoading = false;
@@ -95,7 +95,7 @@ export class NutritionTracking implements OnInit {
       return;
     }
 
-    this.http.post('http://localhost:8027/nutrition/meals', this.mealEntry, this.getHeaders())
+    this.http.post('https://wolverinestack-api.onrender.com/nutrition/meals', this.mealEntry, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Meal logged! 🍽️');
@@ -108,7 +108,7 @@ export class NutritionTracking implements OnInit {
   }
 
   deleteMeal(id: number) {
-    this.http.delete(`http://localhost:8027/nutrition/meals/${id}`, this.getHeaders())
+    this.http.delete(`https://wolverinestack-api.onrender.com/nutrition/meals/${id}`, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.info('Meal removed');

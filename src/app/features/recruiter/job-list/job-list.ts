@@ -20,7 +20,7 @@ export class JobList {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.http.get(`http://localhost:8027/recruiter/jobs/${id}`)
+    this.http.get(`https://wolverinestack-api.onrender.com/recruiter/jobs/${id}`)
       .subscribe(res => this.job = res);
   }
 

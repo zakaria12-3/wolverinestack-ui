@@ -34,7 +34,7 @@ export class Signup {
 
   onSubmit(form: any) {
     if (form.valid) {
-      this.https.post('http://localhost:8082/auth/signup', this.user)
+      this.https.post('https://wolverinestack-api.onrender.com/auth/signup', this.user)
         .subscribe({
           next: (response) => {
             console.log('Signup successful:', response);

@@ -51,7 +51,7 @@ export class CreatePlan {
     }
 
     this.isLoading = true;
-    this.http.post('http://localhost:8027/trainer/plans', this.plan, this.getHeaders())
+    this.http.post('https://wolverinestack-api.onrender.com/trainer/plans', this.plan, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Workout plan created! 💪');

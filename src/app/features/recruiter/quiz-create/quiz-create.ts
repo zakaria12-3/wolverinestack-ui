@@ -80,7 +80,7 @@ export class QuizCreate implements OnInit {
       questions: formattedQuestions
     };
 
-    this.http.post('http://localhost:8027/recruiter/quiz', payload)
+    this.http.post('https://wolverinestack-api.onrender.com/recruiter/quiz', payload)
       .subscribe({
         next: () => {
           this.toastr.success("Quiz created!");
