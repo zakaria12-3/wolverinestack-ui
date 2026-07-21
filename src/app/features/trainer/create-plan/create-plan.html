@@ -1,41 +1,135 @@
-<div class="p-6 flex justify-center items-center min-h-[60vh]" @fadeSlide>
-  <div class="glass-card max-w-2xl w-full p-8">
-    <div class="mb-8">
-      <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">📋 Create Workout Plan</h2>
-      <p class="text-slate-300">Design a new workout plan for your clients.</p>
-    </div>
+<div class="p-6 max-w-7xl mx-auto" @fadeSlide>
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">Create Workout Plan</h2>
+    <p class="text-slate-300">Build a plan from illustrated exercise data or add custom movements manually.</p>
+  </div>
 
-    <div class="flex flex-col gap-6">
-      <div class="grid gap-2">
-        <label class="text-white text-sm font-semibold">Plan Name</label>
-        <input class="premium-input" [(ngModel)]="plan.name" placeholder="e.g. Push Pull Legs">
-      </div>
-
-      <div class="grid gap-2">
-        <label class="text-white text-sm font-semibold">Description</label>
-        <textarea class="premium-input min-h-[100px] resize-y" [(ngModel)]="plan.description"
-                  placeholder="Describe the plan, goals, target audience..."></textarea>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
+  <div class="plan-builder-grid">
+    <section class="glass-card p-6">
+      <h3 class="section-title">Plan Details</h3>
+      <div class="flex flex-col gap-5">
         <div class="grid gap-2">
-          <label class="text-white text-sm font-semibold">Difficulty</label>
-          <select class="premium-input" [(ngModel)]="plan.difficulty">
-            <option *ngFor="let d of difficulties" [value]="d">{{ d }}</option>
-          </select>
+          <label class="text-white text-sm font-semibold">Plan Name</label>
+          <input class="premium-input" [(ngModel)]="plan.name" placeholder="e.g. Push Pull Legs">
         </div>
+
         <div class="grid gap-2">
-          <label class="text-white text-sm font-semibold">Days Per Week</label>
-          <input type="number" class="premium-input" [(ngModel)]="plan.daysPerWeek" min="1" max="7">
+          <label class="text-white text-sm font-semibold">Description</label>
+          <textarea class="premium-input min-h-[100px] resize-y" [(ngModel)]="plan.description"
+                    placeholder="Describe the plan, goals, target audience..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <label class="text-white text-sm font-semibold">Goal</label>
+            <select class="premium-input" [(ngModel)]="plan.goal">
+              <option *ngFor="let goal of goals" [value]="goal">{{ formatGoal(goal) }}</option>
+            </select>
+          </div>
+          <div class="grid gap-2">
+            <label class="text-white text-sm font-semibold">Difficulty</label>
+            <select class="premium-input" [(ngModel)]="plan.difficulty">
+              <option *ngFor="let d of difficulties" [value]="d">{{ d }}</option>
+            </select>
+          </div>
+          <div class="grid gap-2">
+            <label class="text-white text-sm font-semibold">Sessions Per Week</label>
+            <input type="number" class="premium-input" [(ngModel)]="plan.sessionsPerWeek" min="1" max="7">
+          </div>
+          <div class="grid gap-2">
+            <label class="text-white text-sm font-semibold">Duration Weeks</label>
+            <input type="number" class="premium-input" [(ngModel)]="plan.durationWeeks" min="1" max="52">
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="flex gap-4 mt-4">
-        <button class="btn-cancel flex-1 premium-button-outline" routerLink="/trainer/dashboard">Cancel</button>
-        <button class="premium-button flex-1" (click)="createPlan()" [disabled]="isLoading">
-          {{ isLoading ? 'Creating...' : '✅ Create Plan' }}
+    <section class="glass-card p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <h3 class="section-title mb-0">Exercise Library</h3>
+        <button class="premium-button-outline text-sm" (click)="showManualExercise = !showManualExercise">
+          {{ showManualExercise ? 'Close Manual' : 'Add Manual' }}
         </button>
       </div>
-    </div>
+
+      <div class="flex gap-2 mb-4">
+        <input class="premium-input flex-1" [(ngModel)]="libraryQuery" placeholder="Search exercises, muscles, equipment">
+        <button class="premium-button-outline search-button" (click)="searchExercises()" [disabled]="isLoadingExercises">
+          {{ isLoadingExercises ? '...' : 'Search' }}
+        </button>
+      </div>
+
+      <div *ngIf="showManualExercise" class="manual-panel mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input class="premium-input" [(ngModel)]="manualExercise.exerciseName" placeholder="Exercise name">
+          <input class="premium-input" [(ngModel)]="manualExercise.muscleGroup" placeholder="Muscle group">
+          <input class="premium-input" [(ngModel)]="manualExercise.equipment" placeholder="Equipment">
+          <input class="premium-input" [(ngModel)]="manualExercise.imageUrl" placeholder="Image URL optional">
+          <textarea class="premium-input md:col-span-2" [(ngModel)]="manualExercise.description" placeholder="Description"></textarea>
+        </div>
+        <button class="premium-button mt-3" (click)="addManualExercise()">Add Exercise</button>
+      </div>
+
+      <div class="exercise-library">
+        <article *ngFor="let exercise of exerciseResults" class="exercise-card">
+          <div class="exercise-image">
+            <img *ngIf="exercise.imageUrl" [src]="exercise.imageUrl" [alt]="exercise.name">
+            <span *ngIf="!exercise.imageUrl">{{ exercise.name.slice(0, 1) }}</span>
+          </div>
+          <div class="exercise-copy">
+            <h4>{{ exercise.name }}</h4>
+            <p>{{ exercise.description }}</p>
+            <div class="exercise-meta">
+              <span>{{ exercise.muscleGroup }}</span>
+              <span>{{ exercise.equipment }}</span>
+            </div>
+          </div>
+          <button class="premium-button-outline text-sm" (click)="addExerciseFromLibrary(exercise)">Add</button>
+        </article>
+      </div>
+    </section>
   </div>
+
+  <section class="glass-card p-6 mt-6">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <h3 class="section-title mb-0">Selected Exercises</h3>
+      <span class="text-sm text-slate-400">{{ plan.exercises.length }} selected</span>
+    </div>
+
+    <div *ngIf="!plan.exercises.length" class="empty-state">
+      Add exercises from the library or create one manually.
+    </div>
+
+    <div class="selected-list" *ngIf="plan.exercises.length">
+      <article *ngFor="let exercise of plan.exercises; let i = index" class="selected-exercise">
+        <div class="selected-index">{{ i + 1 }}</div>
+        <div class="selected-main">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <input class="premium-input" [(ngModel)]="exercise.exerciseName" placeholder="Exercise name">
+            <input class="premium-input" [(ngModel)]="exercise.muscleGroup" placeholder="Muscle group">
+            <input class="premium-input" [(ngModel)]="exercise.equipment" placeholder="Equipment">
+          </div>
+          <textarea class="premium-input mt-3" [(ngModel)]="exercise.instructions" placeholder="Instructions"></textarea>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+            <label class="mini-field">Sets<input type="number" [(ngModel)]="exercise.sets" min="1"></label>
+            <label class="mini-field">Reps<input type="number" [(ngModel)]="exercise.reps" min="0"></label>
+            <label class="mini-field">Duration<input type="number" [(ngModel)]="exercise.durationSeconds" min="0"></label>
+            <label class="mini-field">Rest<input type="number" [(ngModel)]="exercise.restSeconds" min="0"></label>
+          </div>
+        </div>
+        <div class="selected-actions">
+          <button class="icon-button" (click)="moveExercise(i, -1)" [disabled]="i === 0" title="Move up">↑</button>
+          <button class="icon-button" (click)="moveExercise(i, 1)" [disabled]="i === plan.exercises.length - 1" title="Move down">↓</button>
+          <button class="icon-button danger" (click)="removeExercise(i)" title="Remove">×</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="flex gap-4 mt-6">
+      <button class="btn-cancel flex-1 premium-button-outline" routerLink="/trainer/dashboard">Cancel</button>
+      <button class="premium-button flex-1" (click)="createPlan()" [disabled]="isLoading">
+        {{ isLoading ? 'Creating...' : 'Create Plan' }}
+      </button>
+    </div>
+  </section>
 </div>

@@ -56,6 +56,19 @@ export interface MealPlanDto {
   notes?: string;
 }
 
+export interface MealAnalysisResult {
+  foodName?: string;
+  description?: string;
+  estimatedCalories?: number;
+  proteinGrams?: number;
+  carbsGrams?: number;
+  fatGrams?: number;
+  fiberGrams?: number;
+  confidenceScore?: number;
+  suggestions?: string;
+  error?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
   private API = environment.apiUrl;
@@ -102,5 +115,12 @@ export class NutritionService {
 
   getAiMealSuggestions(date: string): Observable<any> {
     return this.http.get(`${this.API}/ai/meal-suggestions?date=${date}`, { headers: this.getHeaders() });
+  }
+
+  analyzeMealPhoto(image: File, mealType: string): Observable<MealAnalysisResult> {
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('mealType', mealType);
+    return this.http.post<MealAnalysisResult>(`${this.API}/ai/analyze-meal-image`, formData, { headers: this.getHeaders() });
   }
 }

@@ -20,6 +20,32 @@
     <!-- Log Meal Form -->
     <div *ngIf="showLogForm" class="glass-card mb-6">
       <h3 class="text-lg font-bold text-white mb-4">Log a Meal</h3>
+      <div class="meal-photo-panel mb-4">
+        <div class="flex flex-col md:flex-row gap-4 items-start">
+          <div class="meal-photo-preview" [class.has-image]="mealPhotoPreview">
+            <img *ngIf="mealPhotoPreview" [src]="mealPhotoPreview" alt="Selected meal photo">
+            <span *ngIf="!mealPhotoPreview">Photo</span>
+          </div>
+          <div class="flex-1">
+            <label class="premium-button-outline inline-flex items-center justify-center text-sm cursor-pointer">
+              Take or Upload Photo
+              <input class="hidden" type="file" accept="image/*" capture="environment" (change)="onMealPhotoSelected($event)">
+            </label>
+            <p class="text-xs text-slate-400 mt-2">AI will estimate the meal name, calories, and macros. You can edit anything before saving.</p>
+            <div *ngIf="isAnalyzingMealPhoto" class="text-sm text-blue-300 mt-3">Analyzing meal photo...</div>
+            <div *ngIf="mealAnalysis && !isAnalyzingMealPhoto" class="analysis-result mt-3">
+              <div class="text-white text-sm font-semibold">
+                {{ mealAnalysis.foodName || 'Meal analysis' }}
+                <span class="text-slate-400 font-normal" *ngIf="mealAnalysis.confidenceScore !== undefined">
+                  · {{ mealAnalysis.confidenceScore }}% confidence
+                </span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1" *ngIf="mealAnalysis.description">{{ mealAnalysis.description }}</p>
+              <p class="text-xs text-emerald-300 mt-1" *ngIf="mealAnalysis.suggestions">{{ mealAnalysis.suggestions }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid gap-1">
           <label class="text-xs text-slate-400">Meal Type</label>
@@ -48,7 +74,9 @@
           <input type="number" class="premium-input text-sm" [(ngModel)]="mealEntry.fatGrams" min="0" step="0.1">
         </div>
       </div>
-      <button class="premium-button w-full mt-4" (click)="logMeal()">✅ Log Meal</button>
+      <button class="premium-button w-full mt-4" (click)="logMeal()" [disabled]="isAnalyzingMealPhoto">
+        {{ isAnalyzingMealPhoto ? 'Analyzing...' : 'Log Meal' }}
+      </button>
     </div>
 
     <!-- Macro Progress Bars -->
