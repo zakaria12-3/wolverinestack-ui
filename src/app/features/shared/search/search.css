@@ -1,0 +1,137 @@
+.search-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: white;
+}
+
+.search-header {
+  margin-bottom: 30px;
+}
+
+.search-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.search-query {
+  color: #3b82f6;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 30px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab-btn:hover {
+  color: #fff;
+}
+
+.tab-btn.active {
+  color: #60a5fa;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #60a5fa;
+}
+
+/* Common Card Styles */
+.result-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #e5e7eb;
+}
+
+/* User Card */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.user-details h3 {
+  font-size: 18px;
+  margin: 0;
+}
+.user-details p {
+  color: #9ca3af;
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+/* Job Card */
+.job-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-bottom: 5px;
+}
+.job-meta {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 15px;
+}
+.job-desc {
+  font-size: 14px;
+  color: #d1d5db;
+  line-height: 1.5;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #9ca3af;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  color: #9ca3af;
+}

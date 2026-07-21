@@ -1,0 +1,58 @@
+<div class="dashboard-content max-w-4xl mx-auto" *ngIf="quiz" @fadeSlide>
+  
+  <div class="header mb-10 text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-500/20 text-purple-400 mb-4 border border-purple-400/30">
+      <span class="text-3xl">📝</span>
+    </div>
+    <h2 class="text-3xl font-bold text-white mb-2 text-gradient-primary">
+      {{ quiz.jobTitle }} Assessment
+    </h2>
+    <p class="text-slate-300">Please answer all questions carefully before submitting.</p>
+  </div>
+
+  <div class="flex flex-col gap-6">
+    <div class="glass-card flex flex-col p-8 group relative overflow-hidden" *ngFor="let q of quiz.questions; let i = index">
+      
+      <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500/50 group-hover:bg-purple-400 transition-colors"></div>
+
+      <div class="mb-6 pl-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-purple-400 mb-1 block">Question {{ i + 1 }}</span>
+        <h3 class="text-xl text-white font-medium">{{ q.questionText }}</h3>
+      </div>
+
+      <div class="grid gap-3 pl-4">
+        <!-- Option A -->
+        <label class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 hover:!bg-white/10 cursor-pointer relative items-center flex gap-4 transition-all has-[:checked]:!border-purple-500 has-[:checked]:!bg-purple-500/10">
+          <input type="radio" [name]="q.id" (change)="answers[q.id] = q.optionA" class="w-5 h-5 accent-purple-500">
+          <span class="text-lg">{{ q.optionA }}</span>
+        </label>
+
+        <!-- Option B -->
+        <label class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 hover:!bg-white/10 cursor-pointer relative items-center flex gap-4 transition-all has-[:checked]:!border-purple-500 has-[:checked]:!bg-purple-500/10">
+          <input type="radio" [name]="q.id" (change)="answers[q.id] = q.optionB" class="w-5 h-5 accent-purple-500">
+          <span class="text-lg">{{ q.optionB }}</span>
+        </label>
+
+        <!-- Option C -->
+        <label class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 hover:!bg-white/10 cursor-pointer relative items-center flex gap-4 transition-all has-[:checked]:!border-purple-500 has-[:checked]:!bg-purple-500/10">
+          <input type="radio" [name]="q.id" (change)="answers[q.id] = q.optionC" class="w-5 h-5 accent-purple-500">
+          <span class="text-lg">{{ q.optionC }}</span>
+        </label>
+
+        <!-- Option D -->
+        <label class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 hover:!bg-white/10 cursor-pointer relative items-center flex gap-4 transition-all has-[:checked]:!border-purple-500 has-[:checked]:!bg-purple-500/10">
+          <input type="radio" [name]="q.id" (change)="answers[q.id] = q.optionD" class="w-5 h-5 accent-purple-500">
+          <span class="text-lg">{{ q.optionD }}</span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mt-12 text-center">
+    <button class="premium-button px-12 py-4 text-lg !bg-gradient-to-r !from-purple-500 !to-indigo-600 hover:!shadow-[0_6px_20px_rgba(168,85,247,0.4)]" (click)="submitQuiz()">
+      Submit Assessment
+    </button>
+  </div>
+
+</div>

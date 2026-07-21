@@ -1,0 +1,14 @@
+<br>
+<hlm-calendar class="calendar-wrapper" [ngModel]="today" [captionLayout]="_captionLayout()"@fadeSlide />
+<br>
+<br>
+<brn-select class="inline-block" placeholder="Select an option" @fadeSlide [(ngModel)]="_captionLayout">
+  <hlm-select-trigger class="w-full">
+    <hlm-select-value />
+  </hlm-select-trigger>
+  <hlm-select-content class="c">
+    <hlm-option value="dropdown" class="op1">Month and Year</hlm-option>
+    <hlm-option value="dropdown-months" class="op1">Only Month</hlm-option>
+    <hlm-option value="dropdown-years" class="op1">Only Year</hlm-option>
+  </hlm-select-content>
+</brn-select>

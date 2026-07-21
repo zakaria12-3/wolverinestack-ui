@@ -1,0 +1,22 @@
+<div class="quiz-form" @fadeSlide>
+  <h2>Create Quiz</h2>
+
+
+
+  <button (click)="addQuestion()">+ Add Question</button>&nbsp;
+
+  <div *ngFor="let q of quiz.questions; let i = index">
+    <h4>Question {{ i + 1 }}</h4>
+
+    <input [(ngModel)]="q.text" placeholder="Question">
+
+    <input [(ngModel)]="q.options[0]" placeholder="Option 1">
+    <input [(ngModel)]="q.options[1]" placeholder="Option 2">
+    <input [(ngModel)]="q.options[2]" placeholder="Option 3">
+    <input [(ngModel)]="q.options[3]" placeholder="Option 4">
+
+    <input [(ngModel)]="q.correctAnswer" placeholder="Correct answer">
+  </div>
+
+  <button (click)="createQuiz()">Create Quiz</button>
+</div>

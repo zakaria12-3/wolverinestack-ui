@@ -1,0 +1,169 @@
+<div class="p-6 max-w-5xl mx-auto" @fadeSlide>
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-white flex items-center gap-3">🍽️ Nutrition Tracker</h1>
+      <p class="text-slate-400 mt-1">Log meals and track your macros for the day.</p>
+    </div>
+    <button class="premium-button text-sm" (click)="showLogForm = !showLogForm">
+      {{ showLogForm ? '✕ Cancel' : '+ Log Meal' }}
+    </button>
+  </div>
+
+  <!-- Tab Switcher -->
+  <div class="flex gap-2 mb-6">
+    <button class="premium-button-outline text-sm" [class.!bg-blue-500/20]="activeTab === 'today'" (click)="switchTab('today')">📊 Today</button>
+    <button class="premium-button-outline text-sm" [class.!bg-blue-500/20]="activeTab === 'weekly'" (click)="switchTab('weekly')">📈 Weekly</button>
+  </div>
+
+  <!-- TODAY TAB -->
+  <div *ngIf="activeTab === 'today'">
+    <!-- Log Meal Form -->
+    <div *ngIf="showLogForm" class="glass-card mb-6">
+      <h3 class="text-lg font-bold text-white mb-4">Log a Meal</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Meal Type</label>
+          <select class="premium-input text-sm" [(ngModel)]="mealEntry.mealType">
+            <option *ngFor="let t of mealTypes" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Food Name</label>
+          <input class="premium-input text-sm" [(ngModel)]="mealEntry.foodName" placeholder="e.g. Grilled Chicken">
+        </div>
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Calories</label>
+          <input type="number" class="premium-input text-sm" [(ngModel)]="mealEntry.calories" min="0">
+        </div>
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Protein (g)</label>
+          <input type="number" class="premium-input text-sm" [(ngModel)]="mealEntry.proteinGrams" min="0" step="0.1">
+        </div>
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Carbs (g)</label>
+          <input type="number" class="premium-input text-sm" [(ngModel)]="mealEntry.carbsGrams" min="0" step="0.1">
+        </div>
+        <div class="grid gap-1">
+          <label class="text-xs text-slate-400">Fat (g)</label>
+          <input type="number" class="premium-input text-sm" [(ngModel)]="mealEntry.fatGrams" min="0" step="0.1">
+        </div>
+      </div>
+      <button class="premium-button w-full mt-4" (click)="logMeal()">✅ Log Meal</button>
+    </div>
+
+    <!-- Macro Progress Bars -->
+    <div *ngIf="progress" class="glass-card mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-white">📊 Daily Progress</h2>
+        <span class="text-sm text-slate-400">{{ progress.mealCount }} meals · {{ progress.caloriesRemaining > 0 ? progress.caloriesRemaining + ' kcal left' : '🎯 Goal met!' }}</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">{{ progress.totalCalories }}</div>
+          <div class="text-sm text-slate-400">/ {{ progress.calorieGoal }} kcal</div>
+          <div class="w-full bg-white/10 rounded-full h-3 mt-2 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700" 
+                 [style.width.%]="progress.caloriePercent"
+                 [style.background]="getProgressColor(progress.caloriePercent)"></div>
+          </div>
+          <div class="text-xs mt-1" 
+               [class.text-green-400]="progress.caloriePercent >= 100"
+               [class.text-blue-400]="progress.caloriePercent < 100">{{ progress.caloriePercent }}%</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">{{ progress.totalProtein }}g</div>
+          <div class="text-sm text-slate-400">/ {{ progress.proteinGoal }}g</div>
+          <div class="w-full bg-white/10 rounded-full h-3 mt-2 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 bg-blue-400" 
+                 [style.width.%]="progress.proteinPercent"></div>
+          </div>
+          <div class="text-xs mt-1 text-blue-400">{{ progress.proteinPercent }}%</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">{{ progress.totalCarbs }}g</div>
+          <div class="text-sm text-slate-400">/ {{ progress.carbsGoal }}g</div>
+          <div class="w-full bg-white/10 rounded-full h-3 mt-2 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 bg-amber-400" 
+                 [style.width.%]="progress.carbsPercent"></div>
+          </div>
+          <div class="text-xs mt-1 text-amber-400">{{ progress.carbsPercent }}%</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-white">{{ progress.totalFat }}g</div>
+          <div class="text-sm text-slate-400">/ {{ progress.fatGoal }}g</div>
+          <div class="w-full bg-white/10 rounded-full h-3 mt-2 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 bg-purple-400" 
+                 [style.width.%]="progress.fatPercent"></div>
+          </div>
+          <div class="text-xs mt-1 text-purple-400">{{ progress.fatPercent }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meals List by Type -->
+    <div *ngIf="meals.length > 0">
+      <h2 class="text-xl font-bold text-white mb-4">Today's Meals</h2>
+      <div class="space-y-4">
+        <div *ngFor="let group of getGroupedMeals()" class="glass-card">
+          <h3 class="text-white font-bold mb-3">{{ group.label }}</h3>
+          <div class="space-y-2">
+            <div *ngFor="let meal of group.items" 
+                 class="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+              <div>
+                <div class="text-white font-medium">{{ meal.foodName }}</div>
+                <div class="text-xs text-slate-400">
+                  {{ meal.calories }} kcal · P: {{ meal.proteinGrams }}g · C: {{ meal.carbsGrams }}g · F: {{ meal.fatGrams }}g
+                </div>
+              </div>
+              <button class="text-red-400 hover:text-red-300 text-sm transition-colors" (click)="deleteMeal(meal.id)">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!progress && !isLoading" class="glass-card text-center py-10">
+      <div class="text-5xl mb-4 opacity-50">🍽️</div>
+      <p class="text-slate-400">No meals logged today. Start tracking your nutrition!</p>
+    </div>
+  </div>
+
+  <!-- WEEKLY TAB -->
+  <div *ngIf="activeTab === 'weekly'">
+    <div *ngIf="weeklyReport" class="glass-card">
+      <h2 class="text-xl font-bold text-white mb-6">📈 Weekly Nutrition Report</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div class="text-center p-4 bg-white/5 rounded-xl">
+          <div class="text-2xl font-bold text-white">{{ weeklyReport.avgCalories }}</div>
+          <div class="text-xs text-slate-400">Avg Calories</div>
+        </div>
+        <div class="text-center p-4 bg-white/5 rounded-xl">
+          <div class="text-2xl font-bold text-white">{{ weeklyReport.avgProtein }}g</div>
+          <div class="text-xs text-slate-400">Avg Protein</div>
+        </div>
+        <div class="text-center p-4 bg-white/5 rounded-xl">
+          <div class="text-2xl font-bold text-white">{{ weeklyReport.avgCarbs }}g</div>
+          <div class="text-xs text-slate-400">Avg Carbs</div>
+        </div>
+        <div class="text-center p-4 bg-white/5 rounded-xl">
+          <div class="text-2xl font-bold text-white">{{ weeklyReport.avgFat }}g</div>
+          <div class="text-xs text-slate-400">Avg Fat</div>
+        </div>
+        <div class="text-center p-4 bg-white/5 rounded-xl">
+          <div class="text-2xl font-bold" 
+               [class.text-green-400]="weeklyReport.onTrackDays >= weeklyReport.totalDays / 2"
+               [class.text-yellow-400]="weeklyReport.onTrackDays < weeklyReport.totalDays / 2">
+            {{ weeklyReport.onTrackDays }}/{{ weeklyReport.totalDays }}
+          </div>
+          <div class="text-xs text-slate-400">On Track</div>
+        </div>
+      </div>
+      <p class="text-slate-400 text-sm">
+        {{ weeklyReport.startDate }} — {{ weeklyReport.endDate }}
+      </p>
+    </div>
+    <div *ngIf="!weeklyReport && isLoading" class="glass-card text-center py-10">
+      <p class="text-slate-400">Loading weekly report...</p>
+    </div>
+  </div>
+</div>

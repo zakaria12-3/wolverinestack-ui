@@ -1,0 +1,51 @@
+<div class="min-h-screen flex items-center justify-center p-4" @fadeSlide>
+  <div class="glass-panel rounded-xl max-w-md w-full p-8">
+    <div class="text-center mb-8">
+      <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-2 block tracking-[0.2em]">WELCOME BACK</span>
+      <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Sign In</h1>
+      <p class="font-body-md text-on-surface-variant mt-2">Enter your credentials to access your dashboard.</p>
+    </div>
+
+    <form #form="ngForm" (ngSubmit)="onLogin(form); $event.preventDefault()">
+      <div class="space-y-6">
+        <div>
+          <label class="font-label-caps text-[10px] text-on-surface-variant block mb-2" for="email">EMAIL</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="credentials.email"
+            placeholder="m@example.com"
+            required
+            class="input-titan w-full"
+          />
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="font-label-caps text-[10px] text-on-surface-variant" for="password">PASSWORD</label>
+            <a href="#" class="font-label-caps text-[9px] text-secondary-fixed-dim hover:text-secondary-fixed transition-colors">Forgot?</a>
+          </div>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="credentials.password"
+            required
+            class="input-titan w-full"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary w-full mt-8">
+        <span class="material-symbols-outlined text-sm">login</span> Sign In
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <p class="font-label-caps text-[10px] text-on-surface-variant">
+        Don't have an account?
+        <a routerLink="/signup" class="text-primary-container hover:text-primary-fixed-dim transition-colors">Sign Up</a>
+      </p>
+    </div>
+  </div>
+</div>

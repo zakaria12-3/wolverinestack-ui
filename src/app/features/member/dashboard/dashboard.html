@@ -1,0 +1,241 @@
+<div class="min-h-screen" @fadeSlide>
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="flex justify-center items-center min-h-[60vh]">
+    <div class="text-center">
+      <div class="skeleton-pulse text-5xl mb-4">💪</div>
+      <p class="text-on-surface-variant font-label-caps">LOADING YOUR DASHBOARD...</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !isLoading" class="flex justify-center items-center min-h-[60vh]">
+    <div class="glass-panel rounded-xl p-10 text-center max-w-md">
+      <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">error_outline</span>
+      <h2 class="font-headline-md text-headline-md text-primary mb-2">Connection Error</h2>
+      <p class="font-body-md text-on-surface-variant mb-6">Make sure you've completed your onboarding setup.</p>
+      <button class="btn-primary" routerLink="/onboarding">Go to Onboarding →</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="dashboard && !isLoading">
+    <!-- Header -->
+    <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+      <div>
+        <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-xs block">ELITE PERFORMANCE DASHBOARD</span>
+        <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">
+          Welcome, <span class="text-primary-container">{{ dashboard.profile.username }}</span>
+        </h1>
+        <div class="flex items-center gap-base mt-base">
+          <span class="material-symbols-outlined text-outline-variant">fitness_center</span>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">{{ formatLabel(dashboard.profile.fitnessGoal) }} MODE</span>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button class="btn-outline text-xs" routerLink="/profile">
+          <span class="material-symbols-outlined text-sm">person</span> Profile
+        </button>
+        <button class="btn-outline text-xs" routerLink="/feed">
+          <span class="material-symbols-outlined text-sm">forum</span> Feed
+        </button>
+      </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
+      <!-- Left Column (8 cols) -->
+      <div class="md:col-span-8 space-y-md">
+
+        <!-- Nutrition Today - Macro Ring Card -->
+        <div class="glass-panel rounded-xl p-md flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+          <!-- Macro Ring -->
+          <div class="relative w-40 h-40 shrink-0">
+            <div class="absolute inset-0 rounded-full border-[10px] border-surface-container-highest"></div>
+            <div class="absolute inset-0 rounded-full border-[10px] macro-ring-gradient opacity-80 blur-[2px]"></div>
+            <div class="absolute inset-0 rounded-full border-[10px] macro-ring-gradient"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Remaining</span>
+              <span class="font-data-metric text-3xl text-primary mt-1">{{ dashboard.nutrition.caloriesRemaining > 0 ? dashboard.nutrition.caloriesRemaining : 0 }}</span>
+              <span class="font-label-caps text-[10px] text-on-surface-variant uppercase">kcal</span>
+            </div>
+          </div>
+
+          <!-- Macro Details -->
+          <div class="flex-1 w-full space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-headline-md text-headline-md text-primary uppercase">Today's Fuel</h3>
+              <button class="btn-ghost text-xs" routerLink="/member/nutrition">
+                <span class="material-symbols-outlined text-sm">edit</span> Log
+              </button>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-primary-fixed"></div>
+                  <span class="font-label-caps text-[10px] uppercase text-on-surface-variant">Protein</span>
+                </div>
+                <div class="font-data-metric text-primary">{{ dashboard.nutrition.totalProtein }}<span class="font-label-caps text-xs ml-1 text-on-surface-variant">/ {{ dashboard.nutrition.proteinGoal }}g</span></div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill bg-primary-fixed" [style.width.%]="dashboard.nutrition.proteinPercent"></div>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></div>
+                  <span class="font-label-caps text-[10px] uppercase text-on-surface-variant">Carbs</span>
+                </div>
+                <div class="font-data-metric text-primary">{{ dashboard.nutrition.totalCarbs }}<span class="font-label-caps text-xs ml-1 text-on-surface-variant">/ {{ dashboard.nutrition.carbsGoal }}g</span></div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill bg-secondary-fixed-dim" [style.width.%]="dashboard.nutrition.carbsPercent"></div>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-primary"></div>
+                  <span class="font-label-caps text-[10px] uppercase text-on-surface-variant">Fats</span>
+                </div>
+                <div class="font-data-metric text-primary">{{ dashboard.nutrition.totalFat }}<span class="font-label-caps text-xs ml-1 text-on-surface-variant">/ {{ dashboard.nutrition.fatGoal }}g</span></div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill bg-primary" [style.width.%]="dashboard.nutrition.fatPercent"></div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-white/5 flex justify-between items-center">
+              <div class="font-label-caps text-[10px] text-on-surface-variant">Total Intake: <span class="text-primary font-bold">{{ dashboard.nutrition.totalCalories }} kcal</span></div>
+              <div class="font-label-caps text-[10px] text-on-surface-variant">Goal: <span class="text-primary font-bold">{{ dashboard.nutrition.calorieGoal }} kcal</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workout Progress -->
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-headline-md text-headline-md text-primary uppercase">Workout Volume</h3>
+            <button class="btn-ghost text-xs" routerLink="/member/workouts">
+              <span class="material-symbols-outlined text-sm">arrow_forward</span> View All
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="bg-surface-container-high rounded-lg p-4 text-center">
+              <div class="font-data-metric text-3xl text-primary">{{ dashboard.workout.totalSessions }}</div>
+              <div class="font-label-caps text-[10px] text-on-surface-variant mt-1">Total Sessions</div>
+            </div>
+            <div class="bg-surface-container-high rounded-lg p-4 text-center">
+              <div class="font-data-metric text-3xl text-primary">{{ dashboard.workout.sessionsThisWeek }}</div>
+              <div class="font-label-caps text-[10px] text-on-surface-variant mt-1">This Week</div>
+            </div>
+            <div class="bg-surface-container-high rounded-lg p-4 text-center">
+              <div class="font-data-metric text-3xl text-primary">{{ dashboard.workout.totalMinutesThisWeek }}</div>
+              <div class="font-label-caps text-[10px] text-on-surface-variant mt-1">Min This Week</div>
+            </div>
+          </div>
+
+          <div *ngIf="dashboard.workout.currentPlanName" class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
+            <span class="font-label-caps text-[11px] text-on-surface-variant">Current Plan: <span class="text-primary">{{ dashboard.workout.currentPlanName }}</span></span>
+          </div>
+
+          <div *ngIf="dashboard.workout.recentSessions?.length" class="space-y-2">
+            <div class="font-label-caps text-[10px] text-on-surface-variant opacity-60 mb-2">RECENT SESSIONS</div>
+            <div *ngFor="let session of dashboard.workout.recentSessions.slice(0, 3)" 
+                 class="flex justify-between items-center p-3 bg-surface-container-high rounded-lg hover:bg-surface-variant transition-colors">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary-container">fitness_center</span>
+                <div>
+                  <div class="font-body-md text-primary">{{ session.sessionName }}</div>
+                  <div class="font-label-caps text-[10px] text-on-surface-variant">{{ session.durationMinutes }} min</div>
+                </div>
+              </div>
+              <div class="font-label-caps text-[11px] text-primary-fixed-dim">{{ session.caloriesBurned }} kcal</div>
+            </div>
+          </div>
+          <div *ngIf="!dashboard.workout.recentSessions?.length" class="text-center py-6">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-3 block">fitness_center</span>
+            <p class="font-body-md text-on-surface-variant mb-4">No workouts logged yet.</p>
+            <button class="btn-primary text-xs" routerLink="/member/workouts">Start Your First Session</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (4 cols) -->
+      <div class="md:col-span-4 space-y-md">
+
+        <!-- Profile Mini Card -->
+        <div class="bg-surface-container-high rounded-xl p-md border border-white/5 text-center">
+          <div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mx-auto mb-3 border border-white/10">
+            <span class="material-symbols-outlined text-3xl text-primary-container">{{ dashboard.profile.gender === 'MALE' ? 'man' : 'woman' }}</span>
+          </div>
+          <h3 class="font-headline-md text-headline-md text-primary">{{ dashboard.profile.username }}</h3>
+          <div class="flex justify-center gap-4 mt-3 text-sm">
+            <div class="text-center">
+              <div class="font-data-metric text-lg text-primary">{{ dashboard.profile.weightKg }}</div>
+              <div class="font-label-caps text-[9px] text-on-surface-variant">KG</div>
+            </div>
+            <div class="text-center">
+              <div class="font-data-metric text-lg text-primary">{{ dashboard.profile.heightCm }}</div>
+              <div class="font-label-caps text-[9px] text-on-surface-variant">CM</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body Measurements -->
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Measurements</h4>
+            <button class="btn-ghost text-xs" routerLink="/member/measurements">
+              <span class="material-symbols-outlined text-sm">edit</span>
+            </button>
+          </div>
+          <div *ngIf="dashboard.measurement.hasData" class="space-y-3">
+            <div class="flex justify-between items-center py-2 border-b border-white/5">
+              <span class="font-label-caps text-[10px] text-on-surface-variant">Weight</span>
+              <span class="font-body-md text-primary font-semibold">{{ dashboard.measurement.weightKg }} kg</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-white/5">
+              <span class="font-label-caps text-[10px] text-on-surface-variant">Body Fat</span>
+              <span class="font-body-md text-primary font-semibold">{{ dashboard.measurement.bodyFatPercent }}%</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-white/5">
+              <span class="font-label-caps text-[10px] text-on-surface-variant">Waist</span>
+              <span class="font-body-md text-primary font-semibold">{{ dashboard.measurement.waistCm }} cm</span>
+            </div>
+            <div *ngIf="dashboard.measurement.weightChangeKg" class="pt-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm" [class.text-green-400]="dashboard.measurement.weightChangeKg! < 0" [class.text-red-400]="dashboard.measurement.weightChangeKg! > 0">trending_{{ dashboard.measurement.weightChangeKg! < 0 ? 'up' : 'down' }}</span>
+              <span class="font-label-caps text-[10px]" [class.text-primary-fixed-dim]="dashboard.measurement.weightChangeKg! < 0" [class.text-error]="dashboard.measurement.weightChangeKg! > 0">
+                {{ dashboard.measurement.weightChangeKg! > 0 ? '+' : '' }}{{ dashboard.measurement.weightChangeKg }} kg
+              </span>
+            </div>
+          </div>
+          <div *ngIf="!dashboard.measurement.hasData" class="text-center py-4">
+            <p class="font-label-caps text-[10px] text-on-surface-variant">No data yet</p>
+            <button class="btn-primary text-xs mt-2" routerLink="/member/measurements">Log First</button>
+          </div>
+        </div>
+
+        <!-- AI Coach Note -->
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md relative overflow-hidden">
+          <div class="absolute -top-4 -right-4 opacity-5">
+            <span class="material-symbols-outlined text-8xl text-primary-container">auto_awesome</span>
+          </div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
+              <h4 class="font-label-caps text-label-caps text-primary-container uppercase">Coach AI</h4>
+            </div>
+            <p class="font-body-md text-on-surface leading-relaxed mb-4">
+              "{{ dashboard.coachNote.message }}"
+            </p>
+            <div *ngIf="dashboard.coachNote.suggestion" class="bg-surface-container-highest rounded-lg p-3 border border-white/5">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-outlined text-secondary-fixed-dim text-sm">tips_and_updates</span>
+                <span class="font-label-caps text-[10px] text-secondary-fixed-dim">SUGGESTION</span>
+              </div>
+              <p class="font-body-md text-sm text-on-surface-variant">{{ dashboard.coachNote.suggestion }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

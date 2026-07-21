@@ -1,0 +1,20 @@
+<div class="result-container" @fadeSlide>
+  <h1>Quiz Result</h1>
+
+
+  <div class="score">
+    Your Score: <strong>{{ score }}</strong>
+  </div>
+
+  <div *ngIf="passed; else failed" class="pass">
+    ✅ You Passed!
+  </div>
+
+  <ng-template #failed>
+    <div class="fail">
+      ❌ You Failed
+    </div>
+  </ng-template>
+
+  <button routerLink="/candidate">Back to Jobs</button>
+</div>

@@ -1,0 +1,42 @@
+<div id="app-content" [class.blur-active]="isLoading">
+  <!-- Top Navigation Shell -->
+  <app-navbar></app-navbar>
+
+  <!-- Main Content Canvas -->
+  <main class="lg:ml-64 pt-20 pb-24 px-gutter max-w-container-max mx-auto min-h-screen">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation (Mobile) -->
+  <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface/80 backdrop-blur-xl border-t border-white/10">
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/" routerLinkActive="text-primary-fixed-dim">
+      <span class="material-symbols-outlined text-xl">home</span>
+      <span class="font-label-caps text-[8px] uppercase mt-1">Home</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/member/workouts" routerLinkActive="text-primary-fixed-dim">
+      <span class="material-symbols-outlined text-xl">fitness_center</span>
+      <span class="font-label-caps text-[8px] uppercase mt-1">Lifts</span>
+    </a>
+    <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary rounded-full p-3 active:scale-90 transition-all duration-150" routerLink="/member/nutrition" routerLinkActive="bg-primary-fixed-dim">
+      <span class="material-symbols-outlined text-2xl">nutrition</span>
+      <span class="font-label-caps text-[8px] uppercase mt-1">Macros</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/member/dashboard" routerLinkActive="text-primary-fixed-dim">
+      <span class="material-symbols-outlined text-xl">monitoring</span>
+      <span class="font-label-caps text-[8px] uppercase mt-1">Stats</span>
+    </a>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/feed" routerLinkActive="text-primary-fixed-dim">
+      <span class="material-symbols-outlined text-xl">forum</span>
+      <span class="font-label-caps text-[8px] uppercase mt-1">Feed</span>
+    </a>
+  </nav>
+
+  <!-- Floating Action Button (Mobile) -->
+  <button class="fixed bottom-24 right-gutter w-14 h-14 bg-primary-container text-on-primary shadow-2xl rounded-lg flex items-center justify-center active:scale-90 transition-transform z-40 lg:hidden neon-glow-primary">
+    <span class="material-symbols-outlined text-3xl">add</span>
+  </button>
+</div>
+
+<div class="loader-overlay" [class.active]="isLoading">
+  <app-loader></app-loader>
+</div>

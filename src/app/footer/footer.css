@@ -1,0 +1,52 @@
+#f {
+  background-color: #4B5563; /* bg-gray-400 */
+  color: #f3f4f6; /* text-gray-100 */
+  padding: 8px 0; /* smaller vertical padding */
+  font-size: 0.85rem; /* slightly smaller text */
+}
+
+#f .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
+  gap: 4px; /* smaller gaps in grid */
+}
+
+#f a {
+  font-size: 0.85rem;
+  margin-top: 4px; /* smaller spacing between links */
+}
+
+#f img {
+  height: 24px; /* smaller logo */
+}
+
+#f h2 {
+  font-size: 0.95rem; /* smaller section titles */
+}
+
+#f p {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+#f button {
+  width: 28px; /* smaller social icons */
+  height: 28px;
+  opacity: 0.7;
+}
+
+#f .grid > div {
+  margin-top: 8px;
+}
+
+#f input {
+  padding: 6px;
+  font-size: 0.8rem;
+  height: 32px;
+}
+
+#f .mt-10 {
+  margin-top: 8px; /* reduce extra spacing */
+}

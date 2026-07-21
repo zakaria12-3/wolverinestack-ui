@@ -1,0 +1,19 @@
+<div class="glass-sidebar min-h-screen" @fadeSlide>
+  
+  <div class="px-6 mb-8 mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+    Menu
+  </div>
+
+  <nav class="nav-menu">
+    @for(item of _items; track item.title){
+      <button class="w-full text-left flex items-center justify-start gap-4 mb-2 hover:bg-white/5 transition-colors" [routerLink]="item.path" routerLinkActive="active bg-gradient-to-r from-blue-500/20 to-transparent text-blue-400 border-l-2 border-blue-400">
+        <ng-icon hlm [name]="item.icon" class="text-xl" />
+        <span class="font-medium text-sm">{{ item.title }}</span>
+      </button>
+    }
+  </nav>
+
+</div>
+<div class="dashboard-content">
+  <ng-content />
+</div>

@@ -1,0 +1,48 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="glass-panel rounded-xl max-w-lg w-full p-8">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <span class="font-label-caps text-[10px] text-secondary-fixed-dim tracking-[0.2em] block mb-2">BECOME A TRAINER</span>
+      <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Trainer Account</h1>
+      <p class="font-body-md text-on-surface-variant mt-2">Create your trainer account to manage clients and workout plans.</p>
+    </div>
+
+    <form #signupForm="ngForm" (ngSubmit)="onSubmit(signupForm)">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">FULL NAME</label>
+          <input type="text" name="username" placeholder="John Doe" required
+                 [(ngModel)]="user.username" class="input-titan w-full">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">EMAIL</label>
+          <input type="email" name="email" placeholder="m@example.com" required
+                 [(ngModel)]="user.email" class="input-titan w-full">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">PASSWORD</label>
+          <input type="password" name="password" required
+                 [(ngModel)]="user.password" class="input-titan w-full">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-2">CONFIRM PASSWORD</label>
+          <input type="password" name="confirmPassword" required
+                 [(ngModel)]="user.confirmPassword" class="input-titan w-full">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary w-full mt-8" [disabled]="isLoading">
+        <span class="material-symbols-outlined text-sm">group_add</span>
+        {{ isLoading ? 'CREATING...' : 'CREATE TRAINER ACCOUNT' }}
+      </button>
+    </form>
+
+    <div class="text-center mt-6">
+      <p class="font-label-caps text-[10px] text-on-surface-variant">
+        Already have an account?
+        <a routerLink="/login" class="text-primary-container hover:text-primary-fixed-dim transition-colors">Sign In</a>
+      </p>
+    </div>
+  </div>
+</div>

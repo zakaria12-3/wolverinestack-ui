@@ -1,0 +1,114 @@
+<div class="p-6 max-w-5xl mx-auto" @fadeSlide>
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-white flex items-center gap-3">📏 Body Measurements</h1>
+      <p class="text-slate-400 mt-1">Track your weight, body fat, and measurements over time.</p>
+    </div>
+    <button class="premium-button text-sm" (click)="showForm = !showForm">
+      {{ showForm ? '✕ Cancel' : '+ New Measurement' }}
+    </button>
+  </div>
+
+  <!-- Log Form -->
+  <div *ngIf="showForm" class="glass-card mb-6">
+    <h3 class="text-lg font-bold text-white mb-4">Log Measurements</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Weight (kg) *</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.weightKg" placeholder="e.g. 75" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Body Fat %</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.bodyFatPercent" placeholder="e.g. 15" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Waist (cm)</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.waistCm" placeholder="e.g. 85" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Chest (cm)</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.chestCm" placeholder="e.g. 100" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Arms (cm)</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.armsCm" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Thighs (cm)</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.thighsCm" step="0.1">
+      </div>
+      <div class="grid gap-1">
+        <label class="text-xs text-slate-400">Hips (cm)</label>
+        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.hipsCm" step="0.1">
+      </div>
+      <div class="grid gap-1 col-span-2 md:col-span-4">
+        <label class="text-xs text-slate-400">Notes</label>
+        <input class="premium-input text-sm" [(ngModel)]="newMeasurement.notes" placeholder="Optional notes...">
+      </div>
+    </div>
+    <button class="premium-button w-full mt-4" (click)="saveMeasurement()" [disabled]="isLoading">
+      {{ isLoading ? 'Saving...' : '💾 Save Measurements' }}
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div *ngIf="summary?.hasData" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="glass-card text-center">
+      <div class="text-slate-400 text-xs">Latest Weight</div>
+      <div class="text-3xl font-bold text-white mt-1">{{ summary.weightKg }} <span class="text-sm text-slate-400">kg</span></div>
+      <div *ngIf="summary.weightChangeKg" class="text-xs mt-1" [class]="getChangeClass(summary.weightChangeKg, true)">
+        {{ summary.weightChangeKg! > 0 ? '+' : '' }}{{ summary.weightChangeKg }} kg
+      </div>
+    </div>
+    <div class="glass-card text-center">
+      <div class="text-slate-400 text-xs">Body Fat</div>
+      <div class="text-3xl font-bold text-white mt-1">{{ summary.bodyFatPercent }} <span class="text-sm text-slate-400">%</span></div>
+      <div *ngIf="summary.bodyFatChange" class="text-xs mt-1" [class]="getChangeClass(summary.bodyFatChange)">
+        {{ summary.bodyFatChange! > 0 ? '+' : '' }}{{ summary.bodyFatChange }}%
+      </div>
+    </div>
+    <div class="glass-card text-center">
+      <div class="text-slate-400 text-xs">Waist</div>
+      <div class="text-3xl font-bold text-white mt-1">{{ summary.waistCm || '—' }} <span class="text-sm text-slate-400">cm</span></div>
+    </div>
+    <div class="glass-card text-center">
+      <div class="text-slate-400 text-xs">Chest</div>
+      <div class="text-3xl font-bold text-white mt-1">{{ summary.chestCm || '—' }} <span class="text-sm text-slate-400">cm</span></div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!summary?.hasData && !isLoading" class="glass-card text-center py-10 mb-8">
+    <div class="text-5xl mb-4 opacity-50">📏</div>
+    <p class="text-slate-400">No measurements recorded yet. Log your first measurement to start tracking progress!</p>
+  </div>
+
+  <!-- History -->
+  <div *ngIf="measurements.length > 0">
+    <h2 class="text-xl font-bold text-white mb-4">📅 Measurement History</h2>
+    <div class="glass-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Weight</th>
+            <th>Body Fat</th>
+            <th>Waist</th>
+            <th>Chest</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of measurements">
+            <td class="text-slate-400">{{ m.date ? (m.date | date:'MMM d, yyyy') : '—' }}</td>
+            <td class="bold">{{ m.weightKg || '—' }} kg</td>
+            <td>{{ m.bodyFatPercent || '—' }}%</td>
+            <td>{{ m.waistCm || '—' }} cm</td>
+            <td>{{ m.chestCm || '—' }} cm</td>
+            <td><button class="btn-delete text-xs" (click)="deleteMeasurement(m.id)">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

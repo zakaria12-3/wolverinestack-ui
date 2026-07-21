@@ -1,0 +1,117 @@
+#sg {
+  min-height: 100vh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 60px;
+}
+
+/* Container */
+.signup-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* --- GLASS CARD --- */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); /* slightly stronger */
+  padding: 20px; /* more breathing room */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px); /* smoother lift */
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* --- FORM LAYOUT --- */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* slightly more spacing */
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* --- INPUTS (glassy) --- */
+input[hlmInput] {
+  padding: 10px 12px; /* added padding */
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #111; /* softer than pure black */
+  transition: all 0.2s ease;
+}
+
+input[hlmInput]::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+input[hlmInput]:focus {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #38bdf8; /* highlight focus */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+/* --- BUTTONS --- */
+.primary-btn,
+.secondary-btn {
+  width: 100%;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.12)
+  );
+  transform: translateY(-2px);
+}
+
+.primary-btn:active,
+.secondary-btn:active {
+  transform: scale(0.98);
+}
+
+/* --- FOOTER --- */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}

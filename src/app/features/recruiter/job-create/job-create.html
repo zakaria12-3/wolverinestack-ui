@@ -1,0 +1,39 @@
+<div class="dashboard-content flex justify-center items-center min-h-[calc(100vh-100px)]" @fadeSlide>
+  <div class="glass-card max-w-2xl w-full p-8">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-white mb-2 text-gradient-primary">Create New Job</h2>
+      <p class="text-slate-300">Fill in the details below to post a new position.</p>
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <div class="grid gap-2">
+        <label class="text-white text-sm font-semibold">Job Title</label>
+        <input class="premium-input" [(ngModel)]="job.title" placeholder="e.g. Senior Software Engineer">
+      </div>
+      
+      <div class="grid gap-2">
+        <label class="text-white text-sm font-semibold">Company Name</label>
+        <input class="premium-input" [(ngModel)]="job.company" placeholder="e.g. Tech Corp">
+      </div>
+      
+      <div class="grid gap-2">
+        <label class="text-white text-sm font-semibold">Location</label>
+        <input class="premium-input" [(ngModel)]="job.location" placeholder="e.g. New York, NY (or Remote)">
+      </div>
+
+      <div class="grid gap-2">
+        <label class="text-white text-sm font-semibold">Description</label>
+        <textarea 
+          class="premium-input min-h-[150px] resize-y" 
+          [(ngModel)]="job.description" 
+          placeholder="Detailed job description, requirements, and benefits..."
+        ></textarea>
+      </div>
+
+      <div class="flex gap-4 mt-4">
+        <button class="btn-cancel flex-1" routerLink="/recdashboard">Cancel</button>
+        <button class="premium-button flex-1" (click)="createJob()">Post Job</button>
+      </div>
+    </div>
+  </div>
+</div>

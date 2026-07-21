@@ -1,0 +1,211 @@
+<div class="min-h-screen flex items-center justify-center p-4" @fadeSlide>
+  <div class="glass-card max-w-3xl w-full p-10">
+
+    <!-- Step Progress -->
+    <div class="flex justify-center mb-10 gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+             [class.bg-blue-500]="step >= 1" [class.bg-white/10]="step < 1"
+             [class.text-white]="step >= 1" [class.text-slate-400]="step < 1">1</div>
+        <span class="text-sm" [class.text-blue-400]="step >= 1" [class.text-slate-500]="step < 1">Metrics</span>
+      </div>
+      <div class="w-16 h-px self-center" [class.bg-blue-500]="step >= 2" [class.bg-white/10]="step < 2"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+             [class.bg-blue-500]="step >= 2" [class.bg-white/10]="step < 2"
+             [class.text-white]="step >= 2" [class.text-slate-400]="step < 2">2</div>
+        <span class="text-sm" [class.text-blue-400]="step >= 2" [class.text-slate-500]="step < 2">Goal</span>
+      </div>
+      <div class="w-16 h-px self-center" [class.bg-blue-500]="step >= 3" [class.bg-white/10]="step < 3"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+             [class.bg-blue-500]="step >= 3" [class.bg-white/10]="step < 3"
+             [class.text-white]="step >= 3" [class.text-slate-400]="step < 3">3</div>
+        <span class="text-sm" [class.text-blue-400]="step >= 3" [class.text-slate-500]="step < 3">Confirm</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Enter Body Metrics -->
+    <div *ngIf="step === 1">
+      <div class="text-center mb-8">
+        <div class="text-5xl mb-4">📏</div>
+        <h2 class="text-3xl font-bold text-white mb-2">Tell Us About Yourself</h2>
+        <p class="text-slate-300">Enter your body metrics so we can calculate the right goals.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid gap-2">
+          <label class="text-white text-sm font-semibold">Gender</label>
+          <select class="select-titan w-full" [(ngModel)]="metrics.gender">
+            <option value="" disabled>Select gender</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+          </select>
+        </div>
+        <div class="grid gap-2">
+          <label class="text-white text-sm font-semibold">Date of Birth</label>
+          <input type="date" class="input-titan w-full" [(ngModel)]="metrics.dateOfBirth" max="{{ today }}">
+        </div>
+        <div class="grid gap-2">
+          <label class="text-white text-sm font-semibold">Weight (kg)</label>
+          <input type="number" class="input-titan w-full" [(ngModel)]="metrics.weightKg" placeholder="e.g. 75" min="30" max="300">
+        </div>
+        <div class="grid gap-2">
+          <label class="text-white text-sm font-semibold">Height (cm)</label>
+          <input type="number" class="input-titan w-full" [(ngModel)]="metrics.heightCm" placeholder="e.g. 175" min="100" max="250">
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <button class="btn-primary w-full" (click)="getAiSuggestions()" [disabled]="isLoading">
+          <span class="material-symbols-outlined text-sm">auto_awesome</span> {{ isLoading ? 'Consulting AI...' : 'Get AI Suggestions' }}
+        </button>
+        <div class="mt-4 text-center">
+          <button class="text-blue-400 hover:text-blue-300 text-sm transition-colors" (click)="goToManualSelect()">
+            Skip AI suggestions, choose manually →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: AI Suggestions Display -->
+    <div *ngIf="step === 2 && showingSuggestions && suggestions">
+      <div class="text-center mb-8">
+        <div class="text-5xl mb-4">🤖</div>
+        <h2 class="text-3xl font-bold text-white mb-2">AI Recommendations</h2>
+        <p class="text-slate-400">Based on your metrics, here's what we recommend:</p>
+      </div>
+
+      <!-- BMR/TDEE Summary -->
+      <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-8 text-center">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-slate-400 text-sm">Estimated BMR</p>
+            <p class="text-2xl font-bold text-white">{{ suggestions.bmrEstimate || 'Calculating...' }}</p>
+          </div>
+          <div>
+            <p class="text-slate-400 text-sm">Estimated TDEE</p>
+            <p class="text-2xl font-bold text-white">{{ suggestions.tdeeEstimate || 'Calculating...' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goal Suggestions -->
+      <div *ngIf="suggestions.goalSuggestions?.length" class="mb-6">
+        <h3 class="text-white font-bold mb-4 flex items-center gap-2">🎯 Recommended Goals</h3>
+        <div class="grid gap-3">
+          <div *ngFor="let g of suggestions.goalSuggestions" 
+               class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 cursor-pointer transition-all"
+               [class.!bg-blue-500/20]="selectedGoal === g.value"
+               [class.!border-blue-500]="selectedGoal === g.value"
+               (click)="selectGoal(g.value)">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 mt-1">
+                <input type="radio" [checked]="selectedGoal === g.value" class="accent-blue-500">
+              </div>
+              <div>
+                <div class="font-bold text-white">{{ g.label }}</div>
+                <div class="text-sm text-slate-400 mt-1">{{ g.reasoning }}</div>
+                <div class="text-xs text-blue-400 mt-1">Confidence: {{ g.confidence }}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Suggestions -->
+      <div *ngIf="suggestions.activitySuggestions?.length" class="mb-8">
+        <h3 class="text-white font-bold mb-4 flex items-center gap-2">🏃 Recommended Activity Level</h3>
+        <div class="grid gap-3">
+          <div *ngFor="let a of suggestions.activitySuggestions"
+               class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 cursor-pointer transition-all"
+               [class.!bg-blue-500/20]="selectedActivity === a.value"
+               [class.!border-blue-500]="selectedActivity === a.value"
+               (click)="selectActivity(a.value)">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 mt-1">
+                <input type="radio" [checked]="selectedActivity === a.value" class="accent-blue-500">
+              </div>
+              <div>
+                <div class="font-bold text-white">{{ a.label }}</div>
+                <div class="text-sm text-slate-400 mt-1">{{ a.reasoning }}</div>
+                <div class="text-xs text-blue-400 mt-1">Confidence: {{ a.confidence }}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div *ngIf="suggestions.summary" class="bg-white/5 rounded-xl p-4 mb-8 text-slate-300 italic border border-white/10">
+        "{{ suggestions.summary }}"
+      </div>
+
+      <div class="flex gap-4">
+        <button class="premium-button-outline flex-1" (click)="goToManualSelect()">Choose Manually</button>
+        <button class="premium-button flex-1" (click)="confirmWithAiSuggestion()" [disabled]="!selectedGoal || !selectedActivity">
+          Confirm & Continue →
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Manual Goal & Activity Selection -->
+    <div *ngIf="step === 3 && !showingSuggestions">
+      <div class="text-center mb-8">
+        <div class="text-5xl mb-4">🎯</div>
+        <h2 class="text-3xl font-bold text-white mb-2">Set Your Goals</h2>
+        <p class="text-slate-300">Choose your fitness goal and activity level.</p>
+      </div>
+
+      <!-- Goal Selection -->
+      <h3 class="text-white font-bold mb-4">Your Fitness Goal</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div *ngFor="let g of goals"
+             class="glass-card cursor-pointer transition-all p-6"
+             [class.!bg-blue-500/20]="selectedGoal === g.value"
+             [class.!border-blue-500]="selectedGoal === g.value"
+             (click)="selectGoal(g.value)">
+          <div class="text-3xl mb-2">{{ g.icon }}</div>
+          <h4 class="text-white font-bold">{{ g.label }}</h4>
+          <p class="text-slate-400 text-sm mt-1">{{ g.desc }}</p>
+        </div>
+      </div>
+
+      <!-- Activity Level Selection -->
+      <h3 class="text-white font-bold mb-4">Your Activity Level</h3>
+      <div class="grid gap-3 mb-8">
+        <div *ngFor="let a of activityLevels"
+             class="premium-button-outline w-full !justify-start !text-left !px-6 !py-4 cursor-pointer transition-all"
+             [class.!bg-blue-500/20]="selectedActivity === a.value"
+             [class.!border-blue-500]="selectedActivity === a.value"
+             (click)="selectActivity(a.value)">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">{{ a.icon }}</span>
+            <div>
+              <div class="font-bold text-white">{{ a.label }}</div>
+              <div class="text-sm text-slate-400">{{ a.desc }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-xl p-4 mb-8 border border-white/10">
+        <h4 class="text-white font-semibold mb-2">📊 Your Profile Summary</h4>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div><span class="text-slate-400">Gender:</span> <span class="text-white">{{ metrics.gender || '—' }}</span></div>
+          <div><span class="text-slate-400">Weight:</span> <span class="text-white">{{ metrics.weightKg || '—' }} kg</span></div>
+          <div><span class="text-slate-400">Height:</span> <span class="text-white">{{ metrics.heightCm || '—' }} cm</span></div>
+          <div><span class="text-slate-400">DOB:</span> <span class="text-white">{{ metrics.dateOfBirth || '—' }}</span></div>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <button class="premium-button-outline flex-1" (click)="step = 1">← Back</button>
+        <button class="premium-button flex-1" (click)="completeOnboarding()" [disabled]="isLoading || !selectedGoal || !selectedActivity">
+          {{ isLoading ? 'Setting Up...' : '✅ Complete Setup' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

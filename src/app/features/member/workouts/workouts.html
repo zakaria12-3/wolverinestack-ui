@@ -1,0 +1,145 @@
+<div class="min-h-screen" @fadeSlide>
+  <!-- Header -->
+  <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+    <div>
+      <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-xs block">ELITE PERFORMANCE TRACKER</span>
+      <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">LIFT LOG</h1>
+      <div class="flex items-center gap-base mt-base">
+        <span class="material-symbols-outlined text-outline-variant">fitness_center</span>
+        <span class="font-body-md text-on-surface-variant">Track your sets, reps, and PRs</span>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn-outline text-xs" (click)="viewMode = 'plans'" [class.!bg-primary-container]="viewMode === 'plans'" [class.!text-on-primary]="viewMode === 'plans'">
+        <span class="material-symbols-outlined text-sm">list_alt</span> Plans
+      </button>
+      <button class="btn-outline text-xs" (click)="viewMode = 'sessions'" [class.!bg-primary-container]="viewMode === 'sessions'" [class.!text-on-primary]="viewMode === 'sessions'">
+        <span class="material-symbols-outlined text-sm">history</span> History
+      </button>
+      <button class="btn-primary text-xs" (click)="startNewSession()">
+        <span class="material-symbols-outlined text-sm">play_arrow</span> Quick Start
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Workout Session -->
+  <div *ngIf="activeSession && viewMode === 'active'" class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
+        <div>
+          <h2 class="font-headline-md text-headline-md text-primary">Active Session</h2>
+          <p class="font-label-caps text-[10px] text-on-surface-variant">
+            Started · Duration: {{ getDuration(activeSession.startedAt) }}
+          </p>
+        </div>
+      </div>
+      <button class="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-caps text-[10px] font-bold hover:brightness-110 transition-all active:scale-95"
+              (click)="completeSession()">
+        <span class="material-symbols-outlined text-sm">check</span> Complete
+      </button>
+    </div>
+
+    <!-- Logged Exercises -->
+    <div *ngIf="activeSession.exercises?.length" class="mb-6 space-y-4">
+      <div *ngFor="let ex of activeSession.exercises" 
+           class="bg-surface-container-high rounded-lg p-4 border border-white/5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-lg bg-background flex items-center justify-center border border-secondary-fixed-dim/30">
+            <span class="material-symbols-outlined text-secondary-fixed-dim">fitness_center</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-primary">{{ ex.exerciseName }}</h3>
+          </div>
+        </div>
+        <div class="font-label-caps text-[10px] text-primary-fixed-dim">
+          {{ ex.sets }}×{{ ex.reps }} @ {{ ex.weightKg }} kg · LOGGED ✓
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Exercise Form -->
+    <div class="bg-surface-container-highest rounded-xl p-4">
+      <h3 class="font-label-caps text-label-caps text-primary-container mb-4">LOG EXERCISE</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">EXERCISE</label>
+          <input class="input-titan w-full text-sm" [(ngModel)]="currentExercise.exerciseName" placeholder="Bench Press">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">SETS</label>
+          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.sets" min="1">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">REPS</label>
+          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.reps" min="1">
+        </div>
+        <div>
+          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">WEIGHT (KG)</label>
+          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.weightKg" min="0" step="0.5">
+        </div>
+      </div>
+      <button class="btn-primary w-full text-xs" (click)="logExercise()">
+        <span class="material-symbols-outlined text-sm">add</span> Log Exercise
+      </button>
+    </div>
+  </div>
+
+  <!-- Workout Plans -->
+  <div *ngIf="viewMode === 'plans'">
+    <h2 class="font-headline-md text-headline-md text-primary uppercase mb-4">Workout Plans</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let plan of plans" class="bg-surface-container-low border border-white/5 rounded-xl p-md hover:border-primary-container/30 transition-all cursor-pointer"
+           (click)="loadPlanDetails(plan.id)">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary-container">
+              {{ plan.difficulty === 'BEGINNER' ? 'eco' : plan.difficulty === 'INTERMEDIATE' ? 'trending_up' : 'whatshot' }}
+            </span>
+          </div>
+          <h3 class="font-headline-md text-headline-md text-primary">{{ plan.name }}</h3>
+        </div>
+        <p class="font-body-md text-on-surface-variant text-sm mb-4 line-clamp-2">{{ plan.description || 'No description' }}</p>
+        <div class="flex justify-between items-center pt-3 border-t border-white/5">
+          <span class="font-label-caps text-[9px] text-on-surface-variant">{{ plan.daysPerWeek }} days/week · {{ plan.difficulty }}</span>
+          <button class="btn-primary text-[10px] px-4 py-2" (click)="startPlan(plan.id); $event.stopPropagation()">
+            <span class="material-symbols-outlined text-sm">play_arrow</span> Start
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16">
+        <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
+        <p class="font-body-md text-on-surface-variant">No plans available yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session History -->
+  <div *ngIf="viewMode === 'sessions'">
+    <h2 class="font-headline-md text-headline-md text-primary uppercase mb-4">Session History</h2>
+    <div class="space-y-3">
+      <div *ngFor="let session of sessions" 
+           class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-on-surface-variant">history</span>
+          <div>
+            <div class="font-body-md text-primary">{{ session.sessionName || 'Workout' }}</div>
+            <div class="font-label-caps text-[10px] text-on-surface-variant mt-1">
+              {{ formatDate(session.startedAt) }}
+              <span *ngIf="session.durationMinutes"> · {{ session.durationMinutes }} min</span>
+              <span *ngIf="session.caloriesBurned"> · {{ session.caloriesBurned }} kcal</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="session.completedAt" class="bg-primary-container/10 text-primary-container px-3 py-1 rounded font-label-caps text-[9px]">COMPLETED</div>
+        <div *ngIf="!session.completedAt" class="bg-secondary-fixed-dim/10 text-secondary-fixed-dim px-3 py-1 rounded font-label-caps text-[9px]">IN PROGRESS</div>
+      </div>
+
+      <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16">
+        <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
+        <p class="font-body-md text-on-surface-variant">No sessions yet.</p>
+      </div>
+    </div>
+  </div>
+</div>

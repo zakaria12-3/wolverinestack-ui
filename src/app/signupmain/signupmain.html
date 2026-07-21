@@ -1,0 +1,70 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-5xl mx-auto w-full">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <span class="font-label-caps text-[10px] text-secondary-fixed-dim tracking-[0.2em] block mb-4">CHOOSE YOUR PATH</span>
+      <h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary tracking-tight">
+        Join <span class="text-primary-container">TITAN FITNESS</span>
+      </h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Member Card -->
+      <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:border-primary-container/30"
+           routerLink="/signupcand">
+        <div class="h-56 relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-container-lowest z-10"></div>
+          <div class="w-full h-full bg-gradient-to-br from-surface-container-high to-surface-container-lowest flex items-center justify-center">
+            <span class="material-symbols-outlined text-8xl text-primary-container opacity-20 group-hover:scale-110 transition-transform duration-700">fitness_center</span>
+          </div>
+        </div>
+
+        <div class="p-8 -mt-16 relative z-20">
+          <div class="w-16 h-16 rounded-xl bg-primary-container/20 flex items-center justify-center mb-4 border border-primary-container/30 backdrop-blur-md neon-glow-primary">
+            <span class="material-symbols-outlined text-3xl text-primary-container">fitness_center</span>
+          </div>
+          <h3 class="font-headline-md text-headline-md text-primary mb-3">Member</h3>
+          <p class="font-body-md text-on-surface-variant mb-8 leading-relaxed">
+            Track workouts, log nutrition, measure progress, and get AI-powered coaching to reach your fitness goals.
+          </p>
+          <button class="btn-primary w-full">
+            <span class="material-symbols-outlined text-sm">person_add</span> Sign Up as Member
+          </button>
+        </div>
+      </div>
+
+      <!-- Trainer Card -->
+      <div class="glass-panel rounded-xl overflow-hidden group cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:border-secondary-fixed-dim/30"
+           routerLink="/signup/company">
+        <div class="h-56 relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-container-lowest z-10"></div>
+          <div class="w-full h-full bg-gradient-to-br from-surface-container-high to-surface-container-lowest flex items-center justify-center">
+            <span class="material-symbols-outlined text-8xl text-secondary-fixed-dim opacity-20 group-hover:scale-110 transition-transform duration-700">groups</span>
+          </div>
+        </div>
+
+        <div class="p-8 -mt-16 relative z-20">
+          <div class="w-16 h-16 rounded-xl bg-secondary-fixed-dim/20 flex items-center justify-center mb-4 border border-secondary-fixed-dim/30 backdrop-blur-md neon-glow-cyan">
+            <span class="material-symbols-outlined text-3xl text-secondary-fixed-dim">groups</span>
+          </div>
+          <h3 class="font-headline-md text-headline-md text-primary mb-3">Trainer</h3>
+          <p class="font-body-md text-on-surface-variant mb-8 leading-relaxed">
+            Create workout plans, manage clients, track their progress, and build your training business.
+          </p>
+          <button class="w-full py-3 bg-secondary-fixed-dim/10 text-secondary-fixed-dim border border-secondary-fixed-dim/30 font-label-caps text-[10px] uppercase tracking-widest hover:bg-secondary-fixed-dim hover:text-on-secondary transition-all rounded-lg font-bold">
+            <span class="material-symbols-outlined text-sm">group_add</span> Sign Up as Trainer
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer link -->
+    <div class="text-center mt-10">
+      <p class="font-label-caps text-[10px] text-on-surface-variant">
+        Already have an account? <a routerLink="/login" class="text-primary-container hover:text-primary-fixed-dim transition-colors">Sign In</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+.result-container {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 35px 30px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+/* Title */
+.result-container h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1f2937;
+}
+
+/* Score box */
+.score {
+  font-size: 18px;
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.score strong {
+  font-size: 22px;
+  color: #4f46e5;
+}
+
+/* PASS */
+.pass {
+  margin: 20px 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #059669;
+  font-weight: 600;
+  border: 1px solid #a7f3d0;
+}
+
+/* FAIL */
+.fail {
+  margin: 20px 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-weight: 600;
+  border: 1px solid #fecaca;
+}
+
+/* Button */
+.result-container button {
+  margin-top: 15px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.result-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.result-container button:active {
+  transform: scale(0.97);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,76 @@
+<div class="feed-container">
+  
+  <!-- Create Post Area -->
+  <div class="create-post-card">
+    <textarea 
+      placeholder="What's on your mind? Share an update or thread..." 
+      [(ngModel)]="newPostContent">
+    </textarea>
+    <div class="post-actions">
+      <button class="btn-post" (click)="createPost()" [disabled]="!newPostContent.trim()">Post Thread</button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    Loading feed...
+  </div>
+
+  <!-- Posts Feed -->
+  <div class="posts-list" *ngIf="!isLoading">
+    <div class="post-card" *ngFor="let post of posts">
+      
+      <div class="post-header">
+        <img [src]="post.authorAvatar || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'" class="author-avatar" alt="Avatar">
+        <div class="author-info">
+          <span class="author-name">{{ post.authorName }}</span>
+          <span class="post-date">{{ formatDate(post.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="post-content">
+        {{ post.content }}
+      </div>
+
+      <div class="interaction-bar">
+        <button class="action-btn" [class.liked]="post.likedByCurrentUser" (click)="toggleLike(post)">
+          <svg width="20" height="20" viewBox="0 0 24 24" [attr.fill]="post.likedByCurrentUser ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          Like ({{ post.likesCount || 0 }})
+        </button>
+        <button class="action-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Comment ({{ post.comments?.length || 0 }})
+        </button>
+      </div>
+
+      <!-- Comments Section -->
+      <div class="comments-section">
+        <div class="comment-item" *ngFor="let comment of post.comments">
+          <img [src]="comment.authorAvatar || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'" class="comment-avatar" alt="Avatar">
+          <div class="comment-content-wrap">
+            <div class="comment-author-name">
+              {{ comment.authorName }}
+              <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+            </div>
+            <div class="comment-text">{{ comment.content }}</div>
+          </div>
+        </div>
+        
+        <!-- Add Comment -->
+        <div class="add-comment">
+          <input type="text" class="comment-input" placeholder="Write a comment..." [(ngModel)]="commentInputs[post.id!]" (keyup.enter)="addComment(post)">
+          <button class="btn-send-comment" (click)="addComment(post)" [disabled]="!commentInputs[post.id!]?.trim()">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <line x1="22" y1="2" x2="11" y2="13"></line>
+               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+             </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+.app-card {
+  background: #1e1e2f;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  color: white;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.accept { background: #4caf50; color: white; }
+.reject { background: #f44336; color: white; }
+.view { background: #2196f3; color: white; }
+
+/* ✅ Modal viewer */
+.cv-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.cv-modal iframe {
+  flex: 1;
+  border: none;
+}
+
+.close-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}

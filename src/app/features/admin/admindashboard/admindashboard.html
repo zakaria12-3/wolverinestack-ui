@@ -1,0 +1,181 @@
+<div class="admin-dashboard">
+  <!-- Sidebar -->
+  <aside class="glass-sidebar">
+    <nav class="nav-menu">
+      <button [class.active]="activeTab === 'overview'" (click)="setTab('overview')">
+        <i class="icon">📊</i> Overview
+      </button>
+      <button [class.active]="activeTab === 'users'" (click)="setTab('users')">
+        <i class="icon">👥</i> Manage Members
+      </button>
+      <button [class.active]="activeTab === 'trainers'" (click)="setTab('trainers')">
+        <i class="icon">🏋️</i> Trainers
+      </button>
+      <button [class.active]="activeTab === 'plans'" (click)="setTab('plans')">
+        <i class="icon">📋</i> Workout Plans
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-content">
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-content fade-in" *ngIf="activeTab === 'overview'">
+      <div class="header">
+        <h1>Wolverine Stack Admin</h1>
+        <p class="subtitle">Command center for the pack. Manage members, trainers, and workout plans.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card glass-card">
+          <div class="stat-icon users-icon">👥</div>
+          <div class="stat-details">
+            <h3>Total Members</h3>
+            <p class="stat-number">{{ stats.totalUsers }}</p>
+          </div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-icon jobs-icon">🏋️</div>
+          <div class="stat-details">
+            <h3>Trainers</h3>
+            <p class="stat-number">{{ stats.totalTrainers }}</p>
+          </div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-icon apps-icon">📋</div>
+          <div class="stat-details">
+            <h3>Workout Plans</h3>
+            <p class="stat-number">{{ stats.totalPlans }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-content fade-in" *ngIf="activeTab === 'users'">
+      <div class="header">
+        <h1>Member Management</h1>
+      </div>
+      <div class="glass-table-container">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Goal</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>#{{ user.id }}</td>
+              <td class="bold">{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span *ngIf="user.fitnessGoal" class="text-xs text-slate-400">
+                  {{ user.fitnessGoal?.replace(/_/g, ' ') }}
+                </span>
+                <span *ngIf="!user.fitnessGoal" class="text-xs text-slate-500">—</span>
+              </td>
+              <td>
+                <span class="status-badge" [class.active]="user.enabled" [class.inactive]="!user.enabled">
+                  {{ user.enabled ? 'Active' : 'Disabled' }}
+                </span>
+              </td>
+              <td class="action-cell">
+                <button class="btn-toggle" (click)="toggleUserStatus(user)">
+                  {{ user.enabled ? 'Disable' : 'Enable' }}
+                </button>
+                <button class="btn-delete" (click)="deleteUser(user.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TRAINERS TAB -->
+    <div class="tab-content fade-in" *ngIf="activeTab === 'trainers'">
+      <div class="header">
+        <h1>Trainer Management</h1>
+      </div>
+      <div class="glass-table-container">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let trainer of trainers">
+              <td>#{{ trainer.id }}</td>
+              <td class="bold">{{ trainer.username }}</td>
+              <td>{{ trainer.email }}</td>
+              <td>
+                <select class="role-select" [ngModel]="trainer.role" (ngModelChange)="changeRole(trainer, $event)">
+                  <option value="ROLE_MEMBER">Member</option>
+                  <option value="ROLE_TRAINER">Trainer</option>
+                  <option value="ROLE_ADMIN">Admin</option>
+                </select>
+              </td>
+              <td class="action-cell">
+                <button class="btn-delete" (click)="deleteUser(trainer.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PLANS TAB -->
+    <div class="tab-content fade-in" *ngIf="activeTab === 'plans'">
+      <div class="header">
+        <h1>Workout Plans</h1>
+      </div>
+      <div class="glass-table-container">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Difficulty</th>
+              <th>Days/Week</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plan of plans">
+              <td>#{{ plan.id }}</td>
+              <td class="bold">{{ plan.name }}</td>
+              <td>{{ plan.difficulty }}</td>
+              <td>{{ plan.daysPerWeek }}</td>
+              <td class="action-cell">
+                <button class="btn-delete" (click)="deletePlan(plan.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Confirm Modal -->
+  <div class="premium-modal-overlay" *ngIf="showConfirmModal">
+    <div class="premium-modal glass-card fade-scale-in">
+      <h3>Confirm Action</h3>
+      <p>{{ pendingAction?.message }}</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-danger" (click)="executeConfirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
