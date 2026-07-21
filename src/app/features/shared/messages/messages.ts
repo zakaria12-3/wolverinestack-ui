@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MessagingService, Conversation, Message } from '../../../core/services/messaging.service';
 
 @Component({
@@ -20,9 +21,16 @@ export class Messages implements OnInit {
   isSending = false;
   error = '';
 
-  constructor(private messagingService: MessagingService) {}
+  constructor(
+    private messagingService: MessagingService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    const userId = Number(this.route.snapshot.queryParamMap.get('userId'));
+    if (userId) {
+      this.newReceiverId = userId;
+    }
     this.loadConversations();
   }
 
@@ -32,7 +40,7 @@ export class Messages implements OnInit {
       next: (conversations) => {
         this.conversations = conversations || [];
         this.isLoading = false;
-        if (this.conversations.length) {
+        if (this.conversations.length && !this.newReceiverId) {
           this.selectConversation(this.conversations[0]);
         }
       },

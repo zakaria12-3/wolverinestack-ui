@@ -1,5 +1,8 @@
-import { Component, HostListener, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, AfterViewInit, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../core/services/auth.service';
+import { ResearchFeedService, ResearchStudy } from '../core/services/research-feed.service';
 
 interface Slide {
   name: string;
@@ -11,18 +14,23 @@ interface Slide {
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
   standalone: true,
 })
-export class Home implements AfterViewInit, OnDestroy {
+export class Home implements OnInit, AfterViewInit, OnDestroy {
   currentSlide = 0;
   slideInterval: any;
   isTransitioning = false;
   scrollProgress = 0;
   activeSection = 0;
   visibleSections: Set<number> = new Set();
+  isLoggedIn = false;
+  role: string | null = null;
+  studies: ResearchStudy[] = [];
+  studiesLoading = false;
+  studiesError = false;
 
   // Wolverine Stack — Wolverine character slideshow
   slides: Slide[] = [
@@ -64,6 +72,20 @@ export class Home implements AfterViewInit, OnDestroy {
 
   private animationFrameId: number | null = null;
   private statsAnimated = false;
+
+  constructor(
+    private authService: AuthService,
+    private researchFeedService: ResearchFeedService,
+    private cd: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    this.isLoggedIn = !!localStorage.getItem('token');
+    this.role = this.authService.getRole();
+    if (this.isLoggedIn) {
+      this.loadStudies();
+    }
+  }
 
   ngAfterViewInit() {
     this.startSlideshow();
@@ -123,6 +145,29 @@ export class Home implements AfterViewInit, OnDestroy {
 
   formatStat(stat: { current: number; suffix: string; decimal: number }): string {
     return stat.current.toFixed(stat.decimal) + stat.suffix;
+  }
+
+  loadStudies() {
+    this.studiesLoading = true;
+    this.studiesError = false;
+    this.researchFeedService.getWorkoutStudies().subscribe({
+      next: (studies) => {
+        this.studies = studies;
+        this.studiesLoading = false;
+        this.cd.detectChanges();
+      },
+      error: () => {
+        this.studiesError = true;
+        this.studiesLoading = false;
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  getDashboardLink(): string {
+    if (this.role === 'TRAINER') return '/trainer/dashboard';
+    if (this.role === 'ADMIN') return '/admin/dashboard';
+    return '/member/dashboard';
   }
 
   animateStats() {

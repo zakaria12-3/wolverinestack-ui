@@ -3,8 +3,8 @@
   <app-navbar></app-navbar>
 
   <!-- Main Content Canvas -->
-  <main class="lg:ml-64 pt-20 pb-24 px-gutter max-w-container-max mx-auto min-h-screen">
-    <router-outlet></router-outlet>
+  <main class="lg:ml-64 pt-20 pb-24 px-gutter max-w-container-max mx-auto min-h-screen" [@routeFadeSlide]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
   </main>
 
   <!-- Bottom Navigation (Mobile) -->

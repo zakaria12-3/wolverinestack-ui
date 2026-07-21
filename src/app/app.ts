@@ -7,6 +7,7 @@ import {
   NavigationError,
   RouterOutlet
 } from '@angular/router';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 import { Navbar } from './shared/components/navbar/navbar';
 import { Loader } from './shared/components/loader/loader';
@@ -18,7 +19,15 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
   standalone: true,
-  imports: [Navbar, RouterOutlet, Loader]
+  imports: [Navbar, RouterOutlet, Loader],
+  animations: [
+    trigger('routeFadeSlide', [
+      transition('* <=> *', [
+        style({ opacity: 0, transform: 'translateY(18px)' }),
+        animate('420ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class App  {
 
@@ -55,5 +64,8 @@ export class App  {
     });
   }
 
+  prepareRoute(outlet: RouterOutlet): string {
+    return outlet?.activatedRouteData?.['animation'] || outlet?.activatedRoute?.routeConfig?.path || 'home';
+  }
 
 }

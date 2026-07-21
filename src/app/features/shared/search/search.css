@@ -70,6 +70,13 @@
   flex-direction: column;
 }
 
+.user-card {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .section-title {
   font-size: 20px;
   font-weight: 700;
@@ -97,6 +104,24 @@
   color: #9ca3af;
   margin: 4px 0 0;
   font-size: 14px;
+}
+
+.message-user-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 184, 0, 0.12);
+  color: #FFB800;
+  border: 1px solid rgba(255, 184, 0, 0.24);
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+
+.message-user-btn:hover {
+  background: #FFB800;
+  color: #2b1a00;
 }
 
 /* Job Card */

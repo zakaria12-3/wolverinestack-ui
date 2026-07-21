@@ -78,12 +78,20 @@
       AI-powered workout tracking, precision nutrition planning, and deep performance analytics — built for those with an unbreakable will.
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-4">
+    <div *ngIf="!isLoggedIn" class="flex flex-col sm:flex-row gap-4">
       <button routerLink="/signup" class="btn-primary text-sm px-8 py-4 pulse-ring">
         <span class="material-symbols-outlined text-lg">bolt</span> Start Your Beast Mode
       </button>
       <button routerLink="/login" class="btn-outline text-sm px-8 py-4">
         Sign In
+      </button>
+    </div>
+    <div *ngIf="isLoggedIn" class="flex flex-col sm:flex-row gap-4">
+      <button [routerLink]="getDashboardLink()" class="btn-primary text-sm px-8 py-4 pulse-ring">
+        <span class="material-symbols-outlined text-lg">dashboard</span> Open Dashboard
+      </button>
+      <button routerLink="/messages" class="btn-outline text-sm px-8 py-4">
+        <span class="material-symbols-outlined text-lg">chat</span> Messages
       </button>
     </div>
   </div>
@@ -100,6 +108,37 @@
   <button class="slide-arrow next" (click)="nextSlide()">
     <span class="material-symbols-outlined">chevron_right</span>
   </button>
+</section>
+
+<!-- === SECTION: Research Feed === -->
+<section *ngIf="isLoggedIn" class="py-20 px-gutter max-w-6xl mx-auto reveal-on-scroll">
+  <div class="research-heading">
+    <div>
+      <span class="font-label-caps text-[10px] text-wolverine-gold tracking-[0.2em] block mb-4">TRAINING STUDIES</span>
+      <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
+        Latest Workout Research
+      </h2>
+    </div>
+    <button type="button" class="btn-outline text-xs" (click)="loadStudies()">
+      <span class="material-symbols-outlined text-sm">refresh</span>
+      Refresh
+    </button>
+  </div>
+
+  <div *ngIf="studiesLoading" class="research-status glass-panel">Loading recent studies...</div>
+  <div *ngIf="studiesError" class="research-status glass-panel">Could not load studies right now. Try again in a bit.</div>
+
+  <div *ngIf="!studiesLoading && !studiesError" class="research-grid">
+    <a *ngFor="let study of studies" class="research-card glass-panel" [href]="study.url" target="_blank" rel="noopener">
+      <span class="material-symbols-outlined">science</span>
+      <h3>{{ study.title }}</h3>
+      <p>{{ study.authors }}</p>
+      <div>
+        <small>{{ study.journal }}</small>
+        <small>{{ study.published }}</small>
+      </div>
+    </a>
+  </div>
 </section>
 
 <!-- === SECTION: Stats Counter === -->
@@ -168,12 +207,20 @@
     <p class="font-body-lg text-on-surface-variant max-w-lg mx-auto mb-8">
       Thousands of athletes trust Wolverine Stack to track, analyze, and optimize their performance. It's time to unleash yours.
     </p>
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <div *ngIf="!isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
       <button routerLink="/signup" class="btn-primary text-sm px-10 py-4 pulse-ring">
         <span class="material-symbols-outlined">bolt</span> Start Free
       </button>
       <button routerLink="/login" class="btn-outline text-sm px-10 py-4">
         Sign In
+      </button>
+    </div>
+    <div *ngIf="isLoggedIn" class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button [routerLink]="getDashboardLink()" class="btn-primary text-sm px-10 py-4 pulse-ring">
+        <span class="material-symbols-outlined">monitoring</span> Continue Training
+      </button>
+      <button routerLink="/feed" class="btn-outline text-sm px-10 py-4">
+        Community Feed
       </button>
     </div>
   </div>
