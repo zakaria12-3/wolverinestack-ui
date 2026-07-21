@@ -65,7 +65,11 @@ export class App  {
   }
 
   prepareRoute(outlet: RouterOutlet): string {
-    return outlet?.activatedRouteData?.['animation'] || outlet?.activatedRoute?.routeConfig?.path || 'home';
+    if (!outlet?.isActivated) {
+      return this.router.url || 'home';
+    }
+
+    return outlet.activatedRouteData?.['animation'] || this.router.url || 'home';
   }
 
 }
