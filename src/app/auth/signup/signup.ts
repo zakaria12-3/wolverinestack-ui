@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../environments/environment';
+import { VerificationMailService } from '../../core/services/verification-mail.service';
 @Component({
   selector: 'app-signup',
   imports: [FormsModule, RouterLink],
@@ -14,7 +16,12 @@ export class Signup {
   private readonly passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
   private readonly passwordRequirementsMessage = 'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.';
 
-  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toastr: ToastrService,
+    private verificationMail: VerificationMailService
+  ) {}
 
   user = {
     username: '',
@@ -48,9 +55,10 @@ export class Signup {
       return;
     }
 
+    const email = this.user.email.trim().toLowerCase();
     const payload: any = {
       username: this.user.username,
-      email: this.user.email.trim().toLowerCase(),
+      email,
       password: this.user.password,
       role: 'MEMBER'
     };
@@ -62,12 +70,22 @@ export class Signup {
 
     this.isLoading = true;
 
-    this.http.post('https://wolverinestack-api.onrender.com/auth/signup', payload)
+    this.http.post(`${environment.apiUrl}/auth/signup`, payload)
       .subscribe({
         next: () => {
-          this.isLoading = false;
-          localStorage.setItem('verifyEmail', this.user.email);
-          this.router.navigate(['/verify'], { queryParams: { email: this.user.email } });
+          localStorage.setItem('verifyEmail', email);
+          this.verificationMail.sendVerificationCode(email).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.toastr.success('Verification code sent.');
+              this.router.navigate(['/verify'], { queryParams: { email } });
+            },
+            error: () => {
+              this.isLoading = false;
+              this.toastr.warning('Account created, but the verification email could not be resent automatically. Use Resend Code on the next screen.');
+              this.router.navigate(['/verify'], { queryParams: { email } });
+            }
+          });
         },
         error: (err) => {
           this.isLoading = false;

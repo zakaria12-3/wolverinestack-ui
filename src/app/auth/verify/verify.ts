@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideInfo } from '@ng-icons/lucide';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { VerificationMailService } from '../../core/services/verification-mail.service';
 
 @Component({
   selector: 'app-verify',
@@ -45,15 +45,19 @@ export class Verify {
   };
 
   showPopup = false;
+  isResending = false;
+  resendCooldown = 0;
+  private cooldownTimer?: number;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private verificationMail: VerificationMailService
   ) {
     this.route.queryParams.subscribe(params => {
-      this.user.email = params['email'] || '';
+      const email = params['email'] || localStorage.getItem('verifyEmail') || '';
+      this.user.email = email.trim().toLowerCase();
 
       // 🔴 FIX: handle missing email
       if (!this.user.email) {
@@ -78,7 +82,7 @@ export class Verify {
 
     console.log("VERIFY PAYLOAD:", payload);
 
-    this.http.post('https://wolverinestack-api.onrender.com/auth/verify', payload,{responseType: 'text'})
+    this.verificationMail.verifyCode(payload.email, payload.verificationCode)
 
       .subscribe({
         next: () => {
@@ -93,23 +97,43 @@ export class Verify {
   }
 
   onResendCode() {
-    if (!this.user.email) {
+    if (!this.user.email || this.isResending || this.resendCooldown > 0) {
+      if (this.resendCooldown > 0) {
+        this.toastr.info(`Please wait ${this.resendCooldown}s before resending.`);
+        return;
+      }
       this.toastr.error('No email found. Please sign up again.');
       this.router.navigate(['/signup']);
       return;
     }
 
-    this.http.post('https://wolverinestack-api.onrender.com/auth/resend', {
-      email: this.user.email
-    }).subscribe({
+    this.isResending = true;
+    this.verificationMail.sendVerificationCode(this.user.email).subscribe({
       next: () => {
+        this.isResending = false;
+        this.toastr.success('Verification code sent.');
         this.showPopup = true;
+        this.startCooldown();
         setTimeout(() => this.showPopup = false, 4000);
       },
       error: (err) => {
+        this.isResending = false;
         console.log("RESEND ERROR:", err);
         this.toastr.error('Failed: ' + (err.error || 'Unknown error'));
       }
     });
+  }
+
+  private startCooldown(): void {
+    this.resendCooldown = 60;
+    if (this.cooldownTimer) {
+      window.clearInterval(this.cooldownTimer);
+    }
+    this.cooldownTimer = window.setInterval(() => {
+      this.resendCooldown = Math.max(0, this.resendCooldown - 1);
+      if (this.resendCooldown === 0 && this.cooldownTimer) {
+        window.clearInterval(this.cooldownTimer);
+      }
+    }, 1000);
   }
 }

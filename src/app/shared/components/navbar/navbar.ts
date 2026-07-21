@@ -117,6 +117,11 @@ import {Subscription} from 'rxjs';
           <span class="font-label-caps text-label-caps">Feed</span>
         </a>
         <a class="flex items-center gap-sm p-3 text-on-surface-variant opacity-70 hover:bg-surface-variant hover:text-primary transition-all duration-200 rounded-lg"
+           routerLink="/messages" routerLinkActive="bg-surface-variant text-primary opacity-100">
+          <span class="material-symbols-outlined text-xl">chat</span>
+          <span class="font-label-caps text-label-caps">Messages</span>
+        </a>
+        <a class="flex items-center gap-sm p-3 text-on-surface-variant opacity-70 hover:bg-surface-variant hover:text-primary transition-all duration-200 rounded-lg"
            routerLink="/profile" routerLinkActive="bg-surface-variant text-primary opacity-100">
           <span class="material-symbols-outlined text-xl">person</span>
           <span class="font-label-caps text-label-caps">Profile</span>

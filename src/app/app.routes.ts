@@ -151,5 +151,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/shared/search/search').then(m => m.SearchComponent),
     canActivate: [authGuard]
   },
+  {
+    path: 'messages',
+    loadComponent: () => import('./features/shared/messages/messages').then(m => m.Messages),
+    canActivate: [authGuard]
+  },
   { path: '**', redirectTo: '' }
 ];

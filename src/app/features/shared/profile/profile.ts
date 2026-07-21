@@ -5,6 +5,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { UserService, UserProfile } from '../../../core/services/user.service';
 import { MemberService, DashboardDto } from '../../../core/services/member.service';
+import { ReminderService, ReminderSettings } from '../../../core/services/reminder.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,19 +17,25 @@ import { MemberService, DashboardDto } from '../../../core/services/member.servi
 export class Profile implements OnInit {
   profile: UserProfile = {};
   dashboard: DashboardDto | null = null;
+  reminderSettings: ReminderSettings;
   isEditing = false;
   isLoading = true;
+  reminderPermission = 'default';
 
   readonly fallbackAvatar = 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
 
   constructor(
     private userService: UserService,
     private memberService: MemberService,
+    private reminderService: ReminderService,
     private cd: ChangeDetectorRef
-  ) {}
+  ) {
+    this.reminderSettings = { ...this.reminderService.settings };
+  }
 
   ngOnInit(): void {
     this.loadProfile();
+    this.reminderPermission = 'Notification' in window ? Notification.permission : 'unsupported';
   }
 
   loadProfile(): void {
@@ -85,6 +92,59 @@ export class Profile implements OnInit {
         this.cd.detectChanges();
       }
     });
+  }
+
+  saveReminders(): void {
+    this.reminderService.saveSettings(this.reminderSettings);
+    this.reminderService.requestPermission().then(permission => {
+      this.reminderPermission = permission;
+      this.cd.detectChanges();
+    });
+  }
+
+  updateMealTime(index: number, value: string): void {
+    this.reminderSettings = {
+      ...this.reminderSettings,
+      mealTimes: this.reminderSettings.mealTimes.map((time, i) => i === index ? value : time)
+    };
+  }
+
+  addMealReminder(): void {
+    this.reminderSettings = {
+      ...this.reminderSettings,
+      mealTimes: [...this.reminderSettings.mealTimes, '16:00']
+    };
+  }
+
+  removeMealReminder(index: number): void {
+    this.reminderSettings = {
+      ...this.reminderSettings,
+      mealTimes: this.reminderSettings.mealTimes.filter((_, i) => i !== index)
+    };
+  }
+
+  getProfileCompletion(): number {
+    const fields = [
+      this.profile.username,
+      this.profile.email,
+      this.profile.headline,
+      this.profile.bio,
+      this.profile.location,
+      this.profile.fitnessGoal,
+      this.profile.activityLevel,
+      this.profile.weightKg,
+      this.profile.heightCm,
+      this.profile.dailyCalorieGoal
+    ];
+    const complete = fields.filter(Boolean).length;
+    return Math.round((complete / fields.length) * 100);
+  }
+
+  getReminderStatus(): string {
+    if (this.reminderPermission === 'granted') return 'Browser reminders enabled';
+    if (this.reminderPermission === 'denied') return 'Notifications blocked in browser settings';
+    if (this.reminderPermission === 'unsupported') return 'Browser notifications unavailable';
+    return 'Permission needed for browser notifications';
   }
 
   private mergeDashboardProfile(): void {

@@ -71,8 +71,9 @@
         type="button"
         class="primary-btn w-full font-semibold rounded-lg py-2 backdrop-blur-md"
         (click)="onResendCode()"
+        [disabled]="isResending || resendCooldown > 0"
       >
-        Resend Code
+        {{ isResending ? 'Sending...' : resendCooldown > 0 ? 'Resend in ' + resendCooldown + 's' : 'Resend Code' }}
       </button>
     </div>
 

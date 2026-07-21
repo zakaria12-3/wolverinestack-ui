@@ -30,6 +30,16 @@
       </button>
     </section>
 
+    <section class="profile-progress">
+      <div>
+        <span class="font-label-caps text-secondary-fixed-dim">PROFILE COMPLETION</span>
+        <strong>{{ getProfileCompletion() }}%</strong>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" [style.width.%]="getProfileCompletion()" [style.background]="getProfileCompletion() > 80 ? '#22c55e' : '#FFB800'"></div>
+      </div>
+    </section>
+
     <section class="stats-grid">
       <div class="stat-card">
         <span class="material-symbols-outlined">monitor_weight</span>
@@ -122,6 +132,51 @@
             <div class="target-row"><span>Protein</span><strong>{{ profile.dailyProteinGoal || dashboard?.nutrition?.proteinGoal || 0 }} g</strong></div>
             <div class="target-row"><span>Carbs</span><strong>{{ profile.dailyCarbsGoal || dashboard?.nutrition?.carbsGoal || 0 }} g</strong></div>
             <div class="target-row"><span>Fat</span><strong>{{ profile.dailyFatGoal || dashboard?.nutrition?.fatGoal || 0 }} g</strong></div>
+          </div>
+        </section>
+
+        <section class="profile-panel">
+          <div class="section-heading">
+            <div>
+              <span class="font-label-caps text-secondary-fixed-dim">REMINDERS</span>
+              <h2 class="font-headline-md text-primary">Workouts & Meals</h2>
+            </div>
+            <span class="status-badge" [class.active]="reminderPermission === 'granted'">{{ getReminderStatus() }}</span>
+          </div>
+
+          <div class="reminder-grid mt-5">
+            <label class="reminder-toggle">
+              <input type="checkbox" [(ngModel)]="reminderSettings.workoutEnabled">
+              <span>Workout reminder</span>
+            </label>
+            <label>
+              <span>Workout time</span>
+              <input class="input-titan w-full" type="time" [(ngModel)]="reminderSettings.workoutTime">
+            </label>
+            <label class="reminder-toggle">
+              <input type="checkbox" [(ngModel)]="reminderSettings.mealEnabled">
+              <span>Meal reminders</span>
+            </label>
+          </div>
+
+          <div class="meal-time-list">
+            <div *ngFor="let time of reminderSettings.mealTimes; let i = index" class="meal-time-row">
+              <input class="input-titan" type="time" [ngModel]="time" (ngModelChange)="updateMealTime(i, $event)">
+              <button type="button" class="btn-outline text-xs" (click)="removeMealReminder(i)">
+                <span class="material-symbols-outlined text-sm">delete</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions mt-5">
+            <button type="button" class="btn-outline text-xs" (click)="addMealReminder()">
+              <span class="material-symbols-outlined text-sm">add</span>
+              Meal Time
+            </button>
+            <button type="button" class="btn-primary text-xs" (click)="saveReminders()">
+              <span class="material-symbols-outlined text-sm">notifications</span>
+              Save Reminders
+            </button>
           </div>
         </section>
       </main>

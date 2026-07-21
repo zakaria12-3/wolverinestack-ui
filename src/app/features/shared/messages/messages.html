@@ -1,0 +1,63 @@
+<div class="messages-page">
+  <header class="messages-header">
+    <div>
+      <span class="font-label-caps text-secondary-fixed-dim">MESSAGES</span>
+      <h1 class="font-headline-lg text-primary mt-2">Conversations</h1>
+    </div>
+  </header>
+
+  <div *ngIf="error" class="notice">{{ error }}</div>
+
+  <section class="messages-shell">
+    <aside class="conversation-list">
+      <div class="new-message">
+        <label>
+          <span>Receiver user ID</span>
+          <input class="input-titan w-full" type="number" min="1" [(ngModel)]="newReceiverId" placeholder="Start with a user ID">
+        </label>
+      </div>
+
+      <div *ngIf="isLoading" class="empty-state">Loading conversations...</div>
+      <button
+        *ngFor="let conversation of conversations"
+        class="conversation-item"
+        [class.active]="selectedConversation?.id === conversation.id"
+        (click)="selectConversation(conversation)"
+      >
+        <img [src]="conversation.participantAvatar || 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg'" alt="">
+        <span>
+          <strong>{{ conversation.participantName }}</strong>
+          <small>{{ conversation.lastMessage || 'No messages yet' }}</small>
+        </span>
+        <em *ngIf="conversation.unreadCount">{{ conversation.unreadCount }}</em>
+      </button>
+
+      <div *ngIf="!isLoading && !conversations.length" class="empty-state">No conversations yet.</div>
+    </aside>
+
+    <main class="thread-panel">
+      <div class="thread-heading">
+        <div>
+          <span class="font-label-caps text-on-surface-variant">CHAT WITH</span>
+          <h2>{{ getConversationName() }}</h2>
+        </div>
+      </div>
+
+      <div class="message-list">
+        <div *ngFor="let message of messages" class="message-bubble" [class.mine]="message.mine">
+          <p>{{ message.content }}</p>
+          <small>{{ formatTime(message.createdAt) }}</small>
+        </div>
+        <div *ngIf="!messages.length" class="empty-state">Select a conversation or enter a receiver ID to start.</div>
+      </div>
+
+      <form class="composer" (ngSubmit)="send()">
+        <textarea class="input-titan" name="draft" [(ngModel)]="draft" placeholder="Write a message..."></textarea>
+        <button class="btn-primary" type="submit" [disabled]="isSending || !draft.trim() || (!selectedConversation && !newReceiverId)">
+          <span class="material-symbols-outlined text-sm">send</span>
+          Send
+        </button>
+      </form>
+    </main>
+  </section>
+</div>

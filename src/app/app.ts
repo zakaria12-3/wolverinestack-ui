@@ -10,6 +10,8 @@ import {
 
 import { Navbar } from './shared/components/navbar/navbar';
 import { Loader } from './shared/components/loader/loader';
+import { ReminderService } from './core/services/reminder.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,17 @@ export class App  {
 
   isLoading = true;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private reminderService: ReminderService,
+    private toastr: ToastrService
+  ) {
+    this.reminderService.start();
+    window.addEventListener('app-reminder', ((event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      this.toastr.info(detail.body, detail.title);
+    }) as EventListener);
+
     setTimeout(() => {
       this.isLoading = false;
     }, 300);

@@ -5,6 +5,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -45,7 +46,7 @@ export class Login {
       password: this.credentials.password
     };
 
-    this.http.post<any>('https://wolverinestack-api.onrender.com/auth/login', payload,
+    this.http.post<any>(`${environment.apiUrl}/auth/login`, payload,
       { headers: { 'Content-Type': 'application/json' } }
     ).subscribe({
       next: (res) => {
