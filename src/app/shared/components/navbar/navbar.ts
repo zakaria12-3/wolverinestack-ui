@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy} from '@angular/core';
 import {HlmAvatarImports} from '@spartan-ng/helm/avatar';
 import { RouterLink, RouterLinkActive, Router} from '@angular/router';
-import {animate, style, transition, trigger} from '@angular/animations';
 import {NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '../../../core/services/auth.service';
@@ -11,14 +10,6 @@ import {Subscription} from 'rxjs';
 @Component({
   selector: 'app-navbar',
   imports: [HlmAvatarImports, RouterLink, RouterLinkActive, NgIf, FormsModule],
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Top Navigation Shell -->

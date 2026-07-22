@@ -4,7 +4,6 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { MemberService, DashboardDto } from '../../../core/services/member.service';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -12,15 +11,7 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css'],
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./dashboard.css']
 })
 export class MemberDashboard implements OnInit {
   dashboard: DashboardDto | null = null;

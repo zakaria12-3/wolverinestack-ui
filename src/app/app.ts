@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   Router,
   NavigationStart,
@@ -10,6 +10,7 @@ import {
 
 import { Navbar } from './shared/components/navbar/navbar';
 import { Loader } from './shared/components/loader/loader';
+import { routeAnimations } from './shared/animations';
 import { ReminderService } from './core/services/reminder.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -18,7 +19,8 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
   standalone: true,
-  imports: [Navbar, RouterOutlet, Loader]
+  imports: [Navbar, RouterOutlet, Loader],
+  animations: [routeAnimations]
 })
 export class App  {
 

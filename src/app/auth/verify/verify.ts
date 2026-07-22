@@ -29,12 +29,6 @@ import { VerificationMailService } from '../../core/services/verification-mail.s
         animate('500ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
       ])
     ]),
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
   ]
 })
 export class Verify {

@@ -1,4 +1,4 @@
-<div class="min-h-screen" @fadeSlide>
+<div class="min-h-screen">
   <!-- Header -->
   <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
     <div>
@@ -23,7 +23,7 @@
   </div>
 
   <!-- ==================== ACTIVE WORKOUT SESSION ==================== -->
-  <div *ngIf="activeSession && viewMode === 'active'" @fadeSlide>
+  <div *ngIf="activeSession && viewMode === 'active'">
     <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md card-hover">
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
@@ -149,7 +149,7 @@
   </div>
 
   <!-- ==================== PLAN BROWSING ==================== -->
-  <div *ngIf="viewMode === 'plans'" @fadeSlide>
+  <div *ngIf="viewMode === 'plans'">
     <div class="flex items-center justify-between mb-4">
       <h2 class="font-headline-md text-headline-md text-primary uppercase">My Plans</h2>
       <button class="btn-primary text-xs" (click)="openCreatePlan()">
@@ -203,7 +203,7 @@
   </div>
 
   <!-- ==================== CREATE / EDIT PLAN ==================== -->
-  <div *ngIf="viewMode === 'create' || viewMode === 'edit'" @fadeSlide>
+  <div *ngIf="viewMode === 'create' || viewMode === 'edit'">
     <div class="mb-6">
       <div class="flex items-center gap-3 mb-2">
         <button class="text-on-surface-variant hover:text-primary transition-colors" (click)="cancelPlanForm()">

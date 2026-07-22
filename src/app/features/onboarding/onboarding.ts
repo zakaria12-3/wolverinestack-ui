@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -13,15 +12,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './onboarding.html',
-  styleUrls: ['./onboarding.css'],
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./onboarding.css']
 })
 export class OnboardingComponent implements OnInit {
   step = 1;

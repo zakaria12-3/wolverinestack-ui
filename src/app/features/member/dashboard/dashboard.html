@@ -1,4 +1,4 @@
-<div class="member-dashboard min-h-screen" @fadeSlide>
+<div class="member-dashboard min-h-screen">
   <div *ngIf="isLoading" class="flex min-h-[60vh] items-center justify-center">
     <div class="glass-panel rounded-lg px-8 py-7 text-center">
       <span class="material-symbols-outlined mb-3 block text-5xl text-primary-container animate-pulse">fitness_center</span>
@@ -18,7 +18,7 @@
   <div *ngIf="dashboard && !isLoading" class="space-y-6">
     <!-- Quick Log Banner (catch up on yesterday) -->
     <div *ngIf="quickLogStatus && (quickLogStatus.missedWorkout || quickLogStatus.missedMeals)"
-         class="bg-surface-container-low border border-primary-container/30 rounded-xl p-md card-hover" @fadeSlide>
+         class="bg-surface-container-low border border-primary-container/30 rounded-xl p-md card-hover">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-3xl text-primary-container">history</span>
@@ -31,18 +31,20 @@
         </div>
         <div class="flex gap-2 flex-wrap">
           <button *ngIf="quickLogStatus.missedWorkout"
-                  class="btn-primary text-xs"
+                  class="btn-primary text-xs flex items-center justify-center gap-1"
                   (click)="quickLogWorkout()"
                   [disabled]="isLoggingWorkout">
-            <span class="material-symbols-outlined text-sm">fitness_center</span>
-            {{ isLoggingWorkout ? 'Logging...' : 'Log Workout 💪' }}
+            <span *ngIf="!isLoggingWorkout" class="material-symbols-outlined text-sm">fitness_center</span>
+            <span *ngIf="isLoggingWorkout" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+            {{ isLoggingWorkout ? 'Logging...' : 'Log Workout' }}
           </button>
           <button *ngIf="quickLogStatus.missedMeals"
-                  class="btn-outline text-xs"
+                  class="btn-outline text-xs flex items-center justify-center gap-1"
                   (click)="quickLogMeal()"
                   [disabled]="isLoggingMeal">
-            <span class="material-symbols-outlined text-sm">restaurant</span>
-            {{ isLoggingMeal ? 'Logging...' : 'Log Meal 🥗' }}
+            <span *ngIf="!isLoggingMeal" class="material-symbols-outlined text-sm">restaurant</span>
+            <span *ngIf="isLoggingMeal" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+            {{ isLoggingMeal ? 'Logging...' : 'Log Meal' }}
           </button>
         </div>
       </div>
@@ -121,7 +123,7 @@
                 <span class="font-label-caps text-secondary-fixed-dim">TODAY'S FUEL</span>
                 <h2 class="font-headline-md text-primary">Macro Progress</h2>
               </div>
-              <button class="btn-outline text-xs px-4 py-2" routerLink="/member/nutrition">
+              <button class="btn-outline text-xs px-4 py-2 flex items-center justify-center gap-1" routerLink="/member/nutrition">
                 <span class="material-symbols-outlined text-sm">add</span>
                 Log Meal
               </button>
@@ -153,7 +155,7 @@
               <span class="font-label-caps text-secondary-fixed-dim">WORKOUT VOLUME</span>
               <h2 class="font-headline-md text-primary">Training Overview</h2>
             </div>
-            <button class="btn-outline text-xs px-4 py-2" routerLink="/member/workouts">
+            <button class="btn-outline text-xs px-4 py-2 flex items-center justify-center gap-1" routerLink="/member/workouts">
               <span class="material-symbols-outlined text-sm">arrow_forward</span>
               View Workouts
             </button>
@@ -200,7 +202,9 @@
           <div *ngIf="!dashboard.workout.recentSessions.length" class="empty-state">
             <span class="material-symbols-outlined">fitness_center</span>
             <p>No workouts logged yet.</p>
-            <button class="btn-primary text-xs" routerLink="/member/workouts">Start Your First Session</button>
+            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/member/workouts">
+              <span class="material-symbols-outlined text-sm">play_arrow</span> Start First Session
+            </button>
           </div>
         </section>
       </main>
@@ -218,11 +222,11 @@
           </div>
 
           <div class="mt-5 grid grid-cols-2 gap-3">
-            <button class="btn-primary text-xs" routerLink="/profile">
+            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/profile">
               <span class="material-symbols-outlined text-sm">person</span>
               Profile
             </button>
-            <button class="btn-outline text-xs" routerLink="/feed">
+            <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/feed">
               <span class="material-symbols-outlined text-sm">forum</span>
               Feed
             </button>
@@ -250,7 +254,9 @@
           <div *ngIf="!dashboard.measurement.hasData" class="empty-state compact">
             <span class="material-symbols-outlined">monitor_weight</span>
             <p>No measurements yet.</p>
-            <button class="btn-primary text-xs" routerLink="/member/measurements">Log First</button>
+            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/member/measurements">
+              <span class="material-symbols-outlined text-sm">monitor_weight</span> Log First
+            </button>
           </div>
         </section>
 

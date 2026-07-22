@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
@@ -12,14 +11,6 @@ import { environment } from '../../../environments/environment';
   imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
   standalone: true,
 })
 export class Login {

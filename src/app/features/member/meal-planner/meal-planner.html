@@ -1,4 +1,4 @@
-<div class="min-h-screen" @fadeSlide>
+<div class="min-h-screen">
   <!-- Header -->
   <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
     <div>
@@ -9,8 +9,10 @@
         <span class="font-body-md text-on-surface-variant">Plan tomorrow's meals and track projected totals</span>
       </div>
     </div>
-    <button class="btn-primary text-xs" (click)="getAiSuggestions()" [disabled]="isLoading">
-      <span class="material-symbols-outlined text-sm">auto_awesome</span> AI Suggestions
+    <button class="btn-primary text-xs flex items-center justify-center gap-1" (click)="getAiSuggestions()" [disabled]="isLoading">
+      <span *ngIf="!isLoading" class="material-symbols-outlined text-sm">auto_awesome</span>
+      <span *ngIf="isLoading" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+      {{ isLoading ? 'Loading...' : 'AI Suggestions' }}
     </button>
   </div>
 
@@ -22,7 +24,7 @@
 
   <!-- AI Suggestion Panel -->
   <div *ngIf="showAiSuggestions && aiSuggestions"
-       class="glass-panel border-l-2 border-primary-container rounded-xl p-md mb-md card-hover" @fadeSlide>
+       class="glass-panel border-l-2 border-primary-container rounded-xl p-md mb-md card-hover">
     <div class="flex justify-between items-start mb-4">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
@@ -106,7 +108,7 @@
           <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeal.fatGrams" min="0" step="0.1">
         </div>
       </div>
-      <button class="btn-primary w-full mt-4 text-xs" (click)="addMeal()">
+      <button class="btn-primary w-full mt-4 text-xs flex items-center justify-center gap-1" (click)="addMeal()">
         <span class="material-symbols-outlined text-sm">add</span> Add to Plan
       </button>
     </div>

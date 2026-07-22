@@ -33,8 +33,9 @@
         </div>
       </div>
 
-      <button type="submit" class="btn-primary w-full mt-8" [disabled]="isLoading">
-        <span class="material-symbols-outlined text-sm">group_add</span>
+      <button type="submit" class="btn-primary w-full mt-8 flex items-center justify-center gap-2" [disabled]="isLoading">
+        <span *ngIf="!isLoading" class="material-symbols-outlined text-sm">group_add</span>
+        <span *ngIf="isLoading" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
         {{ isLoading ? 'CREATING...' : 'CREATE TRAINER ACCOUNT' }}
       </button>
     </form>

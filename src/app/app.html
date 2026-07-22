@@ -4,7 +4,9 @@
 
   <!-- Main Content Canvas -->
   <main class="lg:ml-64 pt-20 pb-28 px-4 sm:px-gutter max-w-container-max mx-auto min-h-screen">
-    <router-outlet></router-outlet>
+    <div [@routeAnimations]="o.activatedRouteData?.['animation']">
+      <router-outlet #o="outlet"></router-outlet>
+    </div>
   </main>
 
   <!-- Bottom Navigation (Mobile) -->
@@ -36,8 +38,8 @@
   </nav>
 
   <!-- Floating Action Button (Mobile) -->
-  <button class="fixed bottom-24 right-gutter w-14 h-14 bg-primary-container text-on-primary shadow-2xl rounded-lg flex items-center justify-center active:scale-90 transition-transform z-40 lg:hidden neon-glow-primary">
-    <span class="material-symbols-outlined text-3xl">add</span>
+  <button class="fixed bottom-24 right-gutter w-14 h-14 bg-primary-container text-on-primary shadow-2xl rounded-lg flex items-center justify-center active:scale-90 transition-transform z-40 lg:hidden neon-glow-primary card-hover" routerLink="/member/workouts">
+    <span class="material-symbols-outlined text-3xl">fitness_center</span>
   </button>
 </div>
 

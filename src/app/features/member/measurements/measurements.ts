@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -11,15 +10,7 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './measurements.html',
-  styleUrls: ['./measurements.css'],
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./measurements.css']
 })
 export class BodyMeasurements implements OnInit {
   measurements: any[] = [];
