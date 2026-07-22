@@ -32,7 +32,7 @@
             <p *ngIf="user.location">📍 {{ user.location }}</p>
           </div>
         </div>
-        <a *ngIf="user.id" class="message-user-btn" [routerLink]="['/messages']" [queryParams]="{ userId: user.id }" title="Message user">
+        <a *ngIf="user.username" class="message-user-btn" [routerLink]="['/messages']" [queryParams]="{ username: user.username }" title="Message user">
           <span class="material-symbols-outlined">chat</span>
         </a>
       </div>

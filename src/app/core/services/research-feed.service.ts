@@ -22,15 +22,12 @@ interface CrossrefWork {
   providedIn: 'root'
 })
 export class ResearchFeedService {
-  private readonly endpoint = 'https://api.crossref.org/works';
+  private readonly endpoint = '/api/research';
 
   constructor(private http: HttpClient) {}
 
   getWorkoutStudies(): Observable<ResearchStudy[]> {
-    const query = encodeURIComponent('resistance training exercise nutrition muscle hypertrophy fitness');
-    const url = `${this.endpoint}?query=${query}&filter=from-pub-date:2022,type:journal-article&sort=published&order=desc&rows=6`;
-
-    return this.http.get<any>(url).pipe(
+    return this.http.get<any>(this.endpoint).pipe(
       map(response => (response?.message?.items || []).map((item: CrossrefWork) => this.toStudy(item)))
     );
   }

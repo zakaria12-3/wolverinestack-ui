@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-trainer-dashboard',
@@ -45,19 +46,28 @@ export class TrainerDashboard implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    this.http.get('https://wolverinestack-api.onrender.com/trainer/clients', this.getHeaders())
-      .subscribe((data: any) => {
-        this.clients = data || [];
-        this.stats.totalClients = this.clients.length;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/trainer/clients`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.clients = data || [];
+          this.stats.totalClients = this.clients.length;
+          this.cdr.detectChanges();
+        },
+        error: () => this.toastr.error('Failed to load clients')
       });
 
-    this.http.get('https://wolverinestack-api.onrender.com/member/plans', this.getHeaders())
-      .subscribe((data: any) => {
-        this.plans = data || [];
-        this.stats.activePlans = this.plans.length;
-        this.isLoading = false;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/member/plans`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.plans = data || [];
+          this.stats.activePlans = this.plans.length;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.toastr.error('Failed to load workout plans');
+        }
       });
   }
 }

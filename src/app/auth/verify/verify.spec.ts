@@ -7,6 +7,7 @@ describe('Verif', () => {
   let fixture: ComponentFixture<Verify>;
 
   beforeEach(async () => {
+    localStorage.setItem('verifyEmail', 'member@example.com');
     await TestBed.configureTestingModule({
       imports: [Verify]
     })

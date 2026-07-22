@@ -59,8 +59,19 @@ export class Login {
           this.toastr.error('Invalid token format');
           return;
         }
-        const decoded = JSON.parse(atob(token.split('.')[1]));
-        const role = decoded.role.replace('ROLE_', '');
+        let decoded: any;
+        try {
+          const encodedPayload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+          decoded = JSON.parse(atob(encodedPayload.padEnd(Math.ceil(encodedPayload.length / 4) * 4, '=')));
+        } catch {
+          this.toastr.error('Invalid token received');
+          return;
+        }
+        const role = String(decoded.role || decoded.authorities?.[0] || '').replace('ROLE_', '');
+        if (!role) {
+          this.toastr.error('Your account role is missing');
+          return;
+        }
         const onboardingComplete = res.onboardingComplete === true ||
           (res.fitnessGoal !== null && res.fitnessGoal !== undefined);
 
@@ -79,7 +90,9 @@ export class Login {
           this.router.navigate([`/${role.toLowerCase()}`]);
         }
       },
-      error: (err) => this.toastr.error(err.error || 'Login failed')
+      error: (err) => this.toastr.error(
+        typeof err.error === 'string' ? err.error : err.error?.message || 'Login failed'
+      )
     });
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-meal-planner',
@@ -57,11 +58,17 @@ export class MealPlanner implements OnInit {
   loadPlan() {
     if (!this.planDate) return;
     this.isLoading = true;
-    this.http.get(`https://wolverinestack-api.onrender.com/nutrition/meal-plan?date=${this.planDate}`, this.getHeaders())
-      .subscribe((data: any) => {
-        this.plan = data;
-        this.isLoading = false;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/nutrition/meal-plan?date=${this.planDate}`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.plan = data;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.toastr.error(this.errorMessage(err, 'Failed to load meal plan'));
+        }
       });
   }
 
@@ -74,8 +81,8 @@ export class MealPlanner implements OnInit {
     const meals = this.plan?.meals || [];
     meals.push({ ...this.newMeal });
 
-    this.http.post('https://wolverinestack-api.onrender.com/nutrition/meal-plan', 
-      { date: this.planDate, meals }, 
+    this.http.post(`${environment.apiUrl}/nutrition/meal-plan`,
+      { date: this.planDate, meals },
       this.getHeaders()
     ).subscribe({
       next: (res: any) => {
@@ -84,27 +91,28 @@ export class MealPlanner implements OnInit {
         this.toastr.success('Meal added to plan!');
         this.cdr.detectChanges();
       },
-      error: (err) => this.toastr.error(err.error || 'Failed to save plan')
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to save plan'))
     });
   }
 
   removeMeal(index: number) {
     const meals = this.plan?.meals || [];
     meals.splice(index, 1);
-    this.http.post('https://wolverinestack-api.onrender.com/nutrition/meal-plan',
+    this.http.post(`${environment.apiUrl}/nutrition/meal-plan`,
       { date: this.planDate, meals },
       this.getHeaders()
     ).subscribe({
       next: (res: any) => {
         this.plan = res;
         this.cdr.detectChanges();
-      }
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to remove meal'))
     });
   }
 
   getAiSuggestions() {
     this.isLoading = true;
-    this.http.get(`https://wolverinestack-api.onrender.com/ai/meal-suggestions?date=${this.planDate}`, this.getHeaders())
+    this.http.get(`${environment.apiUrl}/ai/meal-suggestions?date=${this.planDate}`, this.getHeaders())
       .subscribe({
         next: (res: any) => {
           this.aiSuggestions = res;
@@ -117,6 +125,10 @@ export class MealPlanner implements OnInit {
           this.toastr.error('Failed to get AI suggestions');
         }
       });
+  }
+
+  private errorMessage(err: any, fallback: string): string {
+    return typeof err?.error === 'string' ? err.error : err?.error?.message || fallback;
   }
 
   addAiMeal(meal: any) {

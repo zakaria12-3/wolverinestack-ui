@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-onboarding',
@@ -74,10 +75,13 @@ export class OnboardingComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.http.post('https://wolverinestack-api.onrender.com/auth/onboarding/suggest-goals', this.metrics)
+    this.http.post(`${environment.apiUrl}/auth/onboarding/suggest-goals`, this.metrics)
       .subscribe({
         next: (res: any) => {
           this.suggestions = res;
+          this.selectedGoal = this.bestSuggestion(res?.goalSuggestions)?.value || '';
+          this.selectedActivity = this.bestSuggestion(res?.activitySuggestions)?.value || '';
+          this.step = 2;
           this.showingSuggestions = true;
           this.isLoading = false;
         },
@@ -98,19 +102,30 @@ export class OnboardingComponent implements OnInit {
   }
 
   goToManualSelect() {
+    if (this.step === 1 && !this.hasValidMetrics()) {
+      this.toastr.error('Please complete your body metrics before choosing goals');
+      return;
+    }
     this.showingSuggestions = false;
     this.step = 3;
   }
 
   confirmWithAiSuggestion() {
-    if (this.suggestions?.goalSuggestions?.[0]) {
-      this.selectedGoal = this.suggestions.goalSuggestions[0].value;
-    }
-    if (this.suggestions?.activitySuggestions?.[0]) {
-      this.selectedActivity = this.suggestions.activitySuggestions[0].value;
-    }
+    this.selectedGoal ||= this.bestSuggestion(this.suggestions?.goalSuggestions)?.value || '';
+    this.selectedActivity ||= this.bestSuggestion(this.suggestions?.activitySuggestions)?.value || '';
     this.step = 3;
     this.showingSuggestions = false;
+  }
+
+  private hasValidMetrics(): boolean {
+    const { gender, weightKg, heightCm, dateOfBirth } = this.metrics;
+    return !!gender && !!dateOfBirth && weightKg !== null && weightKg >= 30 && weightKg <= 300 &&
+      heightCm !== null && heightCm >= 100 && heightCm <= 250;
+  }
+
+  private bestSuggestion(items: any[] | undefined): any | undefined {
+    return items?.reduce((best, item) =>
+      !best || Number(item.confidence || 0) > Number(best.confidence || 0) ? item : best, undefined);
   }
 
   completeOnboarding() {
@@ -130,7 +145,7 @@ export class OnboardingComponent implements OnInit {
       calculateTdee: true
     };
 
-    this.http.post('https://wolverinestack-api.onrender.com/auth/onboarding', payload)
+    this.http.post(`${environment.apiUrl}/auth/onboarding`, payload)
       .subscribe({
         next: (res: any) => {
           this.isLoading = false;
@@ -140,7 +155,8 @@ export class OnboardingComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastr.error(err.error?.message || 'Failed to complete onboarding');
+          const message = typeof err.error === 'string' ? err.error : err.error?.message;
+          this.toastr.error(message || 'Failed to complete onboarding');
         }
       });
   }

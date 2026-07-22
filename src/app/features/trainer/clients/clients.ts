@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-trainer-clients',
@@ -25,7 +27,8 @@ export class TrainerClients implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastr: ToastrService
   ) {}
 
   private getHeaders() {
@@ -39,11 +42,17 @@ export class TrainerClients implements OnInit {
 
   loadClients() {
     this.isLoading = true;
-    this.http.get('https://wolverinestack-api.onrender.com/trainer/clients', this.getHeaders())
-      .subscribe((data: any) => {
-        this.clients = data || [];
-        this.isLoading = false;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/trainer/clients`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.clients = data || [];
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.toastr.error('Failed to load clients');
+        }
       });
   }
 

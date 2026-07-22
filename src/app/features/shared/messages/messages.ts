@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MessagingService, Conversation, Message } from '../../../core/services/messaging.service';
+import { SearchService } from '../../../core/services/search.service';
+import { UserProfile } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-messages',
@@ -17,21 +19,77 @@ export class Messages implements OnInit {
   selectedConversation: Conversation | null = null;
   draft = '';
   newReceiverId: number | null = null;
+  usernameQuery = '';
+  memberResults: UserProfile[] = [];
+  selectedRecipientName = '';
+  isSearching = false;
   isLoading = true;
   isSending = false;
   error = '';
 
   constructor(
     private messagingService: MessagingService,
+    private searchService: SearchService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    const userId = Number(this.route.snapshot.queryParamMap.get('userId'));
-    if (userId) {
-      this.newReceiverId = userId;
+    const username = this.route.snapshot.queryParamMap.get('username')?.trim();
+    if (username) {
+      this.usernameQuery = username;
+      this.searchMembers();
     }
     this.loadConversations();
+  }
+
+  searchMembers(): void {
+    const username = this.usernameQuery.trim();
+    this.memberResults = [];
+    this.newReceiverId = null;
+    this.selectedRecipientName = '';
+    if (username.length < 2) {
+      this.error = 'Enter at least two characters of a username.';
+      return;
+    }
+
+    this.error = '';
+    this.isSearching = true;
+    this.searchService.globalSearch(username, 'users').subscribe({
+      next: (response) => {
+        const normalized = username.toLowerCase();
+        this.memberResults = (response.users || [])
+          .filter(user => !!user.id && !!user.username)
+          .sort((a, b) => {
+            const aExact = a.username?.toLowerCase() === normalized ? 0 : 1;
+            const bExact = b.username?.toLowerCase() === normalized ? 0 : 1;
+            return aExact - bExact;
+          });
+        this.isSearching = false;
+        if (!this.memberResults.length) {
+          this.error = `No member found for “${username}”.`;
+        }
+      },
+      error: () => {
+        this.isSearching = false;
+        this.error = 'Member search is unavailable right now.';
+      }
+    });
+  }
+
+  chooseMember(user: UserProfile): void {
+    if (!user.id) return;
+    const existing = this.conversations.find(conversation => conversation.participantId === user.id);
+    this.newReceiverId = user.id;
+    this.selectedRecipientName = user.username || user.email || 'Member';
+    this.usernameQuery = this.selectedRecipientName;
+    this.memberResults = [];
+    this.error = '';
+    if (existing) {
+      this.selectConversation(existing);
+    } else {
+      this.selectedConversation = null;
+      this.messages = [];
+    }
   }
 
   loadConversations(): void {
@@ -94,7 +152,7 @@ export class Messages implements OnInit {
   }
 
   getConversationName(): string {
-    return this.selectedConversation?.participantName || 'New message';
+    return this.selectedConversation?.participantName || this.selectedRecipientName || 'New message';
   }
 
   formatTime(value?: string): string {

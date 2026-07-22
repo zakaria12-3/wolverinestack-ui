@@ -143,7 +143,7 @@
 
       <div class="flex gap-4">
         <button class="premium-button-outline flex-1" (click)="goToManualSelect()">Choose Manually</button>
-        <button class="premium-button flex-1" (click)="confirmWithAiSuggestion()" [disabled]="!selectedGoal || !selectedActivity">
+        <button class="premium-button flex-1" (click)="confirmWithAiSuggestion()" [disabled]="!suggestions.goalSuggestions?.length || !suggestions.activitySuggestions?.length">
           Confirm & Continue →
         </button>
       </div>

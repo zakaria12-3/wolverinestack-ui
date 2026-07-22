@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-body-measurements',
@@ -54,17 +55,26 @@ export class BodyMeasurements implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    this.http.get('https://wolverinestack-api.onrender.com/measurements/summary', this.getHeaders())
-      .subscribe((data: any) => {
-        this.summary = data;
-        this.isLoading = false;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/measurements/summary`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.summary = data;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.toastr.error(this.errorMessage(err, 'Failed to load measurement summary'));
+        }
       });
 
-    this.http.get('https://wolverinestack-api.onrender.com/measurements', this.getHeaders())
-      .subscribe((data: any) => {
-        this.measurements = data || [];
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/measurements`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.measurements = data || [];
+          this.cdr.detectChanges();
+        },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to load measurements'))
       });
   }
 
@@ -75,7 +85,7 @@ export class BodyMeasurements implements OnInit {
     }
 
     this.isLoading = true;
-    this.http.post('https://wolverinestack-api.onrender.com/measurements', this.newMeasurement, this.getHeaders())
+    this.http.post(`${environment.apiUrl}/measurements`, this.newMeasurement, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Measurement saved! 📏');
@@ -88,19 +98,19 @@ export class BodyMeasurements implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
-          this.toastr.error(err.error || 'Failed to save');
+          this.toastr.error(this.errorMessage(err, 'Failed to save'));
         }
       });
   }
 
   deleteMeasurement(id: number) {
-    this.http.delete(`https://wolverinestack-api.onrender.com/measurements/${id}`, this.getHeaders())
+    this.http.delete(`${environment.apiUrl}/measurements/${id}`, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.info('Measurement removed');
           this.loadData();
         },
-        error: (err) => this.toastr.error(err.error || 'Failed to delete')
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete'))
       });
   }
 
@@ -108,5 +118,9 @@ export class BodyMeasurements implements OnInit {
     if (!value) return '';
     if (reverse) return value < 0 ? 'text-green-400' : 'text-red-400';
     return value > 0 ? 'text-green-400' : 'text-red-400';
+  }
+
+  private errorMessage(err: any, fallback: string): string {
+    return typeof err?.error === 'string' ? err.error : err?.error?.message || fallback;
   }
 }

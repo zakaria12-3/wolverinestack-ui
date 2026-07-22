@@ -194,6 +194,11 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupScrollObserver() {
+    if (typeof IntersectionObserver === 'undefined') {
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
+      return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

@@ -52,9 +52,7 @@ export const routes: Routes = [
   {
     path:'member',
     pathMatch: 'full',
-    component: Home, // will be replaced by lazy-loaded MemberDashboard
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'MEMBER' }
+    redirectTo: 'member/dashboard'
   },
   {
     path: 'member/dashboard',
@@ -97,9 +95,7 @@ export const routes: Routes = [
   {
     path:'trainer',
     pathMatch: 'full',
-    component: Home,
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'TRAINER' }
+    redirectTo: 'trainer/dashboard'
   },
   {
     path: 'trainer/dashboard',
@@ -124,9 +120,7 @@ export const routes: Routes = [
   {
     path:'admin',
     pathMatch: 'full',
-    component: Home,
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'ADMIN' }
+    redirectTo: 'admin/dashboard'
   },
   {
     path: 'admin/dashboard',
