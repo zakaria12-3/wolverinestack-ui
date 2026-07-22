@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-workout-tracking',
@@ -61,46 +62,58 @@ export class WorkoutTracking implements OnInit {
   }
 
   loadPlans() {
-    this.http.get('https://wolverinestack-api.onrender.com/member/plans', this.getHeaders())
-      .subscribe((data: any) => {
-        this.plans = data || [];
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/member/plans`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.plans = data || [];
+          this.cdr.detectChanges();
+        },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to load workout plans'))
       });
   }
 
   loadSessions() {
-    this.http.get('https://wolverinestack-api.onrender.com/member/sessions', this.getHeaders())
-      .subscribe((data: any) => {
-        this.sessions = data || [];
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/member/sessions`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.sessions = data || [];
+          this.cdr.detectChanges();
+        },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to load workout history'))
       });
   }
 
   loadPlanDetails(id: number) {
     this.isLoading = true;
-    this.http.get(`https://wolverinestack-api.onrender.com/member/plans/${id}`, this.getHeaders())
-      .subscribe((data: any) => {
-        this.selectedPlan = data;
-        this.viewMode = 'plans';
-        this.isLoading = false;
-        this.cdr.detectChanges();
+    this.http.get(`${environment.apiUrl}/member/plans/${id}`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.selectedPlan = data;
+          this.viewMode = 'plans';
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.toastr.error(this.errorMessage(err, 'Failed to load workout plan'));
+        }
       });
   }
 
   startPlan(planId: number) {
-    this.http.post(`https://wolverinestack-api.onrender.com/member/plans/${planId}/start`, {}, this.getHeaders())
+    this.http.post(`${environment.apiUrl}/member/plans/${planId}/start`, {}, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Plan started!');
           this.startNewSession(planId);
         },
-        error: (err) => this.toastr.error(err.error || 'Failed to start plan')
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to start plan'))
       });
   }
 
   startNewSession(planId?: number) {
-    this.http.post('https://wolverinestack-api.onrender.com/member/sessions/start', 
-      planId ? { planId } : {}, 
+    this.http.post(`${environment.apiUrl}/member/sessions/start`,
+      planId ? { planId } : {},
       this.getHeaders()
     ).subscribe({
       next: (res: any) => {
@@ -109,7 +122,7 @@ export class WorkoutTracking implements OnInit {
         this.toastr.success('Session started! 💪');
         this.cdr.detectChanges();
       },
-      error: (err) => this.toastr.error(err.error || 'Failed to start session')
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to start session'))
     });
   }
 
@@ -125,7 +138,7 @@ export class WorkoutTracking implements OnInit {
     }
 
     this.http.post(
-      `https://wolverinestack-api.onrender.com/member/sessions/${this.activeSession.id}/exercises`,
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises`,
       this.currentExercise,
       this.getHeaders()
     ).subscribe({
@@ -135,7 +148,7 @@ export class WorkoutTracking implements OnInit {
         this.toastr.success('Exercise logged!');
         this.cdr.detectChanges();
       },
-      error: (err) => this.toastr.error(err.error || 'Failed to log exercise')
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log exercise'))
     });
   }
 
@@ -143,7 +156,7 @@ export class WorkoutTracking implements OnInit {
     if (!this.activeSession?.id) return;
 
     this.http.put(
-      `https://wolverinestack-api.onrender.com/member/sessions/${this.activeSession.id}/complete`,
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/complete`,
       {},
       this.getHeaders()
     ).subscribe({
@@ -153,7 +166,7 @@ export class WorkoutTracking implements OnInit {
         this.viewMode = 'sessions';
         this.loadSessions();
       },
-      error: (err) => this.toastr.error(err.error || 'Failed to complete session')
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to complete session'))
     });
   }
 
@@ -168,5 +181,9 @@ export class WorkoutTracking implements OnInit {
   formatDate(d: string) {
     if (!d) return '—';
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  private errorMessage(err: any, fallback: string): string {
+    return typeof err?.error === 'string' ? err.error : err?.error?.message || fallback;
   }
 }

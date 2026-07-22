@@ -1,13 +1,12 @@
 import {Component, model, signal} from '@angular/core';
 import {BrnSelectImports} from '@spartan-ng/brain/select';
-import {FormsModule} from '@angular/forms';
 import {HlmCalendar} from '@spartan-ng/helm/calendar';
 import {HlmSelectImports} from '@spartan-ng/helm/select';
 import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-calendar',
-  imports: [HlmCalendar, BrnSelectImports, HlmSelectImports, FormsModule],
+  imports: [HlmCalendar, BrnSelectImports, HlmSelectImports],
   host: {
     class: 'flex flex-col gap-4',
   },

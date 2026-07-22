@@ -1,8 +1,8 @@
 <br>
-<hlm-calendar class="calendar-wrapper" [ngModel]="today" [captionLayout]="_captionLayout()"@fadeSlide />
+<hlm-calendar class="calendar-wrapper" [(date)]="today" [captionLayout]="_captionLayout()" @fadeSlide />
 <br>
 <br>
-<brn-select class="inline-block" placeholder="Select an option" @fadeSlide [(ngModel)]="_captionLayout">
+<brn-select class="inline-block" placeholder="Select an option" @fadeSlide [(value)]="_captionLayout">
   <hlm-select-trigger class="w-full">
     <hlm-select-value />
   </hlm-select-trigger>

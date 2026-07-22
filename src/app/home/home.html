@@ -127,8 +127,11 @@
 
   <div *ngIf="studiesLoading" class="research-status glass-panel">Loading recent studies...</div>
   <div *ngIf="studiesError" class="research-status glass-panel">Could not load studies right now. Try again in a bit.</div>
+  <div *ngIf="!studiesLoading && !studiesError && studies.length === 0" class="research-status glass-panel">
+    No recent studies were found. Use Refresh to try again.
+  </div>
 
-  <div *ngIf="!studiesLoading && !studiesError" class="research-grid">
+  <div *ngIf="!studiesLoading && !studiesError && studies.length > 0" class="research-grid">
     <a *ngFor="let study of studies" class="research-card glass-panel" [href]="study.url" target="_blank" rel="noopener">
       <span class="material-symbols-outlined">science</span>
       <h3>{{ study.title }}</h3>

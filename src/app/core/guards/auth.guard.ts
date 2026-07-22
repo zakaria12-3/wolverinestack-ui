@@ -13,7 +13,8 @@ export const authGuard: CanActivateFn = () => {
 
   try {
 
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const encodedPayload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(encodedPayload.padEnd(Math.ceil(encodedPayload.length / 4) * 4, '=')));
     const isExpired = payload.exp * 1000 < Date.now();
 
     if (isExpired) {
