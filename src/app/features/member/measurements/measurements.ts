@@ -55,7 +55,7 @@ export class BodyMeasurements implements OnInit {
 
   loadData() {
     this.isLoading = true;
-    this.http.get(`${environment.apiUrl}/measurements/summary`, this.getHeaders())
+    this.http.get(`${environment.apiUrl}/member/measurements/summary`, this.getHeaders())
       .subscribe({
         next: (data: any) => {
           this.summary = data;
@@ -68,7 +68,7 @@ export class BodyMeasurements implements OnInit {
         }
       });
 
-    this.http.get(`${environment.apiUrl}/measurements`, this.getHeaders())
+    this.http.get(`${environment.apiUrl}/member/measurements`, this.getHeaders())
       .subscribe({
         next: (data: any) => {
           this.measurements = data || [];
@@ -85,7 +85,7 @@ export class BodyMeasurements implements OnInit {
     }
 
     this.isLoading = true;
-    this.http.post(`${environment.apiUrl}/measurements`, this.newMeasurement, this.getHeaders())
+    this.http.post(`${environment.apiUrl}/member/measurements`, this.newMeasurement, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.success('Measurement saved! 📏');
@@ -104,7 +104,7 @@ export class BodyMeasurements implements OnInit {
   }
 
   deleteMeasurement(id: number) {
-    this.http.delete(`${environment.apiUrl}/measurements/${id}`, this.getHeaders())
+    this.http.delete(`${environment.apiUrl}/member/measurements/${id}`, this.getHeaders())
       .subscribe({
         next: () => {
           this.toastr.info('Measurement removed');

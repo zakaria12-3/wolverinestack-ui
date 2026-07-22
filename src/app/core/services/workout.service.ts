@@ -63,7 +63,7 @@ export class WorkoutService {
   }
 
   startPlan(planId: number): Observable<any> {
-    return this.http.post(`${this.API}/member/plans/${planId}/start`, {}, { headers: this.getHeaders() });
+    return this.startSession(planId);
   }
 
   // Workout Sessions

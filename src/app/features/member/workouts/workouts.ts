@@ -101,14 +101,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   startPlan(planId: number) {
-    this.http.post(`${environment.apiUrl}/member/plans/${planId}/start`, {}, this.getHeaders())
-      .subscribe({
-        next: () => {
-          this.toastr.success('Plan started!');
-          this.startNewSession(planId);
-        },
-        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to start plan'))
-      });
+    this.startNewSession(planId);
   }
 
   startNewSession(planId?: number) {

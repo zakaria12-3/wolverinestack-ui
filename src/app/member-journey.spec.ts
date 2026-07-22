@@ -48,10 +48,10 @@ describe('dummy member journey', () => {
     expectAuthorized(http.expectOne(`${environment.apiUrl}/member/sessions/11/exercises`)).flush({ id: 1 });
 
     nutrition.getDailyProgress().subscribe();
-    expectAuthorized(http.expectOne(`${environment.apiUrl}/nutrition/daily-progress`)).flush({});
+    expectAuthorized(http.expectOne(`${environment.apiUrl}/member/nutrition/progress`)).flush({});
 
     nutrition.saveMealPlan('2026-07-22', []).subscribe();
-    expectAuthorized(http.expectOne(`${environment.apiUrl}/nutrition/meal-plan`)).flush({ meals: [] });
+    expectAuthorized(http.expectOne(`${environment.apiUrl}/member/meal-plan`)).flush([]);
 
     nutrition.getAiMealSuggestions('2026-07-22').subscribe();
     expectAuthorized(http.expectOne(`${environment.apiUrl}/ai/meal-suggestions?date=2026-07-22`)).flush([]);
@@ -61,7 +61,7 @@ describe('dummy member journey', () => {
     expectAuthorized(http.expectOne(`${environment.apiUrl}/ai/analyze-meal-image`)).flush({ foodName: 'Test meal' });
 
     measurements.logMeasurement({ weightKg: 82 }).subscribe();
-    expectAuthorized(http.expectOne(`${environment.apiUrl}/measurements`)).flush({ id: 1 });
+    expectAuthorized(http.expectOne(`${environment.apiUrl}/member/measurements`)).flush({ id: 1 });
   });
 
   it('preselects the highest-confidence AI onboarding recommendations', async () => {

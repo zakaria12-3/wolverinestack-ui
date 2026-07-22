@@ -40,18 +40,18 @@ export class MeasurementsService {
   }
 
   logMeasurement(measurement: BodyMeasurementDto): Observable<any> {
-    return this.http.post(`${this.API}/measurements`, measurement, { headers: this.getHeaders() });
+    return this.http.post(`${this.API}/member/measurements`, measurement, { headers: this.getHeaders() });
   }
 
   getMeasurements(): Observable<BodyMeasurementDto[]> {
-    return this.http.get<BodyMeasurementDto[]>(`${this.API}/measurements`, { headers: this.getHeaders() });
+    return this.http.get<BodyMeasurementDto[]>(`${this.API}/member/measurements`, { headers: this.getHeaders() });
   }
 
   getMeasurementSummary(): Observable<MeasurementSummaryDto> {
-    return this.http.get<MeasurementSummaryDto>(`${this.API}/measurements/summary`, { headers: this.getHeaders() });
+    return this.http.get<MeasurementSummaryDto>(`${this.API}/member/measurements/summary`, { headers: this.getHeaders() });
   }
 
   deleteMeasurement(id: number): Observable<any> {
-    return this.http.delete(`${this.API}/measurements/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.API}/member/measurements/${id}`, { headers: this.getHeaders() });
   }
 }

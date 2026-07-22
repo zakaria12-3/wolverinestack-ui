@@ -82,35 +82,35 @@ export class NutritionService {
 
   // Meal Logging
   logMeal(entry: MealEntryDto): Observable<any> {
-    return this.http.post(`${this.API}/nutrition/meals`, entry, { headers: this.getHeaders() });
+    return this.http.post(`${this.API}/member/meals`, entry, { headers: this.getHeaders() });
   }
 
   getTodayMeals(): Observable<MealEntryDto[]> {
-    return this.http.get<MealEntryDto[]>(`${this.API}/nutrition/meals/today`, { headers: this.getHeaders() });
+    return this.http.get<MealEntryDto[]>(`${this.API}/member/meals/today`, { headers: this.getHeaders() });
   }
 
   deleteMeal(id: number): Observable<any> {
-    return this.http.delete(`${this.API}/nutrition/meals/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.API}/member/meals/${id}`, { headers: this.getHeaders() });
   }
 
   // Daily Progress
   getDailyProgress(date?: string): Observable<DailyProgressDto> {
     const params = date ? `?date=${date}` : '';
-    return this.http.get<DailyProgressDto>(`${this.API}/nutrition/daily-progress${params}`, { headers: this.getHeaders() });
+    return this.http.get<DailyProgressDto>(`${this.API}/member/nutrition/progress${params}`, { headers: this.getHeaders() });
   }
 
   // Weekly Report
   getWeeklyReport(): Observable<WeeklyReportDto> {
-    return this.http.get<WeeklyReportDto>(`${this.API}/nutrition/weekly-report`, { headers: this.getHeaders() });
+    return this.http.get<WeeklyReportDto>(`${this.API}/member/nutrition/weekly-report`, { headers: this.getHeaders() });
   }
 
   // Meal Planner
   getMealPlan(date: string): Observable<MealPlanDto> {
-    return this.http.get<MealPlanDto>(`${this.API}/nutrition/meal-plan?date=${date}`, { headers: this.getHeaders() });
+    return this.http.get<MealPlanDto>(`${this.API}/member/meal-plan?date=${date}`, { headers: this.getHeaders() });
   }
 
   saveMealPlan(date: string, meals: MealEntryDto[]): Observable<any> {
-    return this.http.post(`${this.API}/nutrition/meal-plan`, { date, meals }, { headers: this.getHeaders() });
+    return this.http.post(`${this.API}/member/meal-plan`, { date, meals }, { headers: this.getHeaders() });
   }
 
   getAiMealSuggestions(date: string): Observable<any> {

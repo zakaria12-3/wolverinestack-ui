@@ -58,10 +58,10 @@ export class MealPlanner implements OnInit {
   loadPlan() {
     if (!this.planDate) return;
     this.isLoading = true;
-    this.http.get(`${environment.apiUrl}/nutrition/meal-plan?date=${this.planDate}`, this.getHeaders())
+    this.http.get(`${environment.apiUrl}/member/meal-plan?date=${this.planDate}`, this.getHeaders())
       .subscribe({
         next: (data: any) => {
-          this.plan = data;
+          this.plan = { meals: Array.isArray(data) ? data : (data?.meals || []) };
           this.isLoading = false;
           this.cdr.detectChanges();
         },
@@ -78,15 +78,20 @@ export class MealPlanner implements OnInit {
       return;
     }
 
-    const meals = this.plan?.meals || [];
-    meals.push({ ...this.newMeal });
-
-    this.http.post(`${environment.apiUrl}/nutrition/meal-plan`,
-      { date: this.planDate, meals },
+    this.http.post(`${environment.apiUrl}/member/meal-plan`,
+      {
+        planDate: this.planDate,
+        mealType: this.newMeal.mealType,
+        foodName: this.newMeal.foodName,
+        estimatedCalories: this.newMeal.calories,
+        estimatedProtein: this.newMeal.proteinGrams,
+        estimatedCarbs: this.newMeal.carbsGrams,
+        estimatedFat: this.newMeal.fatGrams
+      },
       this.getHeaders()
     ).subscribe({
       next: (res: any) => {
-        this.plan = res;
+        this.plan = { meals: [...(this.plan?.meals || []), res] };
         this.newMeal = { mealType: 'BREAKFAST', foodName: '', calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 };
         this.toastr.success('Meal added to plan!');
         this.cdr.detectChanges();
@@ -96,14 +101,13 @@ export class MealPlanner implements OnInit {
   }
 
   removeMeal(index: number) {
-    const meals = this.plan?.meals || [];
-    meals.splice(index, 1);
-    this.http.post(`${environment.apiUrl}/nutrition/meal-plan`,
-      { date: this.planDate, meals },
+    const meal = this.plan?.meals?.[index];
+    if (!meal?.id) return;
+    this.http.delete(`${environment.apiUrl}/member/meal-plan/${meal.id}`,
       this.getHeaders()
     ).subscribe({
-      next: (res: any) => {
-        this.plan = res;
+      next: () => {
+        this.plan.meals.splice(index, 1);
         this.cdr.detectChanges();
       },
       error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to remove meal'))
