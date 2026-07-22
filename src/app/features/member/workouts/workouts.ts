@@ -94,6 +94,9 @@ export class WorkoutTracking implements OnInit {
   difficulties = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   goals = ['GENERAL_FITNESS', 'LOSE_WEIGHT', 'BUILD_MUSCLE', 'INCREASE_STRENGTH', 'IMPROVE_ENDURANCE', 'FLEXIBILITY'];
 
+  // Tracks images that failed to load so the template can show fallback icons
+  failedImages: Set<string> = new Set();
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -116,6 +119,14 @@ export class WorkoutTracking implements OnInit {
     if (id) {
       this.loadPlanDetails(+id);
     }
+  }
+
+  markImageFailed(exerciseName: string) {
+    this.failedImages.add(exerciseName);
+  }
+
+  hasImageFailed(exerciseName: string): boolean {
+    return this.failedImages.has(exerciseName);
   }
 
   // ======== Plan CRUD ========

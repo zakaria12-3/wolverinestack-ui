@@ -22,7 +22,7 @@ export class ExerciseLibraryService {
       description: 'Bodyweight press from a plank position with controlled lowering and full arm extension.',
       muscleGroup: 'Chest',
       equipment: 'Bodyweight',
-      imageUrl: 'https://wger.de/media/exercise-images/193/Push-up-1.png'
+      imageUrl: ''
     },
     {
       id: 'manual-squat',
@@ -30,7 +30,7 @@ export class ExerciseLibraryService {
       description: 'Lower the hips back and down, keep the chest tall, then drive through the feet to stand.',
       muscleGroup: 'Legs',
       equipment: 'Bodyweight',
-      imageUrl: 'https://wger.de/media/exercise-images/111/High-knees-1.png'
+      imageUrl: ''
     },
     {
       id: 'manual-plank',
@@ -38,7 +38,7 @@ export class ExerciseLibraryService {
       description: 'Hold a straight line from shoulders to ankles while bracing the core.',
       muscleGroup: 'Core',
       equipment: 'Bodyweight',
-      imageUrl: 'https://wger.de/media/exercise-images/197/Plank-1.png'
+      imageUrl: ''
     }
   ];
 

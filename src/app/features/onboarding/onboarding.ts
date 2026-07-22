@@ -41,18 +41,18 @@ export class OnboardingComponent implements OnInit {
   showingSuggestions = false;
 
   goals = [
-    { value: 'LOSE_WEIGHT', label: 'Lose Weight', icon: '🔥', desc: 'Calorie deficit focused on fat loss' },
-    { value: 'GAIN_WEIGHT', label: 'Gain Weight', icon: '💪', desc: 'Calorie surplus for mass gain' },
-    { value: 'BUILD_MUSCLE', label: 'Build Muscle', icon: '🏋️', desc: 'Muscle growth with resistance training' },
-    { value: 'GENERAL_FITNESS', label: 'General Fitness', icon: '🌟', desc: 'Balanced health and wellness' }
+    { value: 'LOSE_WEIGHT', label: 'Lose Weight', icon: 'local_fire_department', desc: 'Calorie deficit focused on fat loss' },
+    { value: 'GAIN_WEIGHT', label: 'Gain Weight', icon: 'add_circle', desc: 'Calorie surplus for mass gain' },
+    { value: 'BUILD_MUSCLE', label: 'Build Muscle', icon: 'fitness_center', desc: 'Muscle growth with resistance training' },
+    { value: 'GENERAL_FITNESS', label: 'General Fitness', icon: 'star', desc: 'Balanced health and wellness' }
   ];
 
   activityLevels = [
-    { value: 'SEDENTARY', label: 'Sedentary', icon: '🪑', desc: 'Little or no exercise' },
-    { value: 'LIGHTLY_ACTIVE', label: 'Lightly Active', icon: '🚶', desc: 'Light exercise 1-3 days/week' },
-    { value: 'MODERATELY_ACTIVE', label: 'Moderately Active', icon: '🏃', desc: 'Moderate exercise 3-5 days/week' },
-    { value: 'VERY_ACTIVE', label: 'Very Active', icon: '🏋️', desc: 'Hard exercise 6-7 days/week' },
-    { value: 'EXTRA_ACTIVE', label: 'Extra Active', icon: '🔥', desc: 'Very hard exercise + physical job' }
+    { value: 'SEDENTARY', label: 'Sedentary', icon: 'airline_seat_flat', desc: 'Little or no exercise' },
+    { value: 'LIGHTLY_ACTIVE', label: 'Lightly Active', icon: 'directions_walk', desc: 'Light exercise 1-3 days/week' },
+    { value: 'MODERATELY_ACTIVE', label: 'Moderately Active', icon: 'directions_run', desc: 'Moderate exercise 3-5 days/week' },
+    { value: 'VERY_ACTIVE', label: 'Very Active', icon: 'fitness_center', desc: 'Hard exercise 6-7 days/week' },
+    { value: 'EXTRA_ACTIVE', label: 'Extra Active', icon: 'whatshot', desc: 'Very hard exercise + physical job' }
   ];
 
   constructor(

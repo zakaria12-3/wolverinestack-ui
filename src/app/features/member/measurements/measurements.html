@@ -1,114 +1,145 @@
-<div class="p-6 max-w-5xl mx-auto" @fadeSlide>
-  <div class="flex justify-between items-center mb-8">
+<div class="min-h-screen" @fadeSlide>
+  <!-- Header -->
+  <div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
     <div>
-      <h1 class="text-3xl font-bold text-white flex items-center gap-3">📏 Body Measurements</h1>
-      <p class="text-slate-400 mt-1">Track your weight, body fat, and measurements over time.</p>
+      <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-xs block">WOLVERINE STACK</span>
+      <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">MEASUREMENTS</h1>
+      <div class="flex items-center gap-base mt-base">
+        <span class="material-symbols-outlined text-outline-variant">straighten</span>
+        <span class="font-body-md text-on-surface-variant">Track your weight, body fat, and measurements over time</span>
+      </div>
     </div>
-    <button class="premium-button text-sm" (click)="showForm = !showForm">
-      {{ showForm ? '✕ Cancel' : '+ New Measurement' }}
+    <button class="btn-primary text-xs" (click)="showForm = !showForm">
+      <span class="material-symbols-outlined text-sm">{{ showForm ? 'close' : 'add' }}</span>
+      {{ showForm ? 'Cancel' : 'New Measurement' }}
     </button>
   </div>
 
   <!-- Log Form -->
-  <div *ngIf="showForm" class="glass-card mb-6">
-    <h3 class="text-lg font-bold text-white mb-4">Log Measurements</h3>
+  <div *ngIf="showForm" class="bg-surface-container-low border border-white/5 rounded-xl p-md mb-md card-hover" @fadeSlide>
+    <div class="flex items-center gap-2 mb-4">
+      <span class="material-symbols-outlined text-primary-container">monitor_weight</span>
+      <h3 class="font-headline-md text-headline-md text-primary uppercase">Log Measurements</h3>
+    </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Weight (kg) *</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.weightKg" placeholder="e.g. 75" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Weight (kg) *</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.weightKg" placeholder="e.g. 75" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Body Fat %</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.bodyFatPercent" placeholder="e.g. 15" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Body Fat %</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.bodyFatPercent" placeholder="e.g. 15" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Waist (cm)</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.waistCm" placeholder="e.g. 85" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Waist (cm)</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.waistCm" placeholder="e.g. 85" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Chest (cm)</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.chestCm" placeholder="e.g. 100" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Chest (cm)</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.chestCm" placeholder="e.g. 100" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Arms (cm)</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.armsCm" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Arms (cm)</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.armsCm" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Thighs (cm)</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.thighsCm" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Thighs (cm)</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.thighsCm" step="0.1">
       </div>
-      <div class="grid gap-1">
-        <label class="text-xs text-slate-400">Hips (cm)</label>
-        <input type="number" class="premium-input text-sm" [(ngModel)]="newMeasurement.hipsCm" step="0.1">
+      <div>
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Hips (cm)</label>
+        <input type="number" class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.hipsCm" step="0.1">
       </div>
-      <div class="grid gap-1 col-span-2 md:col-span-4">
-        <label class="text-xs text-slate-400">Notes</label>
-        <input class="premium-input text-sm" [(ngModel)]="newMeasurement.notes" placeholder="Optional notes...">
+      <div class="md:col-span-2">
+        <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Notes</label>
+        <input class="input-titan w-full text-sm" [(ngModel)]="newMeasurement.notes" placeholder="Optional notes...">
       </div>
     </div>
-    <button class="premium-button w-full mt-4" (click)="saveMeasurement()" [disabled]="isLoading">
-      {{ isLoading ? 'Saving...' : '💾 Save Measurements' }}
+    <button class="btn-primary w-full mt-4 text-xs" (click)="saveMeasurement()" [disabled]="isLoading">
+      <span class="material-symbols-outlined text-sm">save</span>
+      {{ isLoading ? 'Saving...' : 'Save Measurements' }}
     </button>
   </div>
 
   <!-- Summary Cards -->
-  <div *ngIf="summary?.hasData" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <div class="glass-card text-center">
-      <div class="text-slate-400 text-xs">Latest Weight</div>
-      <div class="text-3xl font-bold text-white mt-1">{{ summary.weightKg }} <span class="text-sm text-slate-400">kg</span></div>
-      <div *ngIf="summary.weightChangeKg" class="text-xs mt-1" [class]="getChangeClass(summary.weightChangeKg, true)">
+  <div *ngIf="summary?.hasData" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-md">
+    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center card-hover">
+      <span class="material-symbols-outlined text-primary-container block mb-2">monitor_weight</span>
+      <div class="font-data-metric text-primary">{{ summary.weightKg }}</div>
+      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">LATEST WEIGHT</div>
+      <div *ngIf="summary.weightChangeKg" class="font-label-caps text-[9px] mt-1"
+           [class.text-green-400]="summary.weightChangeKg < 0"
+           [class.text-error]="summary.weightChangeKg > 0">
         {{ summary.weightChangeKg! > 0 ? '+' : '' }}{{ summary.weightChangeKg }} kg
       </div>
     </div>
-    <div class="glass-card text-center">
-      <div class="text-slate-400 text-xs">Body Fat</div>
-      <div class="text-3xl font-bold text-white mt-1">{{ summary.bodyFatPercent }} <span class="text-sm text-slate-400">%</span></div>
-      <div *ngIf="summary.bodyFatChange" class="text-xs mt-1" [class]="getChangeClass(summary.bodyFatChange)">
+    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
+      <span class="material-symbols-outlined text-secondary-fixed-dim block mb-2">pie_chart</span>
+      <div class="font-data-metric text-primary">{{ summary.bodyFatPercent }}</div>
+      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">BODY FAT</div>
+      <div *ngIf="summary.bodyFatChange" class="font-label-caps text-[9px] mt-1"
+           [class.text-green-400]="summary.bodyFatChange < 0"
+           [class.text-error]="summary.bodyFatChange > 0">
         {{ summary.bodyFatChange! > 0 ? '+' : '' }}{{ summary.bodyFatChange }}%
       </div>
     </div>
-    <div class="glass-card text-center">
-      <div class="text-slate-400 text-xs">Waist</div>
-      <div class="text-3xl font-bold text-white mt-1">{{ summary.waistCm || '—' }} <span class="text-sm text-slate-400">cm</span></div>
+    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
+      <span class="material-symbols-outlined text-primary-fixed-dim block mb-2">straighten</span>
+      <div class="font-data-metric text-primary">{{ summary.waistCm || '—' }}</div>
+      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">WAIST (CM)</div>
     </div>
-    <div class="glass-card text-center">
-      <div class="text-slate-400 text-xs">Chest</div>
-      <div class="text-3xl font-bold text-white mt-1">{{ summary.chestCm || '—' }} <span class="text-sm text-slate-400">cm</span></div>
+    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
+      <span class="material-symbols-outlined text-tertiary-fixed-dim block mb-2">accessibility</span>
+      <div class="font-data-metric text-primary">{{ summary.chestCm || '—' }}</div>
+      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">CHEST (CM)</div>
     </div>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!summary?.hasData && !isLoading" class="glass-card text-center py-10 mb-8">
-    <div class="text-5xl mb-4 opacity-50">📏</div>
-    <p class="text-slate-400">No measurements recorded yet. Log your first measurement to start tracking progress!</p>
+  <div *ngIf="!summary?.hasData && !isLoading" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 mb-md card-hover">
+    <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">monitor_weight</span>
+    <p class="font-body-md text-on-surface-variant mb-4">No measurements recorded yet. Log your first measurement to start tracking progress!</p>
+    <button class="btn-primary text-xs" (click)="showForm = true">
+      <span class="material-symbols-outlined text-sm">add</span> Log First Measurement
+    </button>
   </div>
 
   <!-- History -->
   <div *ngIf="measurements.length > 0">
-    <h2 class="text-xl font-bold text-white mb-4">📅 Measurement History</h2>
-    <div class="glass-table-container">
-      <table class="premium-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Weight</th>
-            <th>Body Fat</th>
-            <th>Waist</th>
-            <th>Chest</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let m of measurements">
-            <td class="text-slate-400">{{ m.date ? (m.date | date:'MMM d, yyyy') : '—' }}</td>
-            <td class="bold">{{ m.weightKg || '—' }} kg</td>
-            <td>{{ m.bodyFatPercent || '—' }}%</td>
-            <td>{{ m.waistCm || '—' }} cm</td>
-            <td>{{ m.chestCm || '—' }} cm</td>
-            <td><button class="btn-delete text-xs" (click)="deleteMeasurement(m.id)">Delete</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="flex items-center gap-2 mb-4">
+      <span class="material-symbols-outlined text-primary-container">history</span>
+      <h2 class="font-headline-md text-headline-md text-primary uppercase">Measurement History</h2>
+    </div>
+    <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/5">
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Date</th>
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Weight</th>
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Body Fat</th>
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Waist</th>
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Chest</th>
+              <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of measurements" class="border-b border-white/5 hover:bg-surface-container-high transition-colors">
+              <td class="p-4 font-label-caps text-[10px] text-on-surface-variant">{{ m.date ? (m.date | date:'MMM d, yyyy') : '—' }}</td>
+              <td class="p-4 font-body-md text-primary">{{ m.weightKg || '—' }} kg</td>
+              <td class="p-4 font-body-md text-primary">{{ m.bodyFatPercent || '—' }}%</td>
+              <td class="p-4 font-body-md text-primary">{{ m.waistCm || '—' }} cm</td>
+              <td class="p-4 font-body-md text-primary">{{ m.chestCm || '—' }} cm</td>
+              <td class="p-4">
+                <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error hover:bg-error/10 transition-all text-sm"
+                        (click)="deleteMeasurement(m.id)">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

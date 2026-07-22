@@ -1,180 +1,224 @@
-<div class="admin-dashboard">
+<div class="admin-dashboard min-h-screen">
   <!-- Sidebar -->
-  <aside class="glass-sidebar">
-    <nav class="nav-menu">
-      <button [class.active]="activeTab === 'overview'" (click)="setTab('overview')">
-        <i class="icon">📊</i> Overview
+  <aside class="w-64 bg-surface-container-low border-r border-white/5 p-4 shrink-0 hidden lg:flex flex-col">
+    <div class="font-headline-md text-headline-md text-primary-container mb-8 px-3">WOLVERINE STACK</div>
+    <nav class="space-y-1 flex-1">
+      <button class="w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left font-label-caps text-[10px] uppercase tracking-wider"
+              [class.bg-primary-container]="activeTab === 'overview'" [class.text-on-primary]="activeTab === 'overview'"
+              [class.text-on-surface-variant]="activeTab !== 'overview'" [class.hover:bg-surface-variant]="activeTab !== 'overview'"
+              (click)="setTab('overview')">
+        <span class="material-symbols-outlined text-lg">dashboard</span> Overview
       </button>
-      <button [class.active]="activeTab === 'users'" (click)="setTab('users')">
-        <i class="icon">👥</i> Manage Members
+      <button class="w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left font-label-caps text-[10px] uppercase tracking-wider"
+              [class.bg-primary-container]="activeTab === 'users'" [class.text-on-primary]="activeTab === 'users'"
+              [class.text-on-surface-variant]="activeTab !== 'users'" [class.hover:bg-surface-variant]="activeTab !== 'users'"
+              (click)="setTab('users')">
+        <span class="material-symbols-outlined text-lg">group</span> Members
       </button>
-      <button [class.active]="activeTab === 'trainers'" (click)="setTab('trainers')">
-        <i class="icon">🏋️</i> Trainers
+      <button class="w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left font-label-caps text-[10px] uppercase tracking-wider"
+              [class.bg-primary-container]="activeTab === 'trainers'" [class.text-on-primary]="activeTab === 'trainers'"
+              [class.text-on-surface-variant]="activeTab !== 'trainers'" [class.hover:bg-surface-variant]="activeTab !== 'trainers'"
+              (click)="setTab('trainers')">
+        <span class="material-symbols-outlined text-lg">fitness_center</span> Trainers
       </button>
-      <button [class.active]="activeTab === 'plans'" (click)="setTab('plans')">
-        <i class="icon">📋</i> Workout Plans
+      <button class="w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left font-label-caps text-[10px] uppercase tracking-wider"
+              [class.bg-primary-container]="activeTab === 'plans'" [class.text-on-primary]="activeTab === 'plans'"
+              [class.text-on-surface-variant]="activeTab !== 'plans'" [class.hover:bg-surface-variant]="activeTab !== 'plans'"
+              (click)="setTab('plans')">
+        <span class="material-symbols-outlined text-lg">list_alt</span> Plans
       </button>
     </nav>
   </aside>
 
   <!-- Main Content -->
-  <main class="dashboard-content">
+  <main class="flex-1 p-4 sm:p-6 lg:p-10">
 
     <!-- OVERVIEW TAB -->
-    <div class="tab-content fade-in" *ngIf="activeTab === 'overview'">
-      <div class="header">
-        <h1>Wolverine Stack Admin</h1>
-        <p class="subtitle">Command center for the pack. Manage members, trainers, and workout plans.</p>
+    <div *ngIf="activeTab === 'overview'" @fadeSlide>
+      <div class="mb-8">
+        <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-2 block">WOLVERINE STACK</span>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Admin Dashboard</h1>
+        <p class="font-body-md text-on-surface-variant mt-2">Command center for the pack. Manage members, trainers, and workout plans.</p>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card glass-card">
-          <div class="stat-icon users-icon">👥</div>
-          <div class="stat-details">
-            <h3>Total Members</h3>
-            <p class="stat-number">{{ stats.totalUsers }}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-6 flex items-center gap-4 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-primary-container/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary-container">group</span>
+          </div>
+          <div>
+            <div class="font-label-caps text-[9px] text-on-surface-variant uppercase">Total Members</div>
+            <div class="font-data-metric text-primary mt-1">{{ stats.totalUsers }}</div>
           </div>
         </div>
-        <div class="stat-card glass-card">
-          <div class="stat-icon jobs-icon">🏋️</div>
-          <div class="stat-details">
-            <h3>Trainers</h3>
-            <p class="stat-number">{{ stats.totalTrainers }}</p>
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-6 flex items-center gap-4 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-secondary-fixed-dim/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-3xl text-secondary-fixed-dim">fitness_center</span>
+          </div>
+          <div>
+            <div class="font-label-caps text-[9px] text-on-surface-variant uppercase">Trainers</div>
+            <div class="font-data-metric text-primary mt-1">{{ stats.totalTrainers }}</div>
           </div>
         </div>
-        <div class="stat-card glass-card">
-          <div class="stat-icon apps-icon">📋</div>
-          <div class="stat-details">
-            <h3>Workout Plans</h3>
-            <p class="stat-number">{{ stats.totalPlans }}</p>
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-6 flex items-center gap-4 card-hover">
+          <div class="w-14 h-14 rounded-xl bg-primary-fixed-dim/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary-fixed-dim">list_alt</span>
+          </div>
+          <div>
+            <div class="font-label-caps text-[9px] text-on-surface-variant uppercase">Workout Plans</div>
+            <div class="font-data-metric text-primary mt-1">{{ stats.totalPlans }}</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- USERS TAB -->
-    <div class="tab-content fade-in" *ngIf="activeTab === 'users'">
-      <div class="header">
-        <h1>Member Management</h1>
+    <div *ngIf="activeTab === 'users'" @fadeSlide>
+      <div class="mb-6">
+        <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-2 block">MANAGEMENT</span>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Member Management</h1>
       </div>
-      <div class="glass-table-container">
-        <table class="premium-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Goal</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of users">
-              <td>#{{ user.id }}</td>
-              <td class="bold">{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>
-                <span *ngIf="user.fitnessGoal" class="text-xs text-slate-400">
-                  {{ user.fitnessGoal?.replace(/_/g, ' ') }}
-                </span>
-                <span *ngIf="!user.fitnessGoal" class="text-xs text-slate-500">—</span>
-              </td>
-              <td>
-                <span class="status-badge" [class.active]="user.enabled" [class.inactive]="!user.enabled">
-                  {{ user.enabled ? 'Active' : 'Disabled' }}
-                </span>
-              </td>
-              <td class="action-cell">
-                <button class="btn-toggle" (click)="toggleUserStatus(user)">
-                  {{ user.enabled ? 'Disable' : 'Enable' }}
-                </button>
-                <button class="btn-delete" (click)="deleteUser(user.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/5">
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">ID</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Username</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Email</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Goal</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Status</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users" class="border-b border-white/5 hover:bg-surface-container-high transition-colors">
+                <td class="p-4 font-label-caps text-[10px] text-on-surface-variant">#{{ user.id }}</td>
+                <td class="p-4 font-body-md text-primary font-semibold">{{ user.username }}</td>
+                <td class="p-4 font-body-md text-on-surface-variant">{{ user.email }}</td>
+                <td class="p-4">
+                  <span *ngIf="user.fitnessGoal" class="font-label-caps text-[9px] text-on-surface-variant">{{ user.fitnessGoal?.replace(/_/g, ' ') }}</span>
+                  <span *ngIf="!user.fitnessGoal" class="font-label-caps text-[9px] text-on-surface-variant opacity-50">—</span>
+                </td>
+                <td class="p-4">
+                  <span class="status-badge" [class.active]="user.enabled" [class.inactive]="!user.enabled">
+                    {{ user.enabled ? 'Active' : 'Disabled' }}
+                  </span>
+                </td>
+                <td class="p-4">
+                  <div class="flex gap-2">
+                    <button class="text-[10px] font-label-caps px-3 py-1.5 rounded bg-surface-container-highest text-on-surface-variant hover:text-primary transition-colors"
+                            (click)="toggleUserStatus(user)">
+                      {{ user.enabled ? 'Disable' : 'Enable' }}
+                    </button>
+                    <button class="text-[10px] font-label-caps px-3 py-1.5 rounded bg-surface-container-highest text-error hover:bg-error hover:text-white transition-all"
+                            (click)="deleteUser(user.id)">
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- TRAINERS TAB -->
-    <div class="tab-content fade-in" *ngIf="activeTab === 'trainers'">
-      <div class="header">
-        <h1>Trainer Management</h1>
+    <div *ngIf="activeTab === 'trainers'" @fadeSlide>
+      <div class="mb-6">
+        <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-2 block">MANAGEMENT</span>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Trainer Management</h1>
       </div>
-      <div class="glass-table-container">
-        <table class="premium-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let trainer of trainers">
-              <td>#{{ trainer.id }}</td>
-              <td class="bold">{{ trainer.username }}</td>
-              <td>{{ trainer.email }}</td>
-              <td>
-                <select class="role-select" [ngModel]="trainer.role" (ngModelChange)="changeRole(trainer, $event)">
-                  <option value="ROLE_MEMBER">Member</option>
-                  <option value="ROLE_TRAINER">Trainer</option>
-                  <option value="ROLE_ADMIN">Admin</option>
-                </select>
-              </td>
-              <td class="action-cell">
-                <button class="btn-delete" (click)="deleteUser(trainer.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/5">
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">ID</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Name</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Email</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Role</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let trainer of trainers" class="border-b border-white/5 hover:bg-surface-container-high transition-colors">
+                <td class="p-4 font-label-caps text-[10px] text-on-surface-variant">#{{ trainer.id }}</td>
+                <td class="p-4 font-body-md text-primary font-semibold">{{ trainer.username }}</td>
+                <td class="p-4 font-body-md text-on-surface-variant">{{ trainer.email }}</td>
+                <td class="p-4">
+                  <select class="select-titan text-sm" [ngModel]="trainer.role" (ngModelChange)="changeRole(trainer, $event)">
+                    <option value="ROLE_MEMBER">Member</option>
+                    <option value="ROLE_TRAINER">Trainer</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+                  </select>
+                </td>
+                <td class="p-4">
+                  <button class="text-[10px] font-label-caps px-3 py-1.5 rounded bg-surface-container-highest text-error hover:bg-error hover:text-white transition-all"
+                          (click)="deleteUser(trainer.id)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- PLANS TAB -->
-    <div class="tab-content fade-in" *ngIf="activeTab === 'plans'">
-      <div class="header">
-        <h1>Workout Plans</h1>
+    <div *ngIf="activeTab === 'plans'" @fadeSlide>
+      <div class="mb-6">
+        <span class="font-label-caps text-label-caps text-secondary-fixed-dim mb-2 block">MANAGEMENT</span>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Workout Plans</h1>
       </div>
-      <div class="glass-table-container">
-        <table class="premium-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Difficulty</th>
-              <th>Days/Week</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let plan of plans">
-              <td>#{{ plan.id }}</td>
-              <td class="bold">{{ plan.name }}</td>
-              <td>{{ plan.difficulty }}</td>
-              <td>{{ plan.daysPerWeek }}</td>
-              <td class="action-cell">
-                <button class="btn-delete" (click)="deletePlan(plan.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/5">
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">ID</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Name</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Difficulty</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Days/Week</th>
+                <th class="font-label-caps text-[9px] text-on-surface-variant text-left p-4 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of plans" class="border-b border-white/5 hover:bg-surface-container-high transition-colors">
+                <td class="p-4 font-label-caps text-[10px] text-on-surface-variant">#{{ plan.id }}</td>
+                <td class="p-4 font-body-md text-primary font-semibold">{{ plan.name }}</td>
+                <td class="p-4">
+                  <span class="status-badge" [class.active]="plan.difficulty === 'ADVANCED'" [class.completed]="plan.difficulty === 'INTERMEDIATE'" [class.pending]="plan.difficulty === 'BEGINNER'">
+                    {{ plan.difficulty }}
+                  </span>
+                </td>
+                <td class="p-4 font-body-md text-primary">{{ plan.daysPerWeek || plan.sessionsPerWeek || '—' }}</td>
+                <td class="p-4">
+                  <button class="text-[10px] font-label-caps px-3 py-1.5 rounded bg-surface-container-highest text-error hover:bg-error hover:text-white transition-all"
+                          (click)="deletePlan(plan.id)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
   </main>
 
   <!-- Confirm Modal -->
-  <div class="premium-modal-overlay" *ngIf="showConfirmModal">
-    <div class="premium-modal glass-card fade-scale-in">
-      <h3>Confirm Action</h3>
-      <p>{{ pendingAction?.message }}</p>
-      <div class="modal-actions">
-        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
-        <button class="btn-danger" (click)="executeConfirm()">Confirm</button>
+  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" *ngIf="showConfirmModal">
+    <div class="bg-surface-container-low border border-white/5 rounded-xl p-8 max-w-sm w-full mx-4 text-center card-hover" @fadeSlide>
+      <span class="material-symbols-outlined text-4xl text-error mb-4 block">warning</span>
+      <h3 class="font-headline-md text-headline-md text-primary mb-2">Confirm Action</h3>
+      <p class="font-body-md text-on-surface-variant mb-6">{{ pendingAction?.message }}</p>
+      <div class="flex gap-3 justify-center">
+        <button class="btn-outline text-xs px-6" (click)="closeModal()">Cancel</button>
+        <button class="btn-primary text-xs px-6 bg-error border-error hover:bg-red-600" (click)="executeConfirm()">Confirm</button>
       </div>
     </div>
   </div>

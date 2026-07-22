@@ -24,7 +24,7 @@
 
   <!-- ==================== ACTIVE WORKOUT SESSION ==================== -->
   <div *ngIf="activeSession && viewMode === 'active'" @fadeSlide>
-    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md">
+    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md card-hover">
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
           <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
@@ -46,14 +46,16 @@
       <div *ngIf="activeSession.logEntries?.length" class="mb-6 space-y-3">
         <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">EXERCISES</h3>
         <div *ngFor="let entry of activeSession.logEntries"
-             class="bg-surface-container-high rounded-xl overflow-hidden border border-white/5 flex flex-col sm:flex-row">
+             class="bg-surface-container-high rounded-xl overflow-hidden border border-white/5 flex flex-col sm:flex-row card-hover">
           <!-- Exercise Image Thumbnail -->
           <div class="sm:w-32 h-24 sm:h-auto bg-surface-container-highest overflow-hidden flex-shrink-0">
-            <img *ngIf="entry.imageUrl" [src]="entry.imageUrl" [alt]="entry.exerciseName"
-                 class="w-full h-full object-cover"
-                 loading="lazy"
-                 onerror="this.parentElement.innerHTML = '<div class=\\'flex items-center justify-center w-full h-full\\'><span class=\\'material-symbols-outlined text-3xl text-on-surface-variant\\'>fitness_center</span></div>'">
-            <div *ngIf="!entry.imageUrl" class="flex items-center justify-center w-full h-full">
+            <ng-container *ngIf="entry.imageUrl && !hasImageFailed(entry.exerciseName)">
+              <img [src]="entry.imageUrl" [alt]="entry.exerciseName"
+                   class="w-full h-full object-cover"
+                   loading="lazy"
+                   (error)="markImageFailed(entry.exerciseName)">
+            </ng-container>
+            <div *ngIf="!entry.imageUrl || hasImageFailed(entry.exerciseName)" class="flex items-center justify-center w-full h-full">
               <span class="material-symbols-outlined text-3xl text-on-surface-variant">fitness_center</span>
             </div>
           </div>
@@ -81,7 +83,7 @@
       </div>
 
       <!-- Log Exercise Form with Wger Library Search -->
-      <div class="bg-surface-container-highest rounded-xl p-4">
+      <div class="bg-surface-container-highest rounded-xl p-4 card-hover">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-label-caps text-label-caps text-primary-container uppercase">LOG EXERCISE</h3>
           <button class="btn-outline text-[9px]" (click)="showSessionExerciseSearch = !showSessionExerciseSearch">
@@ -103,9 +105,11 @@
                  class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-primary-container/50 transition-all group"
                  (click)="selectSessionExercise(ex)">
               <div class="h-16 bg-surface-container-highest overflow-hidden">
-                <img *ngIf="ex.imageUrl" [src]="ex.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
-                     onerror="this.style.display='none'">
-                <div *ngIf="!ex.imageUrl" class="flex items-center justify-center h-full">
+                <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.name)">
+                  <img [src]="ex.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
+                       (error)="markImageFailed(ex.name)">
+                </ng-container>
+                <div *ngIf="!ex.imageUrl || hasImageFailed(ex.name)" class="flex items-center justify-center h-full">
                   <span class="material-symbols-outlined text-on-surface-variant">fitness_center</span>
                 </div>
               </div>
@@ -155,7 +159,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div *ngFor="let plan of plans"
-           class="bg-surface-container-low border border-white/5 rounded-xl p-md hover:border-primary-container/30 transition-all cursor-pointer group relative"
+           class="bg-surface-container-low border border-white/5 rounded-xl p-md transition-all cursor-pointer group relative card-hover"
            (click)="loadPlanDetails(plan.id)">
         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <button class="w-7 h-7 rounded bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary transition-all text-sm"
@@ -188,7 +192,7 @@
         </div>
       </div>
 
-      <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16">
+      <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant mb-4">No plans yet. Create your first workout plan!</p>
         <button class="btn-primary" (click)="openCreatePlan()">
@@ -213,7 +217,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left Column: Plan Details + Exercise Library -->
       <div class="lg:col-span-8 space-y-6">
-        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
           <h3 class="font-label-caps text-label-caps text-primary-container mb-4 uppercase">Plan Details</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">
@@ -289,11 +293,13 @@
                  class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 hover:border-primary-container/40 transition-all cursor-pointer group"
                  (click)="addExerciseFromLibrary(exercise)">
               <div class="h-36 bg-surface-container-highest overflow-hidden relative">
-                <img *ngIf="exercise.imageUrl" [src]="exercise.imageUrl" [alt]="exercise.name"
-                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                     loading="lazy"
-                     onerror="this.parentElement.innerHTML = '<div class=\\'flex items-center justify-center h-full\\'><span class=\\'material-symbols-outlined text-4xl text-on-surface-variant\\'>fitness_center</span></div>'">
-                <div *ngIf="!exercise.imageUrl" class="flex items-center justify-center h-full">
+                <ng-container *ngIf="exercise.imageUrl && !hasImageFailed(exercise.name)">
+                  <img [src]="exercise.imageUrl" [alt]="exercise.name"
+                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                       loading="lazy"
+                       (error)="markImageFailed(exercise.name)">
+                </ng-container>
+                <div *ngIf="!exercise.imageUrl || hasImageFailed(exercise.name)" class="flex items-center justify-center h-full">
                   <span class="material-symbols-outlined text-4xl text-on-surface-variant">fitness_center</span>
                 </div>
                 <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -318,7 +324,7 @@
       </div>
 
       <div class="lg:col-span-4">
-        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24 card-hover">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Selected</h3>
             <span class="bg-surface-container-highest text-primary text-[10px] font-label-caps px-2 py-0.5 rounded">{{ planExerciseCount() }}</span>
@@ -333,9 +339,11 @@
                  class="bg-surface-container-high rounded-lg p-3 border border-white/5 group">
               <div class="flex items-start gap-2">
                 <div class="w-10 h-10 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
-                  <img *ngIf="ex.imageUrl" [src]="ex.imageUrl" class="w-full h-full object-cover" loading="lazy"
-                       onerror="this.style.display='none'">
-                  <div *ngIf="!ex.imageUrl" class="flex items-center justify-center h-full">
+                  <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.exerciseName)">
+                    <img [src]="ex.imageUrl" class="w-full h-full object-cover" loading="lazy"
+                         (error)="markImageFailed(ex.exerciseName)">
+                  </ng-container>
+                  <div *ngIf="!ex.imageUrl || hasImageFailed(ex.exerciseName)" class="flex items-center justify-center h-full">
                     <span class="material-symbols-outlined text-sm text-on-surface-variant">fitness_center</span>
                   </div>
                 </div>
@@ -393,7 +401,7 @@
     </div>
     <div class="space-y-3">
       <div *ngFor="let session of sessions"
-           class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group">
+           class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group card-hover">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
             <span class="material-symbols-outlined text-on-surface-variant" [class.text-secondary-fixed-dim]="!session.completed" [class.text-primary-container]="session.completed">
@@ -421,7 +429,7 @@
           </button>
         </div>
       </div>
-      <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16">
+      <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant">No sessions yet. Start a workout!</p>
       </div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -9,7 +10,15 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admindashboard.html',
-  styleUrl: './admindashboard.css'
+  styleUrl: './admindashboard.css',
+  animations: [
+    trigger('fadeSlide', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(15px)' }),
+        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class Admindashboard implements OnInit {
   activeTab: 'overview' | 'users' | 'trainers' | 'plans' = 'overview';
