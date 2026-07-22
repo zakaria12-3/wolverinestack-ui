@@ -39,16 +39,13 @@ export const routes: Routes = [
     pathMatch: 'full',
     component:Calendar
   },
-  // --- Gym Community Routes ---
-
   // Onboarding (first-time fitness profile setup)
   {
     path: 'onboarding',
     loadComponent: () => import('./features/onboarding/onboarding').then(m => m.OnboardingComponent),
     canActivate: [authGuard]
   },
-
-  // Member Dashboard
+  // Member Routes (workouts, nutrition, etc.)
   {
     path:'member',
     pathMatch: 'full',
@@ -62,6 +59,12 @@ export const routes: Routes = [
   },
   {
     path: 'member/workouts',
+    loadComponent: () => import('./features/member/workouts/workouts').then(m => m.WorkoutTracking),
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'MEMBER' }
+  },
+  {
+    path: 'member/workouts/new',
     loadComponent: () => import('./features/member/workouts/workouts').then(m => m.WorkoutTracking),
     canActivate: [authGuard, roleGuard],
     data: { role: 'MEMBER' }
@@ -90,32 +93,6 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role: 'MEMBER' }
   },
-
-  // Trainer Dashboard
-  {
-    path:'trainer',
-    pathMatch: 'full',
-    redirectTo: 'trainer/dashboard'
-  },
-  {
-    path: 'trainer/dashboard',
-    loadComponent: () => import('./features/trainer/dashboard/dashboard').then(m => m.TrainerDashboard),
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'TRAINER' }
-  },
-  {
-    path: 'trainer/clients',
-    loadComponent: () => import('./features/trainer/clients/clients').then(m => m.TrainerClients),
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'TRAINER' }
-  },
-  {
-    path: 'trainer/create-plan',
-    loadComponent: () => import('./features/trainer/create-plan/create-plan').then(m => m.CreatePlan),
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'TRAINER' }
-  },
-
   // Admin Dashboard
   {
     path:'admin',
@@ -128,7 +105,6 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role: 'ADMIN' }
   },
-
   // Shared routes
   {
     path: 'profile',

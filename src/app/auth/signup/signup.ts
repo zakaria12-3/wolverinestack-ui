@@ -27,11 +27,7 @@ export class Signup {
     username: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    gender: '',
-    weightKg: null as number | null,
-    heightCm: null as number | null,
-    dateOfBirth: ''
+    confirmPassword: ''
   };
 
   isLoading = false;
@@ -56,17 +52,12 @@ export class Signup {
     }
 
     const email = this.user.email.trim().toLowerCase();
-    const payload: any = {
+    const payload = {
       username: this.user.username,
       email,
       password: this.user.password,
       role: 'MEMBER'
     };
-
-    if (this.user.gender) payload.gender = this.user.gender;
-    if (this.user.weightKg) payload.weightKg = this.user.weightKg;
-    if (this.user.heightCm) payload.heightCm = this.user.heightCm;
-    if (this.user.dateOfBirth) payload.dateOfBirth = this.user.dateOfBirth;
 
     this.isLoading = true;
 
