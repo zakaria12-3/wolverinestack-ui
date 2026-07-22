@@ -67,6 +67,12 @@ export class WorkoutTracking implements OnInit {
     notes: ''
   };
 
+  // Session exercise search (Wger API)
+  showSessionExerciseSearch = false;
+  sessionLibraryQuery = '';
+  isLoadingSessionExercises = false;
+  sessionExerciseResults: ExerciseLibraryItem[] = [];
+
   // Plan builder form
   planForm = {
     name: '',
@@ -261,6 +267,7 @@ export class WorkoutTracking implements OnInit {
       next: (res: any) => {
         this.activeSession = res;
         this.viewMode = 'active';
+        this.showSessionExerciseSearch = false;
         this.toastr.success('Session started! 💪');
         this.cdr.detectChanges();
       },
@@ -336,7 +343,7 @@ export class WorkoutTracking implements OnInit {
       });
   }
 
-  // ======== Exercise Library (Wger API) ========
+  // ======== Exercise Library (Wger API — Plan Builder) ========
 
   searchExercises() {
     this.isLoadingExercises = true;
@@ -394,6 +401,28 @@ export class WorkoutTracking implements OnInit {
     const [exercise] = this.planForm.exercises.splice(index, 1);
     this.planForm.exercises.splice(nextIndex, 0, exercise);
     this.reorderExercises();
+  }
+
+  // ======== Session Exercise Search (Wger — Active Session) ========
+
+  searchSessionExercises() {
+    this.isLoadingSessionExercises = true;
+    this.exerciseLibrary.searchExercises(this.sessionLibraryQuery).subscribe({
+      next: (exercises) => {
+        this.sessionExerciseResults = exercises;
+        this.isLoadingSessionExercises = false;
+      },
+      error: () => {
+        this.sessionExerciseResults = [];
+        this.isLoadingSessionExercises = false;
+      }
+    });
+  }
+
+  selectSessionExercise(exercise: ExerciseLibraryItem) {
+    this.currentExercise.exerciseName = exercise.name;
+    this.showSessionExerciseSearch = false;
+    this.toastr.info(`Selected: ${exercise.name}`);
   }
 
   // ======== Utility ========

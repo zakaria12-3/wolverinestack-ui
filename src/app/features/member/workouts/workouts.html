@@ -23,66 +23,124 @@
   </div>
 
   <!-- ==================== ACTIVE WORKOUT SESSION ==================== -->
-  <div *ngIf="activeSession && viewMode === 'active'" class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md" @fadeSlide>
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center gap-3">
-        <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
-        <div>
-          <h2 class="font-headline-md text-headline-md text-primary">Active Session</h2>
-          <p class="font-label-caps text-[10px] text-on-surface-variant">
-            {{ activeSession.sessionName }} · {{ getDuration(activeSession.startedAt) }}
-          </p>
+  <div *ngIf="activeSession && viewMode === 'active'" @fadeSlide>
+    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md">
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
+          <div>
+            <h2 class="font-headline-md text-headline-md text-primary">{{ activeSession.sessionName || 'Active Session' }}</h2>
+            <p class="font-label-caps text-[10px] text-on-surface-variant">
+              Duration: {{ getDuration(activeSession.startedAt) }}
+              <span *ngIf="activeSession.planName"> · {{ activeSession.planName }}</span>
+            </p>
+          </div>
+        </div>
+        <button class="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-caps text-[10px] font-bold hover:brightness-110 transition-all active:scale-95"
+                (click)="completeSession()">
+          <span class="material-symbols-outlined text-sm">check</span> Complete
+        </button>
+      </div>
+
+      <!-- Logged Exercises with Wger Images -->
+      <div *ngIf="activeSession.logEntries?.length" class="mb-6 space-y-3">
+        <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">EXERCISES</h3>
+        <div *ngFor="let entry of activeSession.logEntries"
+             class="bg-surface-container-high rounded-xl overflow-hidden border border-white/5 flex flex-col sm:flex-row">
+          <!-- Exercise Image Thumbnail -->
+          <div class="sm:w-32 h-24 sm:h-auto bg-surface-container-highest overflow-hidden flex-shrink-0">
+            <img *ngIf="entry.imageUrl" [src]="entry.imageUrl" [alt]="entry.exerciseName"
+                 class="w-full h-full object-cover"
+                 loading="lazy"
+                 onerror="this.parentElement.innerHTML = '<div class=\\'flex items-center justify-center w-full h-full\\'><span class=\\'material-symbols-outlined text-3xl text-on-surface-variant\\'>fitness_center</span></div>'">
+            <div *ngIf="!entry.imageUrl" class="flex items-center justify-center w-full h-full">
+              <span class="material-symbols-outlined text-3xl text-on-surface-variant">fitness_center</span>
+            </div>
+          </div>
+          <!-- Exercise Info -->
+          <div class="flex-1 p-4 flex flex-col justify-center">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h4 class="font-headline-md text-headline-md text-primary">{{ entry.exerciseName }}</h4>
+                <div class="flex items-center gap-2 mt-1 flex-wrap">
+                  <span *ngIf="entry.muscleGroup" class="font-label-caps text-[8px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">{{ entry.muscleGroup }}</span>
+                  <span *ngIf="entry.equipment" class="font-label-caps text-[8px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">{{ entry.equipment }}</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <div class="font-data-metric text-[22px] text-primary tracking-tight">
+                  {{ entry.actualSets || entry.targetSets || '-' }}×{{ entry.actualReps || entry.targetReps || '-' }}
+                </div>
+                <div class="font-label-caps text-[9px] text-primary-container" *ngIf="entry.weightKg">{{ entry.weightKg }} kg</div>
+                <div *ngIf="entry.actualSets" class="font-label-caps text-[9px] text-secondary-fixed-dim mt-1">✓ LOGGED</div>
+                <div *ngIf="!entry.actualSets && entry.targetSets" class="font-label-caps text-[9px] text-on-surface-variant">PENDING</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <button class="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-caps text-[10px] font-bold hover:brightness-110 transition-all active:scale-95"
-              (click)="completeSession()">
-        <span class="material-symbols-outlined text-sm">check</span> Complete
-      </button>
-    </div>
 
-    <!-- Logged Exercises -->
-    <div *ngIf="activeSession.logEntries?.length" class="mb-6 space-y-4">
-      <div *ngFor="let entry of activeSession.logEntries"
-           class="bg-surface-container-high rounded-lg p-4 border border-white/5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-lg bg-background flex items-center justify-center border border-secondary-fixed-dim/30">
-            <span class="material-symbols-outlined text-secondary-fixed-dim">fitness_center</span>
+      <!-- Log Exercise Form with Wger Library Search -->
+      <div class="bg-surface-container-highest rounded-xl p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-label-caps text-label-caps text-primary-container uppercase">LOG EXERCISE</h3>
+          <button class="btn-outline text-[9px]" (click)="showSessionExerciseSearch = !showSessionExerciseSearch">
+            <span class="material-symbols-outlined text-sm">search</span> {{ showSessionExerciseSearch ? 'Close Library' : 'Browse Library' }}
+          </button>
+        </div>
+
+        <!-- Exercise Library Search (collapsible) with Wger Images -->
+        <div *ngIf="showSessionExerciseSearch" class="mb-4 bg-background rounded-lg p-3 border border-white/5" @slideInOut>
+          <div class="flex gap-2 mb-3">
+            <input class="input-titan flex-1 text-sm" [(ngModel)]="sessionLibraryQuery"
+                   placeholder="Search exercises by name, muscle, equipment..." (keyup.enter)="searchSessionExercises()">
+            <button class="btn-primary text-[10px]" (click)="searchSessionExercises()" [disabled]="isLoadingSessionExercises">
+              {{ isLoadingSessionExercises ? '...' : 'Search' }}
+            </button>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[240px] overflow-y-auto custom-scrollbar">
+            <div *ngFor="let ex of sessionExerciseResults"
+                 class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-primary-container/50 transition-all group"
+                 (click)="selectSessionExercise(ex)">
+              <div class="h-16 bg-surface-container-highest overflow-hidden">
+                <img *ngIf="ex.imageUrl" [src]="ex.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
+                     onerror="this.style.display='none'">
+                <div *ngIf="!ex.imageUrl" class="flex items-center justify-center h-full">
+                  <span class="material-symbols-outlined text-on-surface-variant">fitness_center</span>
+                </div>
+              </div>
+              <div class="p-2">
+                <div class="font-label-caps text-[9px] text-primary truncate">{{ ex.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual Input Form -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+          <div>
+            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">EXERCISE</label>
+            <input class="input-titan w-full text-sm" [(ngModel)]="currentExercise.exerciseName" placeholder="Bench Press">
           </div>
           <div>
-            <h3 class="font-headline-md text-headline-md text-primary">{{ entry.exerciseName }}</h3>
-            <span class="font-label-caps text-[10px] text-primary-fixed-dim">
-              {{ entry.actualSets || entry.targetSets || '-' }}×{{ entry.actualReps || entry.targetReps || '-' }}
-              @ {{ entry.weightKg }} kg · LOGGED ✓
-            </span>
+            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">SETS</label>
+            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.sets" min="1">
+          </div>
+          <div>
+            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">REPS</label>
+            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.reps" min="1">
+          </div>
+          <div>
+            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">WEIGHT (KG)</label>
+            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.weightKg" min="0" step="0.5">
+          </div>
+          <div class="flex items-end">
+            <button class="btn-primary w-full text-xs" (click)="logExercise()">
+              <span class="material-symbols-outlined text-sm">add</span> Log
+            </button>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Log Exercise Form -->
-    <div class="bg-surface-container-highest rounded-xl p-4">
-      <h3 class="font-label-caps text-label-caps text-primary-container mb-4">LOG EXERCISE</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">EXERCISE</label>
-          <input class="input-titan w-full text-sm" [(ngModel)]="currentExercise.exerciseName" placeholder="Bench Press">
-        </div>
-        <div>
-          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">SETS</label>
-          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.sets" min="1">
-        </div>
-        <div>
-          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">REPS</label>
-          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.reps" min="1">
-        </div>
-        <div>
-          <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1">WEIGHT (KG)</label>
-          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.weightKg" min="0" step="0.5">
-        </div>
-      </div>
-      <button class="btn-primary w-full text-xs" (click)="logExercise()">
-        <span class="material-symbols-outlined text-sm">add</span> Log Exercise
-      </button>
     </div>
   </div>
 
@@ -99,7 +157,6 @@
       <div *ngFor="let plan of plans"
            class="bg-surface-container-low border border-white/5 rounded-xl p-md hover:border-primary-container/30 transition-all cursor-pointer group relative"
            (click)="loadPlanDetails(plan.id)">
-        <!-- Edit/Delete buttons (only for own plans) -->
         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <button class="w-7 h-7 rounded bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary transition-all text-sm"
                   (click)="openEditPlan(plan); $event.stopPropagation()">
@@ -156,7 +213,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left Column: Plan Details + Exercise Library -->
       <div class="lg:col-span-8 space-y-6">
-        <!-- Plan Details -->
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
           <h3 class="font-label-caps text-label-caps text-primary-container mb-4 uppercase">Plan Details</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -192,7 +248,6 @@
           </div>
         </div>
 
-        <!-- Exercise Library with Wger Images -->
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Exercise Library</h3>
@@ -205,8 +260,6 @@
               </button>
             </div>
           </div>
-
-          <!-- Search -->
           <div class="flex gap-2 mb-4">
             <input class="input-titan flex-1" [(ngModel)]="libraryQuery" placeholder="Search exercises, muscles, equipment..."
                    (keyup.enter)="searchExercises()">
@@ -214,8 +267,6 @@
               {{ isLoadingExercises ? '...' : 'Search' }}
             </button>
           </div>
-
-          <!-- Manual Exercise Form -->
           <div *ngIf="showManualExercise" class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5" @slideInOut>
             <h4 class="font-label-caps text-[10px] text-primary-container uppercase mb-3">Manual Exercise</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -229,18 +280,14 @@
               <span class="material-symbols-outlined text-sm">add</span> Add Exercise
             </button>
           </div>
-
-          <!-- Exercise Results Grid with Images -->
           <div *ngIf="isLoadingExercises" class="text-center py-8">
             <div class="animate-spin w-8 h-8 border-2 border-primary-container border-t-transparent rounded-full mx-auto mb-3"></div>
             <p class="font-label-caps text-[10px] text-on-surface-variant">Loading exercises...</p>
           </div>
-
           <div *ngIf="!isLoadingExercises" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
             <div *ngFor="let exercise of exerciseResults"
                  class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 hover:border-primary-container/40 transition-all cursor-pointer group"
                  (click)="addExerciseFromLibrary(exercise)">
-              <!-- Exercise Image -->
               <div class="h-36 bg-surface-container-highest overflow-hidden relative">
                 <img *ngIf="exercise.imageUrl" [src]="exercise.imageUrl" [alt]="exercise.name"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -249,12 +296,10 @@
                 <div *ngIf="!exercise.imageUrl" class="flex items-center justify-center h-full">
                   <span class="material-symbols-outlined text-4xl text-on-surface-variant">fitness_center</span>
                 </div>
-                <!-- Overlay hint -->
                 <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <span class="material-symbols-outlined text-4xl text-primary-container">add_circle</span>
                 </div>
               </div>
-              <!-- Exercise Info -->
               <div class="p-3">
                 <h4 class="font-headline-md text-[14px] text-primary truncate">{{ exercise.name }}</h4>
                 <p class="font-body-md text-[11px] text-on-surface-variant line-clamp-2 mt-1">{{ exercise.description }}</p>
@@ -264,7 +309,6 @@
                 </div>
               </div>
             </div>
-
             <div *ngIf="exerciseResults.length === 0" class="col-span-full text-center py-8">
               <span class="material-symbols-outlined text-3xl text-on-surface-variant mb-2 block">search</span>
               <p class="font-body-md text-on-surface-variant text-sm">No exercises found. Try a different search or add manually.</p>
@@ -273,25 +317,21 @@
         </div>
       </div>
 
-      <!-- Right Column: Selected Exercises -->
       <div class="lg:col-span-4">
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Selected</h3>
             <span class="bg-surface-container-highest text-primary text-[10px] font-label-caps px-2 py-0.5 rounded">{{ planExerciseCount() }}</span>
           </div>
-
           <div *ngIf="!planForm.exercises.length" class="text-center py-8 border border-dashed border-white/10 rounded-lg">
             <span class="material-symbols-outlined text-3xl text-on-surface-variant mb-2 block">fitness_center</span>
             <p class="font-body-md text-on-surface-variant text-sm">No exercises added yet.</p>
             <p class="font-label-caps text-[9px] text-on-surface-variant mt-1">Search the library above and click to add.</p>
           </div>
-
           <div class="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
             <div *ngFor="let ex of planForm.exercises; let i = index"
                  class="bg-surface-container-high rounded-lg p-3 border border-white/5 group">
               <div class="flex items-start gap-2">
-                <!-- Exercise thumbnail -->
                 <div class="w-10 h-10 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
                   <img *ngIf="ex.imageUrl" [src]="ex.imageUrl" class="w-full h-full object-cover" loading="lazy"
                        onerror="this.style.display='none'">
@@ -315,7 +355,6 @@
                           (click)="removeExercise(i)">×</button>
                 </div>
               </div>
-              <!-- Inline edit for sets/reps -->
               <div class="flex gap-2 mt-2 ml-12">
                 <label class="flex items-center gap-1">
                   <span class="font-label-caps text-[7px] text-on-surface-variant">Sets</span>
@@ -335,8 +374,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Save Actions -->
           <div class="flex gap-3 mt-4 pt-4 border-t border-white/5">
             <button class="btn-outline text-[10px] flex-1" (click)="cancelPlanForm()">Cancel</button>
             <button class="btn-primary text-[10px] flex-1" (click)="savePlan()" [disabled]="isCreating">
@@ -354,7 +391,6 @@
       <h2 class="font-headline-md text-headline-md text-primary uppercase">Session History</h2>
       <span class="font-label-caps text-[10px] text-on-surface-variant">{{ sessions.length }} sessions</span>
     </div>
-
     <div class="space-y-3">
       <div *ngFor="let session of sessions"
            class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group">
@@ -385,7 +421,6 @@
           </button>
         </div>
       </div>
-
       <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant">No sessions yet. Start a workout!</p>

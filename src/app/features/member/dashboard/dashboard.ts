@@ -1,8 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 import { MemberService, DashboardDto } from '../../../core/services/member.service';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-member-dashboard',
@@ -24,14 +27,26 @@ export class MemberDashboard implements OnInit {
   isLoading = true;
   error = false;
 
+  quickLogStatus: any = null;
+  isLoggingWorkout = false;
+  isLoggingMeal = false;
+
   constructor(
     private memberService: MemberService,
+    private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
     this.loadDashboard();
+    this.loadQuickLogStatus();
+  }
+
+  private getHeaders() {
+    const token = localStorage.getItem('token');
+    return { headers: { 'Authorization': `Bearer ${token}` } };
   }
 
   loadDashboard() {
@@ -49,6 +64,51 @@ export class MemberDashboard implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  loadQuickLogStatus() {
+    this.http.get(`${environment.apiUrl}/member/quick-log/status`, this.getHeaders())
+      .subscribe({
+        next: (data: any) => {
+          this.quickLogStatus = data;
+          this.cdr.detectChanges();
+        },
+        error: () => { /* silently ignore — not critical */ }
+      });
+  }
+
+  quickLogWorkout() {
+    this.isLoggingWorkout = true;
+    this.http.post(`${environment.apiUrl}/member/quick-log/workout`, {}, this.getHeaders())
+      .subscribe({
+        next: (res: any) => {
+          this.toastr.success(res.message || 'Workout logged! 💪');
+          this.isLoggingWorkout = false;
+          if (this.quickLogStatus) this.quickLogStatus.missedWorkout = false;
+          this.loadDashboard();
+        },
+        error: () => {
+          this.isLoggingWorkout = false;
+          this.toastr.error('Failed to log workout');
+        }
+      });
+  }
+
+  quickLogMeal() {
+    this.isLoggingMeal = true;
+    this.http.post(`${environment.apiUrl}/member/quick-log/meal`, {}, this.getHeaders())
+      .subscribe({
+        next: (res: any) => {
+          this.toastr.success('Meal logged! 🥗');
+          this.isLoggingMeal = false;
+          if (this.quickLogStatus) this.quickLogStatus.missedMeals = false;
+          this.loadDashboard();
+        },
+        error: () => {
+          this.isLoggingMeal = false;
+          this.toastr.error('Failed to log meal');
+        }
+      });
   }
 
   clampPercent(value?: number): number {
