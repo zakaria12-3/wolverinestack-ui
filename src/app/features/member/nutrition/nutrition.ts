@@ -33,6 +33,10 @@ export class NutritionTracking implements OnInit {
 
   mealEntry = this.defaultMealEntry();
 
+  // Inline editing
+  editingMealId: number | null = null;
+  editMealData = this.defaultMealEntry();
+
   mealTypes = [
     { value: 'BREAKFAST', label: 'Breakfast' },
     { value: 'LUNCH', label: 'Lunch' },
@@ -153,7 +157,42 @@ export class NutritionTracking implements OnInit {
     });
   }
 
+  // ======== Inline Edit ========
+
+  startEditMeal(meal: any) {
+    this.editingMealId = meal.id;
+    this.editMealData = {
+      mealType: meal.mealType || 'BREAKFAST',
+      foodName: meal.foodName || '',
+      calories: meal.calories || 0,
+      proteinGrams: meal.proteinGrams || 0,
+      carbsGrams: meal.carbsGrams || 0,
+      fatGrams: meal.fatGrams || 0
+    };
+  }
+
+  cancelEditMeal() {
+    this.editingMealId = null;
+    this.editMealData = this.defaultMealEntry();
+  }
+
+  saveEditMeal(id: number) {
+    if (!this.editMealData.foodName) {
+      this.toastr.error('Food name is required');
+      return;
+    }
+    this.nutritionService.updateMeal(id, this.editMealData).subscribe({
+      next: () => {
+        this.toastr.success('Meal updated');
+        this.editingMealId = null;
+        this.loadProgress();
+      },
+      error: (err) => this.toastr.error(err.error || 'Failed to update meal')
+    });
+  }
+
   deleteMeal(id: number) {
+    if (!confirm('Delete this meal entry?')) return;
     this.nutritionService.deleteMeal(id).subscribe({
       next: () => {
         this.toastr.info('Meal removed');
@@ -207,7 +246,6 @@ export class NutritionTracking implements OnInit {
     return {
       mealType: 'BREAKFAST',
       foodName: '',
-      portionGrams: 100,
       calories: 0,
       proteinGrams: 0,
       carbsGrams: 0,

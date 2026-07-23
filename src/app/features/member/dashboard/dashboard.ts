@@ -1,15 +1,17 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { MemberService, DashboardDto } from '../../../core/services/member.service';
+import { UserService } from '../../../core/services/user.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-member-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -22,8 +24,25 @@ export class MemberDashboard implements OnInit {
   isLoggingWorkout = false;
   isLoggingMeal = false;
 
+  // Goals editor
+  showGoalsEditor = false;
+  isSavingGoals = false;
+  goalsForm = {
+    fitnessGoal: '',
+    activityLevel: '',
+    dailyCalorieGoal: 0,
+    dailyProteinGoal: 0,
+    dailyCarbsGoal: 0,
+    dailyFatGoal: 0,
+    weightKg: 0,
+    heightCm: 0,
+  };
+  fitnessGoals = ['GENERAL_FITNESS', 'LOSE_WEIGHT', 'BUILD_MUSCLE', 'INCREASE_STRENGTH', 'IMPROVE_ENDURANCE', 'SPORTS_PERFORMANCE', 'FLEXIBILITY'];
+  activityLevels = ['SEDENTARY', 'LIGHTLY_ACTIVE', 'MODERATELY_ACTIVE', 'VERY_ACTIVE', 'EXTREMELY_ACTIVE'];
+
   constructor(
     private memberService: MemberService,
+    private userService: UserService,
     private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -46,6 +65,7 @@ export class MemberDashboard implements OnInit {
       next: (data) => {
         this.dashboard = data;
         this.isLoading = false;
+        this.populateGoalsForm(data);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -56,6 +76,61 @@ export class MemberDashboard implements OnInit {
       }
     });
   }
+
+  // ======== Goals Editor ========
+
+  toggleGoalsEditor() {
+    this.showGoalsEditor = !this.showGoalsEditor;
+    if (this.showGoalsEditor && this.dashboard) {
+      this.populateGoalsForm(this.dashboard);
+    }
+  }
+
+  private populateGoalsForm(data: DashboardDto) {
+    this.goalsForm = {
+      fitnessGoal: data.profile.fitnessGoal || 'GENERAL_FITNESS',
+      activityLevel: data.profile.activityLevel || 'MODERATELY_ACTIVE',
+      dailyCalorieGoal: data.profile.dailyCalorieGoal || 2000,
+      dailyProteinGoal: data.profile.dailyProteinGoal || 150,
+      dailyCarbsGoal: data.profile.dailyCarbsGoal || 250,
+      dailyFatGoal: data.profile.dailyFatGoal || 65,
+      weightKg: data.profile.weightKg || 70,
+      heightCm: data.profile.heightCm || 175,
+    };
+  }
+
+  saveGoals() {
+    this.isSavingGoals = true;
+    this.userService.updateProfile(this.goalsForm).subscribe({
+      next: () => {
+        this.toastr.success('Goals updated!');
+        this.showGoalsEditor = false;
+        this.isSavingGoals = false;
+        this.loadDashboard();
+      },
+      error: (err) => {
+        this.isSavingGoals = false;
+        this.toastr.error(err.error || 'Failed to update goals');
+      }
+    });
+  }
+
+  recalculateTdee() {
+    this.http.post(`${environment.apiUrl}/member/nutrition/tdee/apply`, {}, this.getHeaders())
+      .subscribe({
+        next: (result: any) => {
+          this.goalsForm.dailyCalorieGoal = result.recommendedCalories || this.goalsForm.dailyCalorieGoal;
+          this.goalsForm.dailyProteinGoal = result.recommendedProteinGrams || this.goalsForm.dailyProteinGoal;
+          this.goalsForm.dailyCarbsGoal = result.recommendedCarbsGrams || this.goalsForm.dailyCarbsGoal;
+          this.goalsForm.dailyFatGoal = result.recommendedFatGrams || this.goalsForm.dailyFatGoal;
+          this.toastr.success(`TDEE recalculated: ${result.recommendedCalories} kcal/day`);
+          this.cdr.detectChanges();
+        },
+        error: () => this.toastr.error('Could not recalculate TDEE — update weight, height, and DOB first')
+      });
+  }
+
+  // ======== Quick Log ========
 
   loadQuickLogStatus() {
     this.http.get(`${environment.apiUrl}/member/quick-log/status`, this.getHeaders())

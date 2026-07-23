@@ -149,17 +149,65 @@
           <h3 class="font-headline-md text-headline-md text-primary mb-4">{{ group.label }}</h3>
           <div class="space-y-2">
             <div *ngFor="let meal of group.items"
-                 class="bg-surface-container-high rounded-lg p-3 border border-white/5 flex justify-between items-center hover:border-white/10 transition-all group">
-              <div class="min-w-0">
-                <div class="font-body-md text-primary truncate">{{ meal.foodName }}</div>
-                <div class="font-label-caps text-[10px] text-on-surface-variant mt-0.5">
-                  {{ meal.calories }} kcal · P: {{ meal.proteinGrams }}g · C: {{ meal.carbsGrams }}g · F: {{ meal.fatGrams }}g
+                 class="bg-surface-container-high rounded-lg p-3 border border-white/5 hover:border-white/10 transition-all">
+              <!-- Inline Edit Form -->
+              <div *ngIf="editingMealId === meal.id" class="space-y-3">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div class="col-span-2 md:col-span-3">
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Food</label>
+                    <input class="input-titan w-full text-sm" [(ngModel)]="editMealData.foodName" placeholder="Food name">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Kcal</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="editMealData.calories" min="0">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Protein</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="editMealData.proteinGrams" min="0" step="0.1">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Carbs</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="editMealData.carbsGrams" min="0" step="0.1">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Fat</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="editMealData.fatGrams" min="0" step="0.1">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[8px] text-on-surface-variant block mb-0.5 uppercase">Type</label>
+                    <select class="input-titan w-full text-sm" [(ngModel)]="editMealData.mealType">
+                      <option *ngFor="let t of mealTypes" [value]="t.value">{{ t.label }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn-primary text-[10px] flex-1 flex items-center justify-center gap-1" (click)="saveEditMeal(meal.id)">
+                    <span class="material-symbols-outlined text-sm">save</span> Save
+                  </button>
+                  <button class="btn-outline text-[10px] flex items-center justify-center gap-1" (click)="cancelEditMeal()">
+                    <span class="material-symbols-outlined text-sm">close</span> Cancel
+                  </button>
                 </div>
               </div>
-              <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error hover:bg-error/10 transition-all text-sm opacity-0 group-hover:opacity-100"
-                      (click)="deleteMeal(meal.id)">
-                <span class="material-symbols-outlined text-sm">delete</span>
-              </button>
+              <!-- Display View -->
+              <div *ngIf="editingMealId !== meal.id" class="flex justify-between items-center group">
+                <div class="min-w-0">
+                  <div class="font-body-md text-primary truncate">{{ meal.foodName }}</div>
+                  <div class="font-label-caps text-[10px] text-on-surface-variant mt-0.5">
+                    {{ meal.calories }} kcal · P: {{ meal.proteinGrams }}g · C: {{ meal.carbsGrams }}g · F: {{ meal.fatGrams }}g
+                  </div>
+                </div>
+                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                  <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary hover:bg-primary-container/20 transition-all text-sm"
+                          (click)="startEditMeal(meal)">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error hover:bg-error/10 transition-all text-sm"
+                          (click)="deleteMeal(meal.id)">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

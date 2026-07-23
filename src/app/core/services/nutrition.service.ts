@@ -85,6 +85,10 @@ export class NutritionService {
     return this.http.post(`${this.API}/member/meals`, entry, { headers: this.getHeaders() });
   }
 
+  updateMeal(id: number, entry: MealEntryDto): Observable<any> {
+    return this.http.put(`${this.API}/member/meals/${id}`, entry, { headers: this.getHeaders() });
+  }
+
   getTodayMeals(): Observable<MealEntryDto[]> {
     return this.http.get<MealEntryDto[]>(`${this.API}/member/meals/today`, { headers: this.getHeaders() });
   }

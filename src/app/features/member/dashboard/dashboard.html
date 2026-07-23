@@ -1,4 +1,5 @@
 <div class="member-dashboard min-h-screen">
+  <!-- Header -->
   <div *ngIf="isLoading" class="flex min-h-[60vh] items-center justify-center">
     <div class="glass-panel rounded-lg px-8 py-7 text-center">
       <span class="material-symbols-outlined mb-3 block text-5xl text-primary-container animate-pulse">fitness_center</span>
@@ -16,7 +17,7 @@
   </div>
 
   <div *ngIf="dashboard && !isLoading" class="space-y-6">
-    <!-- Quick Log Banner (catch up on yesterday) -->
+    <!-- Quick Log Banner -->
     <div *ngIf="quickLogStatus && (quickLogStatus.missedWorkout || quickLogStatus.missedMeals)"
          class="bg-surface-container-low border border-primary-container/30 rounded-xl p-md card-hover">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -24,24 +25,20 @@
           <span class="material-symbols-outlined text-3xl text-primary-container">history</span>
           <div>
             <h3 class="font-headline-md text-headline-md text-primary">Missed Yesterday?</h3>
-            <p class="font-body-md text-sm text-on-surface-variant">
-              Catch up with one tap — no details needed.
-            </p>
+            <p class="font-body-md text-sm text-on-surface-variant">Catch up with one tap.</p>
           </div>
         </div>
         <div class="flex gap-2 flex-wrap">
           <button *ngIf="quickLogStatus.missedWorkout"
                   class="btn-primary text-xs flex items-center justify-center gap-1"
-                  (click)="quickLogWorkout()"
-                  [disabled]="isLoggingWorkout">
+                  (click)="quickLogWorkout()" [disabled]="isLoggingWorkout">
             <span *ngIf="!isLoggingWorkout" class="material-symbols-outlined text-sm">fitness_center</span>
             <span *ngIf="isLoggingWorkout" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
             {{ isLoggingWorkout ? 'Logging...' : 'Log Workout' }}
           </button>
           <button *ngIf="quickLogStatus.missedMeals"
                   class="btn-outline text-xs flex items-center justify-center gap-1"
-                  (click)="quickLogMeal()"
-                  [disabled]="isLoggingMeal">
+                  (click)="quickLogMeal()" [disabled]="isLoggingMeal">
             <span *ngIf="!isLoggingMeal" class="material-symbols-outlined text-sm">restaurant</span>
             <span *ngIf="isLoggingMeal" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
             {{ isLoggingMeal ? 'Logging...' : 'Log Meal' }}
@@ -58,38 +55,19 @@
       <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div class="min-w-0">
           <span class="font-label-caps text-secondary-fixed-dim block mb-3">ELITE PERFORMANCE DASHBOARD</span>
-          <h1 class="font-headline-lg text-primary leading-tight">
-            Welcome, <span class="text-primary-container">{{ dashboard.profile.username }}</span>
-          </h1>
+          <h1 class="font-headline-lg text-primary leading-tight">Welcome, <span class="text-primary-container">{{ dashboard.profile.username }}</span></h1>
           <div class="mt-4 flex flex-wrap gap-2">
-            <span class="status-pill">
-              <span class="material-symbols-outlined text-sm">flag</span>
-              {{ formatLabel(dashboard.profile.fitnessGoal) }}
-            </span>
-            <span class="status-pill">
-              <span class="material-symbols-outlined text-sm">bolt</span>
-              {{ formatLabel(dashboard.profile.activityLevel) }}
-            </span>
+            <span class="status-pill"><span class="material-symbols-outlined text-sm">flag</span>{{ formatLabel(dashboard.profile.fitnessGoal) }}</span>
+            <span class="status-pill"><span class="material-symbols-outlined text-sm">bolt</span>{{ formatLabel(dashboard.profile.activityLevel) }}</span>
             <span class="status-pill" [class.status-pill-active]="dashboard.profile.onboardingComplete">
-              <span class="material-symbols-outlined text-sm">verified</span>
-              {{ dashboard.profile.onboardingComplete ? 'Profile Ready' : 'Onboarding Needed' }}
+              <span class="material-symbols-outlined text-sm">verified</span>{{ dashboard.profile.onboardingComplete ? 'Profile Ready' : 'Onboarding Needed' }}
             </span>
           </div>
         </div>
-
         <div class="grid grid-cols-3 gap-3 xl:min-w-[420px]">
-          <div class="hero-stat">
-            <span>{{ dashboard.workout.sessionsThisWeek }}</span>
-            <small>Sessions</small>
-          </div>
-          <div class="hero-stat">
-            <span>{{ getWeeklyMinutesLabel() }}</span>
-            <small>This Week</small>
-          </div>
-          <div class="hero-stat">
-            <span>{{ dashboard.nutrition.mealCount }}</span>
-            <small>Meals Today</small>
-          </div>
+          <div class="hero-stat"><span>{{ dashboard.workout.sessionsThisWeek }}</span><small>Sessions</small></div>
+          <div class="hero-stat"><span>{{ getWeeklyMinutesLabel() }}</span><small>This Week</small></div>
+          <div class="hero-stat"><span>{{ dashboard.nutrition.mealCount }}</span><small>Meals Today</small></div>
         </div>
       </div>
     </section>
@@ -106,17 +84,10 @@
               </div>
             </div>
             <div class="mt-5 grid w-full grid-cols-2 gap-3">
-              <div class="mini-stat">
-                <span>{{ dashboard.nutrition.caloriesRemaining > 0 ? dashboard.nutrition.caloriesRemaining : 0 }}</span>
-                <small>kcal left</small>
-              </div>
-              <div class="mini-stat">
-                <span>{{ clampPercent(dashboard.nutrition.caloriePercent) }}%</span>
-                <small>complete</small>
-              </div>
+              <div class="mini-stat"><span>{{ dashboard.nutrition.caloriesRemaining > 0 ? dashboard.nutrition.caloriesRemaining : 0 }}</span><small>kcal left</small></div>
+              <div class="mini-stat"><span>{{ clampPercent(dashboard.nutrition.caloriePercent) }}%</span><small>complete</small></div>
             </div>
           </article>
-
           <article class="card-elevated">
             <div class="section-heading">
               <div>
@@ -124,11 +95,9 @@
                 <h2 class="font-headline-md text-primary">Macro Progress</h2>
               </div>
               <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/nutrition">
-                <span class="material-symbols-outlined text-sm">add</span>
-                Log Meal
+                <span class="material-symbols-outlined text-sm">add</span> Log Meal
               </button>
             </div>
-
             <div class="mt-6 space-y-5">
               <div class="macro-row">
                 <div class="macro-label"><span class="dot dot-gold"></span>Protein</div>
@@ -156,35 +125,19 @@
               <h2 class="font-headline-md text-primary">Training Overview</h2>
             </div>
             <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/workouts">
-              <span class="material-symbols-outlined text-sm">arrow_forward</span>
-              View Workouts
+              <span class="material-symbols-outlined text-sm">arrow_forward</span> View Workouts
             </button>
           </div>
-
           <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-4">
-            <div class="info-tile">
-              <span>{{ dashboard.workout.totalSessions }}</span>
-              <small>Total sessions</small>
-            </div>
-            <div class="info-tile">
-              <span>{{ dashboard.workout.sessionsThisWeek }}</span>
-              <small>This week</small>
-            </div>
-            <div class="info-tile">
-              <span>{{ dashboard.workout.totalMinutesThisWeek }}</span>
-              <small>Minutes</small>
-            </div>
-            <div class="info-tile">
-              <span>{{ dashboard.workout.totalCaloriesBurnedThisWeek }}</span>
-              <small>Kcal burned</small>
-            </div>
+            <div class="info-tile"><span>{{ dashboard.workout.totalSessions }}</span><small>Total sessions</small></div>
+            <div class="info-tile"><span>{{ dashboard.workout.sessionsThisWeek }}</span><small>This week</small></div>
+            <div class="info-tile"><span>{{ dashboard.workout.totalMinutesThisWeek }}</span><small>Minutes</small></div>
+            <div class="info-tile"><span>{{ dashboard.workout.totalCaloriesBurnedThisWeek }}</span><small>Kcal burned</small></div>
           </div>
-
           <div *ngIf="dashboard.workout.currentPlanName" class="mt-5 rounded-lg border border-primary-container/20 bg-primary-container/10 p-4">
             <div class="font-label-caps text-primary-container mb-1">CURRENT PLAN</div>
             <div class="font-body-md text-primary">{{ dashboard.workout.currentPlanName }}</div>
           </div>
-
           <div *ngIf="dashboard.workout.recentSessions.length" class="mt-5 space-y-3">
             <div class="font-label-caps text-on-surface-variant">RECENT SESSIONS</div>
             <div *ngFor="let session of dashboard.workout.recentSessions.slice(0, 3)" class="session-row">
@@ -198,11 +151,10 @@
               <span class="font-label-caps text-primary-fixed-dim">{{ session.caloriesBurned || 0 }} kcal</span>
             </div>
           </div>
-
-                  <div *ngIf="!dashboard.workout.recentSessions.length" class="empty-state-wolverine">
+          <div *ngIf="!dashboard.workout.recentSessions.length" class="empty-state-wolverine">
             <span class="material-symbols-outlined">fitness_center</span>
             <h3>No workouts yet</h3>
-            <p>Start your first session to begin tracking progress.</p>
+            <p>Start your first session.</p>
             <button class="btn-primary text-xs flex items-center justify-center gap-1 mt-4" routerLink="/member/workouts">
               <span class="material-symbols-outlined text-sm">play_arrow</span> Start First Session
             </button>
@@ -215,22 +167,83 @@
           <div class="avatar-badge">{{ getInitials(dashboard.profile.username) }}</div>
           <h2 class="font-headline-md text-primary mt-4">{{ dashboard.profile.username }}</h2>
           <p class="font-label-caps text-on-surface-variant mt-1">{{ dashboard.profile.email }}</p>
-
           <div class="mt-5 grid grid-cols-3 gap-3">
             <div class="profile-stat"><span>{{ dashboard.profile.weightKg || '--' }}</span><small>KG</small></div>
             <div class="profile-stat"><span>{{ dashboard.profile.heightCm || '--' }}</span><small>CM</small></div>
             <div class="profile-stat"><span>{{ getBmi() }}</span><small>BMI</small></div>
           </div>
+          <div class="mt-5 flex flex-col gap-2">
+            <button class="btn-primary text-xs flex items-center justify-center gap-1" (click)="toggleGoalsEditor()">
+              <span class="material-symbols-outlined text-sm">{{ showGoalsEditor ? 'expand_less' : 'edit' }}</span>
+              {{ showGoalsEditor ? 'Hide Goals Editor' : 'Edit Goals' }}
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+              <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/profile">
+                <span class="material-symbols-outlined text-sm">person</span> Profile
+              </button>
+              <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/feed">
+                <span class="material-symbols-outlined text-sm">forum</span> Feed
+              </button>
+            </div>
+          </div>
 
-          <div class="mt-5 grid grid-cols-2 gap-3">
-            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/profile">
-              <span class="material-symbols-outlined text-sm">person</span>
-              Profile
-            </button>
-            <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/feed">
-              <span class="material-symbols-outlined text-sm">forum</span>
-              Feed
-            </button>
+          <!-- Goals Editor (collapsible) -->
+          <div *ngIf="showGoalsEditor" class="mt-6 border-t border-white/5 pt-5 text-left">
+            <h3 class="font-headline-md text-headline-md text-primary mb-4 text-center uppercase">Edit Your Goals</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Fitness Goal</label>
+                <select class="input-titan w-full text-sm" [(ngModel)]="goalsForm.fitnessGoal">
+                  <option *ngFor="let g of fitnessGoals" [value]="g">{{ formatLabel(g) }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Activity Level</label>
+                <select class="input-titan w-full text-sm" [(ngModel)]="goalsForm.activityLevel">
+                  <option *ngFor="let a of activityLevels" [value]="a">{{ formatLabel(a) }}</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Weight (kg)</label>
+                  <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.weightKg" min="30" max="300" step="0.1">
+                </div>
+                <div>
+                  <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Height (cm)</label>
+                  <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.heightCm" min="100" max="250">
+                </div>
+              </div>
+              <div class="pt-2 border-t border-white/5">
+                <h4 class="font-label-caps text-[9px] text-primary-container uppercase mb-3">Daily Macro Targets</h4>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5 uppercase">Calories</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.dailyCalorieGoal" min="0">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5 uppercase">Protein (g)</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.dailyProteinGoal" min="0">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5 uppercase">Carbs (g)</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.dailyCarbsGoal" min="0">
+                  </div>
+                  <div>
+                    <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5 uppercase">Fat (g)</label>
+                    <input type="number" class="input-titan w-full text-sm" [(ngModel)]="goalsForm.dailyFatGoal" min="0">
+                  </div>
+                </div>
+              </div>
+              <button class="btn-outline w-full text-[10px] flex items-center justify-center gap-1 mt-1" (click)="recalculateTdee()">
+                <span class="material-symbols-outlined text-sm">calculate</span>
+                Auto-Calculate from TDEE
+              </button>
+              <button class="btn-primary w-full text-xs flex items-center justify-center gap-1" (click)="saveGoals()" [disabled]="isSavingGoals">
+                <span *ngIf="!isSavingGoals" class="material-symbols-outlined text-sm">save</span>
+                <span *ngIf="isSavingGoals" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                {{ isSavingGoals ? 'Saving...' : 'Save Goals' }}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -244,14 +257,12 @@
               <span class="material-symbols-outlined text-sm">edit</span>
             </button>
           </div>
-
           <div *ngIf="dashboard.measurement.hasData" class="mt-4 space-y-3">
             <div class="detail-row"><span>Latest</span><strong>{{ formatDate(dashboard.measurement.latestDate) }}</strong></div>
             <div class="detail-row"><span>Weight</span><strong>{{ dashboard.measurement.weightKg || dashboard.profile.weightKg || '--' }} kg</strong></div>
             <div class="detail-row"><span>Body fat</span><strong>{{ dashboard.measurement.bodyFatPercent || '--' }}%</strong></div>
             <div class="detail-row"><span>Waist</span><strong>{{ dashboard.measurement.waistCm || '--' }} cm</strong></div>
           </div>
-
           <div *ngIf="!dashboard.measurement.hasData" class="empty-state-wolverine" style="padding: 1.5rem 1rem;">
             <span class="material-symbols-outlined" style="font-size: 2rem;">monitor_weight</span>
             <h3 style="font-size: 0.9rem;">No measurements yet</h3>
