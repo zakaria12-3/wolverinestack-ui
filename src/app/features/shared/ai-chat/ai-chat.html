@@ -44,6 +44,51 @@
       </div>
     </div>
 
+    <!-- Tag Filter Chips -->
+    <div class="px-3 py-2 border-b border-white/5 flex gap-1.5 flex-wrap">
+      <button
+        class="tag-chip"
+        [class.tag-chip-active]="activeTag === null && !searchQuery"
+        (click)="setTagFilter(null)"
+      >
+        <span class="material-symbols-outlined text-sm">chat</span>
+        All
+      </button>
+      <button
+        class="tag-chip tag-chip-pr"
+        [class.tag-chip-active]="activeTag === 'pr'"
+        (click)="setTagFilter('pr')"
+      >
+        <span class="material-symbols-outlined text-sm">military_tech</span>
+        PR
+        @if (tagCount('pr') > 0) {
+          <span class="tag-chip-badge pr">({{ tagCount('pr') }})</span>
+        }
+      </button>
+      <button
+        class="tag-chip tag-chip-stall"
+        [class.tag-chip-active]="activeTag === 'stall'"
+        (click)="setTagFilter('stall')"
+      >
+        <span class="material-symbols-outlined text-sm">trending_flat</span>
+        Stall
+        @if (tagCount('stall') > 0) {
+          <span class="tag-chip-badge stall">({{ tagCount('stall') }})</span>
+        }
+      </button>
+      <button
+        class="tag-chip tag-chip-nutrition"
+        [class.tag-chip-active]="activeTag === 'nutrition'"
+        (click)="setTagFilter('nutrition')"
+      >
+        <span class="material-symbols-outlined text-sm">restaurant</span>
+        Nutrition
+        @if (tagCount('nutrition') > 0) {
+          <span class="tag-chip-badge nutrition">({{ tagCount('nutrition') }})</span>
+        }
+      </button>
+    </div>
+
     <!-- Conversation List -->
     <div class="flex-1 overflow-y-auto custom-scrollbar px-2 py-2 space-y-1">
       @if (searchQuery && filteredConversations.length === 0) {
@@ -51,10 +96,7 @@
         <div class="text-center py-8 px-3">
           <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">search_off</span>
           <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No matching conversations</p>
-          <button
-            class="mt-2 text-[10px] text-primary-container hover:underline font-label-caps"
-            (click)="clearSearch()"
-          >
+          <button class="mt-2 text-[10px] text-primary-container hover:underline font-label-caps" (click)="clearSearch()">
             Clear search
           </button>
         </div>
@@ -63,6 +105,15 @@
         <div class="text-center py-8 px-3">
           <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">chat_history</span>
           <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No saved conversations yet</p>
+        </div>
+      } @else if (filteredConversations.length === 0) {
+        <!-- No results for active tag filter -->
+        <div class="text-center py-8 px-3">
+          <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">filter_alt_off</span>
+          <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No conversations with this tag</p>
+          <button class="mt-2 text-[10px] text-primary-container hover:underline font-label-caps" (click)="setTagFilter(null)">
+            Show all
+          </button>
         </div>
       }
 
@@ -93,7 +144,25 @@
             >
               <span class="material-symbols-outlined text-sm shrink-0">chat</span>
               <div class="min-w-0 flex-1">
-                <p class="text-xs text-primary truncate">{{ conv.title }}</p>
+                <div class="flex items-center gap-1.5">
+                  <p class="text-xs text-primary truncate">{{ conv.title }}</p>
+                  <!-- Tag badges -->
+                  @if (conv.tags?.includes('pr')) {
+                    <span class="tag-badge tag-badge-pr" title="Contains PR discussion">
+                      <span class="material-symbols-outlined text-[10px]">military_tech</span>
+                    </span>
+                  }
+                  @if (conv.tags?.includes('stall')) {
+                    <span class="tag-badge tag-badge-stall" title="Contains stall discussion">
+                      <span class="material-symbols-outlined text-[10px]">trending_flat</span>
+                    </span>
+                  }
+                  @if (conv.tags?.includes('nutrition')) {
+                    <span class="tag-badge tag-badge-nutrition" title="Contains nutrition discussion">
+                      <span class="material-symbols-outlined text-[10px]">restaurant</span>
+                    </span>
+                  }
+                </div>
                 <p class="text-[9px] text-on-surface-variant/50 font-label-caps">
                   {{ conv.messageCount }} msg · {{ formatSidebarDate(conv.updatedAt) }}
                 </p>
@@ -144,6 +213,8 @@
     <div class="px-3 py-2 border-t border-white/5 text-[9px] text-on-surface-variant/40 font-label-caps text-center">
       @if (searchQuery) {
         {{ filteredConversations.length }} of {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
+      } @else if (activeTag) {
+        {{ filteredConversations.length }} {{ activeTag }} conversation{{ filteredConversations.length !== 1 ? 's' : '' }}
       } @else {
         {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
       }

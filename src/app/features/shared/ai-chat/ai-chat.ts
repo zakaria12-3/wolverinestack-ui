@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, ChangeDetectorRef, AfterViewInit, OnI
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgClass } from '@angular/common';
 import { AiChatService, ChatMessage } from '../../../core/services/ai-chat.service';
-import { ChatHistoryService, SavedConversation } from '../../../core/services/chat-history.service';
+import { ChatHistoryService, SavedConversation, ConversationTag } from '../../../core/services/chat-history.service';
 
 @Component({
   selector: 'app-ai-chat',
@@ -22,11 +22,16 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
   conversations: SavedConversation[] = [];
   filteredConversations: SavedConversation[] = [];
   searchQuery = '';
+  activeTag: ConversationTag | null = null;
   currentConversationId = ChatHistoryService.generateId();
   showHistory = false;
   editingTitleId: string | null = null;
   editingTitleValue = '';
   deleteConfirmId: string | null = null;
+
+  // Helpers exposed to template
+  readonly tagLabel = ChatHistoryService.tagLabel;
+  readonly tagIcon = ChatHistoryService.tagIcon;
 
   // Suggested quick prompts
   suggestions = [
@@ -45,12 +50,22 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.loadConversationList();
 
-    // Check if user navigated here with a conversation id in URL hash
-    const hashConvId = window.location.hash.replace('#conv-', '');
-    if (hashConvId) {
-      this.loadConversation(hashConvId);
-    } else {
-      // Add initial welcome message
+    // Parse URL hash — supports #conv-{id} and #tag-{tag}
+    const hash = window.location.hash;
+
+    const convMatch = hash.match(/#conv-(.+)/);
+    const tagMatch = hash.match(/#tag-(pr|stall|nutrition)/);
+
+    if (tagMatch) {
+      this.activeTag = tagMatch[1] as ConversationTag;
+    }
+
+    if (convMatch) {
+      this.loadConversation(convMatch[1]);
+    }
+
+    // If neither matched, show welcome
+    if (!tagMatch && !convMatch) {
       this.messages.push({
         role: 'assistant',
         content: 'Hey, I\u2019m your Wolverine Stack AI coach. Ask me anything about fitness, nutrition, workouts, or goals. I\u2019m here to help!',
@@ -75,11 +90,15 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
     if (this.showHistory) {
       this.loadConversationList();
     } else {
-      // Reset transient UI state when closing sidebar
-      this.deleteConfirmId = null;
-      this.editingTitleId = null;
-      this.clearSearch();
+      this.resetTransientState();
     }
+  }
+
+  private resetTransientState(): void {
+    this.deleteConfirmId = null;
+    this.editingTitleId = null;
+    this.clearSearch();
+    this.activeTag = null;
   }
 
   private loadConversationList(): void {
@@ -87,19 +106,27 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
     this.applyFilter();
   }
 
-  /** Filter conversations by search query (matches title + message content). */
+  /** Filter conversations by search query and/or active tag. */
   applyFilter(): void {
-    const q = this.searchQuery.toLowerCase().trim();
-    if (!q) {
-      this.filteredConversations = this.conversations;
-      return;
+    let list = this.conversations;
+
+    // Filter by tag
+    if (this.activeTag) {
+      list = list.filter((conv) => conv.tags?.includes(this.activeTag!));
     }
-    this.filteredConversations = this.conversations.filter((conv) => {
-      if (conv.title.toLowerCase().includes(q)) return true;
-      return conv.messages.some((m) =>
-        m.content.toLowerCase().includes(q)
-      );
-    });
+
+    // Filter by search query
+    const q = this.searchQuery.toLowerCase().trim();
+    if (q) {
+      list = list.filter((conv) => {
+        if (conv.title.toLowerCase().includes(q)) return true;
+        return conv.messages.some((m) =>
+          m.content.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    this.filteredConversations = list;
   }
 
   clearSearch(): void {
@@ -107,9 +134,20 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
     this.applyFilter();
   }
 
+  /** Set tag filter and re-apply. */
+  setTagFilter(tag: ConversationTag | null): void {
+    this.activeTag = tag;
+    this.applyFilter();
+  }
+
+  /** Get count of conversations with a given tag. */
+  tagCount(tag: ConversationTag): number {
+    return this.conversations.filter((c) => c.tags?.includes(tag)).length;
+  }
+
   /** Start a brand-new conversation. */
   newConversation(): void {
-    this.autoSaveCurrent(); // save whatever we had
+    this.autoSaveCurrent();
     this.currentConversationId = ChatHistoryService.generateId();
     this.messages = [
       {
@@ -126,7 +164,7 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
   loadConversation(id: string): void {
     const saved = this.chatHistory.getById(id);
     if (!saved) return;
-    this.autoSaveCurrent(); // save current before switching
+    this.autoSaveCurrent();
     this.currentConversationId = id;
     this.messages = saved.messages.map((m) => ({
       role: m.role as 'user' | 'assistant',
@@ -143,7 +181,6 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
     this.loadConversationList();
     this.deleteConfirmId = null;
 
-    // If we just deleted the active conversation, start a new one
     if (this.currentConversationId === id) {
       this.newConversation();
     }
@@ -174,10 +211,11 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
     this.editingTitleValue = '';
   }
 
-  /** Auto-save the current messages to localStorage. */
+  /** Auto-save the current messages to localStorage, detecting tags. */
   private autoSaveCurrent(): void {
-    if (this.messages.length <= 1) return; // don't save empty or welcome-only chats
+    if (this.messages.length <= 1) return;
     try {
+      const tags = ChatHistoryService.detectTags(this.messages);
       this.chatHistory.save({
         id: this.currentConversationId,
         title: ChatHistoryService.deriveTitle(this.messages),
@@ -185,6 +223,7 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         messageCount: this.messages.filter((m) => m.role === 'user').length,
+        tags: tags.length > 0 ? tags : undefined,
       });
     } catch (_) {
       // localStorage may be full or unavailable — silently ignore
@@ -237,7 +276,7 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
           timestamp: new Date(),
         });
         this.isLoading = false;
-        // Auto-save after each AI reply
+        // Auto-save after each AI reply (tags are auto-detected)
         this.autoSaveCurrent();
         this.scrollToBottom();
       },

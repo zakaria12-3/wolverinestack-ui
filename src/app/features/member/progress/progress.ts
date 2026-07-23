@@ -74,11 +74,16 @@ interface ChartPoint {
             <h2 class="font-headline-md text-headline-md text-primary uppercase flex items-center gap-2">
               <span class="material-symbols-outlined text-warning">warning</span> Stalled Lifts
             </h2>
-            <p class="font-body-md text-sm text-on-surface-variant mt-1">Exercises where you haven\'t improved your best set in 30+ days — with AI suggestions to break through</p>
+            <p class="font-body-md text-sm text-on-surface-variant mt-1">Exercises where you haven't improved your best set in 30+ days — with AI suggestions to break through</p>
           </div>
-          <button class="btn-outline text-[9px]" (click)="loadStalledLifts()" [disabled]="isLoadingStalled">
-            <span class="material-symbols-outlined text-sm">refresh</span>
-          </button>
+          <div class="flex gap-2 items-center">
+            <a routerLink="/ai-chat#tag-stall" class="btn-outline text-[9px]">
+              <span class="material-symbols-outlined text-sm">auto_awesome</span> AI Coach
+            </a>
+            <button class="btn-outline text-[9px]" (click)="loadStalledLifts()" [disabled]="isLoadingStalled">
+              <span class="material-symbols-outlined text-sm">refresh</span>
+            </button>
+          </div>
         </div>
 
         <div *ngIf="isLoadingStalled" class="flex items-center justify-center py-12">
@@ -88,7 +93,7 @@ interface ChartPoint {
         <div *ngIf="!isLoadingStalled && stalledItems.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-12 card-hover card-enter">
           <span class="material-symbols-outlined text-4xl text-primary-container mb-3 block">check_circle</span>
           <h3 class="font-headline-md text-headline-md text-primary mb-1">No Stalled Lifts</h3>
-          <p class="font-body-md text-on-surface-variant text-sm">You\'ve improved all your lifts within the last 30 days. Keep pushing!</p>
+          <p class="font-body-md text-on-surface-variant text-sm">You've improved all your lifts within the last 30 days. Keep pushing!</p>
         </div>
 
         <div *ngIf="!isLoadingStalled" class="space-y-4">
@@ -120,17 +125,23 @@ interface ChartPoint {
               <div class="grid grid-cols-3 gap-3 mb-4">
                 <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
                   <div class="font-label-caps text-[7px] text-on-surface-variant uppercase">Best Set</div>
-                  <div class="font-headline-md text-[14px] text-primary mt-1">{{ item.bestWeightKg }}\u00d7{{ item.bestReps }}</div>
+                  <div class="font-headline-md text-[14px] text-primary mt-1">{{ item.bestWeightKg }}×{{ item.bestReps }}</div>
                 </div>
                 <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
                   <div class="font-label-caps text-[7px] text-on-surface-variant uppercase">Stalled Since</div>
-                  <div class="font-headline-md text-[14px] text-primary mt-1">{{ item.bestAchievedDate ? (item.bestAchievedDate | date:\'MMM d\') : '\u2014' }}</div>
+                  <div class="font-headline-md text-[14px] text-primary mt-1">{{ item.bestAchievedDate ? (item.bestAchievedDate | date:'MMM d') : '—' }}</div>
                 </div>
                 <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
                   <div class="font-label-caps text-[7px] text-on-surface-variant uppercase">Sessions</div>
                   <div class="font-headline-md text-[14px] text-primary mt-1">{{ item.totalSessionsLogged }}</div>
                 </div>
               </div>
+
+              <!-- Link to AI Coach for related stall conversations -->
+              <a routerLink="/ai-chat#tag-stall" class="inline-flex items-center gap-1.5 text-[9px] text-primary-container hover:underline font-label-caps mb-3 uppercase tracking-wider">
+                <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                View related AI coaching conversations
+              </a>
 
               <!-- AI Suggestion Card -->
               <div *ngIf="item.aiSuggestion" class="bg-primary-container/5 border border-primary-container/20 rounded-lg p-3 relative overflow-hidden">
@@ -196,7 +207,7 @@ interface ChartPoint {
           <!-- Footer -->
           <div class="flex justify-between items-center mt-3 pt-2 border-t border-white/5">
             <span class="font-label-caps text-[7px] text-on-surface-variant">{{ item.totalSessionsLogged }} sessions</span>
-            <span class="font-label-caps text-[7px] text-primary-container">{{ item.achievedDate ? (item.achievedDate | date:'MMM d, yyyy') : '\u2014' }}</span>
+            <span class="font-label-caps text-[7px] text-primary-container">{{ item.achievedDate ? (item.achievedDate | date:'MMM d, yyyy') : '—' }}</span>
           </div>
         </div>
       </div>
@@ -218,7 +229,7 @@ interface ChartPoint {
             <div class="font-label-caps text-[7px] text-on-surface-variant">1RM</div>
           </div>
           <div class="text-right flex-shrink-0 min-w-[60px]">
-            <div class="font-headline-md text-[14px] text-primary">{{ item.bestWeightKg }}\u00d7{{ item.bestReps }}</div>
+            <div class="font-headline-md text-[14px] text-primary">{{ item.bestWeightKg }}×{{ item.bestReps }}</div>
             <div class="font-label-caps text-[7px] text-primary-container">BEST SET</div>
           </div>
           <span class="material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
@@ -261,7 +272,7 @@ interface ChartPoint {
         <div class="grid grid-cols-3 gap-3 mb-6">
           <div class="bg-surface-container-highest/50 rounded-lg p-3 text-center">
             <div class="font-label-caps text-[7px] text-on-surface-variant uppercase">Best Set</div>
-            <div class="font-data-metric text-[22px] text-primary mt-1">{{ selectedExercise.bestWeightKg }} \u00d7 {{ selectedExercise.bestReps }}</div>
+            <div class="font-data-metric text-[22px] text-primary mt-1">{{ selectedExercise.bestWeightKg }} × {{ selectedExercise.bestReps }}</div>
           </div>
           <div class="bg-primary-container/10 border border-primary-container/20 rounded-lg p-3 text-center">
             <div class="font-label-caps text-[7px] text-primary-container uppercase">Est. 1RM</div>
@@ -269,7 +280,7 @@ interface ChartPoint {
           </div>
           <div class="bg-surface-container-highest/50 rounded-lg p-3 text-center">
             <div class="font-label-caps text-[7px] text-on-surface-variant uppercase">Achieved</div>
-            <div class="font-headline-md text-[13px] text-primary mt-1">{{ selectedExercise.achievedDate ? (selectedExercise.achievedDate | date:'MMM d') : '\u2014' }}</div>
+            <div class="font-headline-md text-[13px] text-primary mt-1">{{ selectedExercise.achievedDate ? (selectedExercise.achievedDate | date:'MMM d') : '—' }}</div>
           </div>
         </div>
 

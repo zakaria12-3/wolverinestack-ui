@@ -87,6 +87,85 @@
   font-size: 11px;
 }
 
+/* ─── Tag Filter Chips ─── */
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(197, 201, 172, 0.7);
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.tag-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5e2e1;
+}
+
+.tag-chip-active {
+  background: rgba(255, 184, 0, 0.12) !important;
+  border-color: rgba(255, 184, 0, 0.3) !important;
+  color: #FFB800 !important;
+}
+
+.tag-chip .material-symbols-outlined {
+  font-size: 12px;
+}
+
+.tag-chip-badge {
+  font-size: 9px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tag-chip-badge.pr { color: #FFB800; }
+.tag-chip-badge.stall { color: #ff8a65; }
+.tag-chip-badge.nutrition { color: #66bb6a; }
+
+/* ─── Tag Badges (on each conversation row) ─── */
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.tag-badge:hover {
+  transform: scale(1.2);
+}
+
+.tag-badge-pr {
+  background: rgba(255, 184, 0, 0.15);
+  color: #FFB800;
+  border: 1px solid rgba(255, 184, 0, 0.25);
+}
+
+.tag-badge-stall {
+  background: rgba(255, 138, 101, 0.15);
+  color: #ff8a65;
+  border: 1px solid rgba(255, 138, 101, 0.25);
+}
+
+.tag-badge-nutrition {
+  background: rgba(102, 187, 106, 0.15);
+  color: #66bb6a;
+  border: 1px solid rgba(102, 187, 106, 0.25);
+}
+
 /* Individual conversation row */
 .history-item {
   display: flex;
