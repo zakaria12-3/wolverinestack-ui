@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -7,7 +8,7 @@ import { environment } from '../../../environments/environment';
 import { VerificationMailService } from '../../core/services/verification-mail.service';
 @Component({
   selector: 'app-signup',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NgIf],
   templateUrl: './signup.html',
   styleUrls: ['./signup.css'],
   standalone: true

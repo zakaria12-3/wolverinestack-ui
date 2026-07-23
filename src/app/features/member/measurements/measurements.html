@@ -16,7 +16,7 @@
   </div>
 
   <!-- Log Form -->
-  <div *ngIf="showForm" class="bg-surface-container-low border border-white/5 rounded-xl p-md mb-md card-hover">
+  <div *ngIf="showForm" class="card-elevated">
     <div class="flex items-center gap-2 mb-4">
       <span class="material-symbols-outlined text-primary-container">monitor_weight</span>
       <h3 class="font-headline-md text-headline-md text-primary uppercase">Log Measurements</h3>
@@ -62,44 +62,45 @@
   </div>
 
   <!-- Summary Cards -->
-  <div *ngIf="summary?.hasData" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-md">
-    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center card-hover">
-      <span class="material-symbols-outlined text-primary-container block mb-2">monitor_weight</span>
-      <div class="font-data-metric text-primary">{{ summary.weightKg }}</div>
-      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">LATEST WEIGHT</div>
-      <div *ngIf="summary.weightChangeKg" class="font-label-caps text-[9px] mt-1"
+  <div *ngIf="summary?.hasData" class="grid-auto-fit-sm mb-md">
+    <div class="stat-cell card-elevated" style="padding: 1.25rem 0.75rem;">
+      <span class="material-symbols-outlined text-primary-container block mb-2" style="font-size: 1.5rem;">monitor_weight</span>
+      <div class="value">{{ summary.weightKg }}</div>
+      <div class="label">LATEST WEIGHT</div>
+      <div *ngIf="summary.weightChangeKg" class="font-label-caps text-[10px] mt-2"
            [class.text-green-400]="summary.weightChangeKg < 0"
            [class.text-error]="summary.weightChangeKg > 0">
         {{ summary.weightChangeKg! > 0 ? '+' : '' }}{{ summary.weightChangeKg }} kg
       </div>
     </div>
-    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-      <span class="material-symbols-outlined text-secondary-fixed-dim block mb-2">pie_chart</span>
-      <div class="font-data-metric text-primary">{{ summary.bodyFatPercent }}</div>
-      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">BODY FAT</div>
-      <div *ngIf="summary.bodyFatChange" class="font-label-caps text-[9px] mt-1"
+    <div class="stat-cell card-elevated" style="padding: 1.25rem 0.75rem;">
+      <span class="material-symbols-outlined text-secondary-fixed-dim block mb-2" style="font-size: 1.5rem;">pie_chart</span>
+      <div class="value">{{ summary.bodyFatPercent }}</div>
+      <div class="label">BODY FAT</div>
+      <div *ngIf="summary.bodyFatChange" class="font-label-caps text-[10px] mt-2"
            [class.text-green-400]="summary.bodyFatChange < 0"
            [class.text-error]="summary.bodyFatChange > 0">
         {{ summary.bodyFatChange! > 0 ? '+' : '' }}{{ summary.bodyFatChange }}%
       </div>
     </div>
-    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-      <span class="material-symbols-outlined text-primary-fixed-dim block mb-2">straighten</span>
-      <div class="font-data-metric text-primary">{{ summary.waistCm || '—' }}</div>
-      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">WAIST (CM)</div>
+    <div class="stat-cell card-elevated" style="padding: 1.25rem 0.75rem;">
+      <span class="material-symbols-outlined text-primary-fixed-dim block mb-2" style="font-size: 1.5rem;">straighten</span>
+      <div class="value">{{ summary.waistCm || '—' }}</div>
+      <div class="label">WAIST (CM)</div>
     </div>
-    <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-      <span class="material-symbols-outlined text-tertiary-fixed-dim block mb-2">accessibility</span>
-      <div class="font-data-metric text-primary">{{ summary.chestCm || '—' }}</div>
-      <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">CHEST (CM)</div>
+    <div class="stat-cell card-elevated" style="padding: 1.25rem 0.75rem;">
+      <span class="material-symbols-outlined text-tertiary-fixed-dim block mb-2" style="font-size: 1.5rem;">accessibility</span>
+      <div class="value">{{ summary.chestCm || '—' }}</div>
+      <div class="label">CHEST (CM)</div>
     </div>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!summary?.hasData && !isLoading" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 mb-md card-hover">
-    <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">monitor_weight</span>
-    <p class="font-body-md text-on-surface-variant mb-4">No measurements recorded yet. Log your first measurement to start tracking progress!</p>
-    <button class="btn-primary text-xs" (click)="showForm = true">
+  <div *ngIf="!summary?.hasData && !isLoading" class="empty-state-wolverine mb-md">
+    <span class="material-symbols-outlined">monitor_weight</span>
+    <h3>No measurements recorded</h3>
+    <p>Log your first measurement to start tracking progress!</p>
+    <button class="btn-primary text-xs flex items-center justify-center gap-1 mt-4" (click)="showForm = true">
       <span class="material-symbols-outlined text-sm">add</span> Log First Measurement
     </button>
   </div>
@@ -110,7 +111,7 @@
       <span class="material-symbols-outlined text-primary-container">history</span>
       <h2 class="font-headline-md text-headline-md text-primary uppercase">Measurement History</h2>
     </div>
-    <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+    <div class="card-elevated" style="padding: 0; overflow: hidden;">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>

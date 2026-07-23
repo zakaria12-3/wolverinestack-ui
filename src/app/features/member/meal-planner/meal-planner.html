@@ -17,7 +17,7 @@
   </div>
 
   <!-- Date Selection -->
-  <div class="bg-surface-container-low border border-white/5 rounded-xl p-md mb-md card-hover">
+  <div class="card-elevated">
     <label class="font-label-caps text-[10px] text-on-surface-variant block mb-3 uppercase">PLAN DATE</label>
     <input type="date" class="input-titan max-w-xs" [(ngModel)]="planDate" (change)="loadPlan()">
   </div>
@@ -55,27 +55,27 @@
 
   <div *ngIf="plan">
     <!-- Projected Totals -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-md">
-      <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center card-hover">
-        <div class="font-data-metric text-primary">{{ plan.totalCalories || 0 }}</div>
-        <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">PROJECTED KCAL</div>
+    <div class="grid-auto-fit-sm mb-md">
+      <div class="stat-cell card-elevated" style="padding: 1.25rem 0.5rem;">
+        <div class="value">{{ plan.totalCalories || 0 }}</div>
+        <div class="label">PROJECTED KCAL</div>
       </div>
-      <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-        <div class="font-data-metric text-primary">{{ plan.totalProtein || 0 }}g</div>
-        <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">PROTEIN</div>
+      <div class="stat-cell card-elevated" style="padding: 1.25rem 0.5rem;">
+        <div class="value">{{ plan.totalProtein || 0 }}g</div>
+        <div class="label">PROTEIN</div>
       </div>
-      <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-        <div class="font-data-metric text-primary">{{ plan.totalCarbs || 0 }}g</div>
-        <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">CARBS</div>
+      <div class="stat-cell card-elevated" style="padding: 1.25rem 0.5rem;">
+        <div class="value">{{ plan.totalCarbs || 0 }}g</div>
+        <div class="label">CARBS</div>
       </div>
-      <div class="bg-surface-container-low border border-white/5 rounded-xl p-4 text-center">
-        <div class="font-data-metric text-primary">{{ plan.totalFat || 0 }}g</div>
-        <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">FAT</div>
+      <div class="stat-cell card-elevated" style="padding: 1.25rem 0.5rem;">
+        <div class="value">{{ plan.totalFat || 0 }}g</div>
+        <div class="label">FAT</div>
       </div>
     </div>
 
     <!-- Add Meal Form -->
-    <div class="bg-surface-container-low border border-white/5 rounded-xl p-md mb-md card-hover">
+    <div class="card-elevated">
       <div class="flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-primary-container">add_circle</span>
         <h3 class="font-headline-md text-headline-md text-primary uppercase">Add a Meal</h3>
@@ -115,7 +115,7 @@
 
     <!-- Meals by Type -->
     <div *ngIf="plan.meals?.length > 0" class="space-y-4">
-      <div *ngFor="let group of getGroupedMeals()" class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
+      <div *ngFor="let group of getGroupedMeals()" class="card-bordered">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
           <h3 class="font-headline-md text-headline-md text-primary">{{ group.label }}</h3>
           <span class="font-label-caps text-[10px] text-on-surface-variant">{{ group.totalCal }} kcal · {{ group.totalProtein }}g protein</span>
@@ -138,13 +138,16 @@
       </div>
     </div>
 
-    <div *ngIf="!plan.meals?.length" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
-      <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">calendar_month</span>
-      <p class="font-body-md text-on-surface-variant">No meals planned yet. Add meals manually or get AI suggestions!</p>
+    <div *ngIf="!plan.meals?.length" class="empty-state-wolverine">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <h3>No meals planned</h3>
+      <p>Add meals or get AI suggestions.</p>
     </div>
   </div>
 
-  <div *ngIf="!plan && isLoading" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
-    <span class="font-label-caps text-on-surface-variant">Loading plan...</span>
+  <div *ngIf="!plan && isLoading" class="empty-state-wolverine">
+    <span class="material-symbols-outlined">sync</span>
+    <h3>Loading plan</h3>
+    <p>Fetching your meal plan...</p>
   </div>
 </div>

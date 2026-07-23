@@ -17,7 +17,7 @@ export interface Application {
 
 @Component({
   selector: 'app-applications',
-  imports: [NgForOf, NgIf, NgClass],
+  imports: [NgForOf, NgIf],
   standalone:true,
   animations: [
     trigger('fadeSlide', [

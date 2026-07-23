@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { MealAnalysisResult, NutritionService } from '../../../core/services/nutrition.service';
 
 @Component({
@@ -9,7 +10,15 @@ import { MealAnalysisResult, NutritionService } from '../../../core/services/nut
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './nutrition.html',
-  styleUrls: ['./nutrition.css']
+  styleUrls: ['./nutrition.css'],
+  animations: [
+    trigger('fadeSlide', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(15px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class NutritionTracking implements OnInit {
   progress: any = null;

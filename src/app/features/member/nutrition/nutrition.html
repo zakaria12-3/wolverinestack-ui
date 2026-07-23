@@ -10,12 +10,14 @@
       </div>
     </div>
     <div class="flex gap-2 flex-wrap">
-      <button class="btn-outline text-xs" (click)="switchTab('today')" [class.!bg-primary-container]="activeTab === 'today'" [class.!text-on-primary]="activeTab === 'today'">
-        <span class="material-symbols-outlined text-sm">today</span> Today
-      </button>
-      <button class="btn-outline text-xs" (click)="switchTab('weekly')" [class.!bg-primary-container]="activeTab === 'weekly'" [class.!text-on-primary]="activeTab === 'weekly'">
-        <span class="material-symbols-outlined text-sm">bar_chart</span> Weekly
-      </button>
+      <div class="tabs-wolverine">
+        <button [class.active]="activeTab === 'today'" (click)="switchTab('today')">
+          <span class="material-symbols-outlined text-sm">today</span> Today
+        </button>
+        <button [class.active]="activeTab === 'weekly'" (click)="switchTab('weekly')">
+          <span class="material-symbols-outlined text-sm">bar_chart</span> Weekly
+        </button>
+      </div>
       <button class="btn-primary text-xs" (click)="showLogForm = !showLogForm">
         <span class="material-symbols-outlined text-sm">{{ showLogForm ? 'close' : 'add' }}</span>
         {{ showLogForm ? 'Cancel' : 'Log Meal' }}
@@ -26,7 +28,7 @@
   <!-- TODAY TAB -->
   <div *ngIf="activeTab === 'today'" class="space-y-6">
     <!-- Log Meal Form -->
-    <div *ngIf="showLogForm" class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover" @fadeSlide>
+    <div *ngIf="showLogForm" class="card-elevated">
       <div class="flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-primary-container">add_circle</span>
         <h3 class="font-headline-md text-headline-md text-primary uppercase">Log a Meal</h3>
@@ -99,7 +101,7 @@
     </div>
 
     <!-- Macro Progress -->
-    <div *ngIf="progress" class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
+    <div *ngIf="progress" class="card-elevated">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary-container">monitoring</span>
@@ -111,30 +113,30 @@
           <span *ngIf="progress.caloriesRemaining <= 0" class="text-primary-container"> · Goal met! 🎯</span>
         </span>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-surface-container-high rounded-lg p-4 text-center card-hover">
-          <div class="font-data-metric text-primary">{{ progress.totalCalories }}</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">/ {{ progress.calorieGoal }} KCAL</div>
+      <div class="grid-auto-fit-sm">
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.75rem;">
+          <div class="value">{{ progress.totalCalories }}</div>
+          <div class="label">/ {{ progress.calorieGoal }} KCAL</div>
           <div class="progress-bar mt-3"><div class="progress-bar-fill" [class.bg-green-500]="progress.caloriePercent >= 100" [class.bg-primary-container]="progress.caloriePercent < 100" [style.width.%]="progress.caloriePercent"></div></div>
-          <div class="font-label-caps text-[9px] mt-1" [class.text-green-400]="progress.caloriePercent >= 100" [class.text-primary-container]="progress.caloriePercent < 100">{{ progress.caloriePercent }}%</div>
+          <div class="font-label-caps text-[10px] mt-2" [class.text-green-400]="progress.caloriePercent >= 100" [class.text-primary-container]="progress.caloriePercent < 100">{{ progress.caloriePercent }}%</div>
         </div>
-        <div class="bg-surface-container-high rounded-lg p-4 text-center">
-          <div class="font-data-metric text-primary">{{ progress.totalProtein }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">/ {{ progress.proteinGoal }}g PROTEIN</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.75rem;">
+          <div class="value">{{ progress.totalProtein }}g</div>
+          <div class="label">/ {{ progress.proteinGoal }}g PROTEIN</div>
           <div class="progress-bar mt-3"><div class="progress-bar-fill bg-secondary-fixed-dim" [style.width.%]="progress.proteinPercent"></div></div>
-          <div class="font-label-caps text-[9px] text-secondary-fixed-dim mt-1">{{ progress.proteinPercent }}%</div>
+          <div class="font-label-caps text-[10px] text-secondary-fixed-dim mt-2">{{ progress.proteinPercent }}%</div>
         </div>
-        <div class="bg-surface-container-high rounded-lg p-4 text-center">
-          <div class="font-data-metric text-primary">{{ progress.totalCarbs }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">/ {{ progress.carbsGoal }}g CARBS</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.75rem;">
+          <div class="value">{{ progress.totalCarbs }}g</div>
+          <div class="label">/ {{ progress.carbsGoal }}g CARBS</div>
           <div class="progress-bar mt-3"><div class="progress-bar-fill bg-tertiary-fixed-dim" [style.width.%]="progress.carbsPercent"></div></div>
-          <div class="font-label-caps text-[9px] mt-1" [class.text-tertiary-fixed-dim]="progress.carbsPercent >= 100" [class.text-on-surface-variant]="progress.carbsPercent < 100">{{ progress.carbsPercent }}%</div>
+          <div class="font-label-caps text-[10px] mt-2" [class.text-tertiary-fixed-dim]="progress.carbsPercent >= 100" [class.text-on-surface-variant]="progress.carbsPercent < 100">{{ progress.carbsPercent }}%</div>
         </div>
-        <div class="bg-surface-container-high rounded-lg p-4 text-center">
-          <div class="font-data-metric text-primary">{{ progress.totalFat }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">/ {{ progress.fatGoal }}g FAT</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.75rem;">
+          <div class="value">{{ progress.totalFat }}g</div>
+          <div class="label">/ {{ progress.fatGoal }}g FAT</div>
           <div class="progress-bar mt-3"><div class="progress-bar-fill bg-outline" [style.width.%]="progress.fatPercent"></div></div>
-          <div class="font-label-caps text-[9px] text-outline mt-1">{{ progress.fatPercent }}%</div>
+          <div class="font-label-caps text-[10px] text-outline mt-2">{{ progress.fatPercent }}%</div>
         </div>
       </div>
     </div>
@@ -143,7 +145,7 @@
     <div *ngIf="meals.length > 0">
       <h2 class="font-headline-md text-headline-md text-primary uppercase mb-4">Today's Meals</h2>
       <div class="space-y-4">
-        <div *ngFor="let group of getGroupedMeals()" class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
+        <div *ngFor="let group of getGroupedMeals()" class="card-bordered">
           <h3 class="font-headline-md text-headline-md text-primary mb-4">{{ group.label }}</h3>
           <div class="space-y-2">
             <div *ngFor="let meal of group.items"
@@ -164,10 +166,11 @@
       </div>
     </div>
 
-    <div *ngIf="!progress && !isLoading" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
-      <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">restaurant</span>
-      <p class="font-body-md text-on-surface-variant mb-4">No meals logged today. Start tracking your nutrition!</p>
-      <button class="btn-primary text-xs" (click)="showLogForm = true">
+    <div *ngIf="!progress && !isLoading" class="empty-state-wolverine">
+      <span class="material-symbols-outlined">restaurant</span>
+      <h3>No meals logged today</h3>
+      <p>Start tracking your nutrition!</p>
+      <button class="btn-primary text-xs flex items-center justify-center gap-1 mt-4" (click)="showLogForm = true">
         <span class="material-symbols-outlined text-sm">add</span> Log Your First Meal
       </button>
     </div>
@@ -175,43 +178,45 @@
 
   <!-- WEEKLY TAB -->
   <div *ngIf="activeTab === 'weekly'">
-    <div *ngIf="weeklyReport" class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
+    <div *ngIf="weeklyReport" class="card-elevated">
       <div class="flex items-center gap-2 mb-6">
         <span class="material-symbols-outlined text-primary-container">bar_chart</span>
         <h2 class="font-headline-md text-headline-md text-primary uppercase">Weekly Nutrition Report</h2>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <div class="bg-surface-container-high rounded-xl p-4 text-center card-hover">
-          <div class="font-data-metric text-primary">{{ weeklyReport.avgCalories }}</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">AVG CALORIES</div>
+      <div class="grid-auto-fit-sm" style="margin-bottom: 1.5rem;">
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.5rem;">
+          <div class="value">{{ weeklyReport.avgCalories }}</div>
+          <div class="label">AVG CALORIES</div>
         </div>
-        <div class="bg-surface-container-high rounded-xl p-4 text-center">
-          <div class="font-data-metric text-primary">{{ weeklyReport.avgProtein }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">AVG PROTEIN</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.5rem;">
+          <div class="value">{{ weeklyReport.avgProtein }}g</div>
+          <div class="label">AVG PROTEIN</div>
         </div>
-        <div class="bg-surface-container-high rounded-xl p-4 text-center">
-          <div class="font-data-metric text-primary">{{ weeklyReport.avgCarbs }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">AVG CARBS</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.5rem;">
+          <div class="value">{{ weeklyReport.avgCarbs }}g</div>
+          <div class="label">AVG CARBS</div>
         </div>
-        <div class="bg-surface-container-high rounded-xl p-4 text-center">
-          <div class="font-data-metric text-primary">{{ weeklyReport.avgFat }}g</div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">AVG FAT</div>
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.5rem;">
+          <div class="value">{{ weeklyReport.avgFat }}g</div>
+          <div class="label">AVG FAT</div>
         </div>
-        <div class="bg-surface-container-high rounded-xl p-4 text-center">
-          <div class="font-data-metric"
+        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.5rem;">
+          <div class="value"
                [class.text-green-400]="weeklyReport.onTrackDays >= weeklyReport.totalDays / 2"
                [class.text-primary-container]="weeklyReport.onTrackDays < weeklyReport.totalDays / 2">
             {{ weeklyReport.onTrackDays }}/{{ weeklyReport.totalDays }}
           </div>
-          <div class="font-label-caps text-[9px] text-on-surface-variant mt-1">ON TRACK</div>
+          <div class="label">ON TRACK</div>
         </div>
       </div>
       <div class="font-label-caps text-[10px] text-on-surface-variant pt-4 border-t border-white/5">
         {{ weeklyReport.startDate }} — {{ weeklyReport.endDate }}
       </div>
     </div>
-    <div *ngIf="!weeklyReport && isLoading" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
-      <span class="font-label-caps text-on-surface-variant">Loading weekly report...</span>
+    <div *ngIf="!weeklyReport && isLoading" class="empty-state-wolverine">
+      <span class="material-symbols-outlined">bar_chart</span>
+      <h3>Loading weekly report</h3>
+      <p>Fetching your nutrition data...</p>
     </div>
   </div>
 </div>

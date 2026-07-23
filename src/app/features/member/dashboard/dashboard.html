@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <section class="dashboard-hero rounded-lg border border-white/10 bg-surface-container-low p-5 md:p-6">
+    <section class="card-elevated p-5 md:p-6" style="background: linear-gradient(135deg, rgba(255, 184, 0, 0.08), transparent 34%), rgba(18, 18, 42, 0.96);">
       <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div class="min-w-0">
           <span class="font-label-caps text-secondary-fixed-dim block mb-3">ELITE PERFORMANCE DASHBOARD</span>
@@ -97,7 +97,7 @@
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
       <main class="space-y-6 min-w-0">
         <section class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <article class="metric-card flex flex-col items-center justify-center text-center">
+          <article class="card-elevated flex flex-col items-center justify-center text-center">
             <div class="calorie-ring" [style.background]="getCalorieRingStyle()">
               <div class="calorie-ring-inner">
                 <span class="font-label-caps text-on-surface-variant">Calories</span>
@@ -117,13 +117,13 @@
             </div>
           </article>
 
-          <article class="metric-card">
+          <article class="card-elevated">
             <div class="section-heading">
               <div>
                 <span class="font-label-caps text-secondary-fixed-dim">TODAY'S FUEL</span>
                 <h2 class="font-headline-md text-primary">Macro Progress</h2>
               </div>
-              <button class="btn-outline text-xs px-4 py-2 flex items-center justify-center gap-1" routerLink="/member/nutrition">
+              <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/nutrition">
                 <span class="material-symbols-outlined text-sm">add</span>
                 Log Meal
               </button>
@@ -149,13 +149,13 @@
           </article>
         </section>
 
-        <section class="metric-card">
+        <section class="card-elevated">
           <div class="section-heading">
             <div>
               <span class="font-label-caps text-secondary-fixed-dim">WORKOUT VOLUME</span>
               <h2 class="font-headline-md text-primary">Training Overview</h2>
             </div>
-            <button class="btn-outline text-xs px-4 py-2 flex items-center justify-center gap-1" routerLink="/member/workouts">
+            <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/workouts">
               <span class="material-symbols-outlined text-sm">arrow_forward</span>
               View Workouts
             </button>
@@ -199,10 +199,11 @@
             </div>
           </div>
 
-          <div *ngIf="!dashboard.workout.recentSessions.length" class="empty-state">
+                  <div *ngIf="!dashboard.workout.recentSessions.length" class="empty-state-wolverine">
             <span class="material-symbols-outlined">fitness_center</span>
-            <p>No workouts logged yet.</p>
-            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/member/workouts">
+            <h3>No workouts yet</h3>
+            <p>Start your first session to begin tracking progress.</p>
+            <button class="btn-primary text-xs flex items-center justify-center gap-1 mt-4" routerLink="/member/workouts">
               <span class="material-symbols-outlined text-sm">play_arrow</span> Start First Session
             </button>
           </div>
@@ -210,7 +211,7 @@
       </main>
 
       <aside class="space-y-6 min-w-0">
-        <section class="profile-summary">
+        <section class="card-elevated text-center" style="background: linear-gradient(180deg, rgba(255, 184, 0, 0.09), transparent 40%), rgba(18, 18, 42, 0.92);">
           <div class="avatar-badge">{{ getInitials(dashboard.profile.username) }}</div>
           <h2 class="font-headline-md text-primary mt-4">{{ dashboard.profile.username }}</h2>
           <p class="font-label-caps text-on-surface-variant mt-1">{{ dashboard.profile.email }}</p>
@@ -233,7 +234,7 @@
           </div>
         </section>
 
-        <section class="metric-card">
+        <section class="card-elevated">
           <div class="section-heading compact">
             <div>
               <span class="font-label-caps text-secondary-fixed-dim">MEASUREMENTS</span>
@@ -251,16 +252,17 @@
             <div class="detail-row"><span>Waist</span><strong>{{ dashboard.measurement.waistCm || '--' }} cm</strong></div>
           </div>
 
-          <div *ngIf="!dashboard.measurement.hasData" class="empty-state compact">
-            <span class="material-symbols-outlined">monitor_weight</span>
-            <p>No measurements yet.</p>
-            <button class="btn-primary text-xs flex items-center justify-center gap-1" routerLink="/member/measurements">
+          <div *ngIf="!dashboard.measurement.hasData" class="empty-state-wolverine" style="padding: 1.5rem 1rem;">
+            <span class="material-symbols-outlined" style="font-size: 2rem;">monitor_weight</span>
+            <h3 style="font-size: 0.9rem;">No measurements yet</h3>
+            <p style="font-size: 0.75rem;">Log your first measurement.</p>
+            <button class="btn-primary text-xs flex items-center justify-center gap-1 mt-3" routerLink="/member/measurements">
               <span class="material-symbols-outlined text-sm">monitor_weight</span> Log First
             </button>
           </div>
         </section>
 
-        <section class="coach-card">
+        <section class="card-elevated" style="position: relative; overflow: hidden;">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
             <span class="font-label-caps text-primary-container">COACH AI</span>
