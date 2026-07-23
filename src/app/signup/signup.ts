@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import {RouterLink} from '@angular/router';
-import { HlmSkeletonImports } from '@spartan-ng/helm/skeleton';
 import { HttpClient, HttpClientModule} from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-signup',
-  imports: [FormsModule,RouterLink,HlmSkeletonImports,HttpClientModule],
+  imports: [FormsModule,RouterLink,HttpClientModule],
   templateUrl: './signup.html',
   styleUrl: './signup.css',
   standalone:true
@@ -34,18 +34,15 @@ export class Signup {
 
   onSubmit(form: any) {
     if (form.valid) {
-      this.https.post('https://wolverinestack-api.onrender.com/auth/signup', this.user)
+      this.https.post(`${environment.apiUrl}/auth/signup`, this.user)
         .subscribe({
           next: (response) => {
             console.log('Signup successful:', response);
-
           },
           error: (err) => {
             console.error('Signup failed:', err);
           }
         });
-
     }
   }
-
 }

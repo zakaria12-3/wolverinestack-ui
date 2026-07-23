@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   Router,
   NavigationStart,
@@ -8,11 +8,12 @@ import {
   RouterOutlet
 } from '@angular/router';
 
-import { Navbar } from './shared/components/navbar/navbar';
-import { Loader } from './shared/components/loader/loader';
+import { Navbar } from './navbar/navbar';
+import { Loader } from './loader/loader';
 import { routeAnimations } from './shared/animations';
 import { ReminderService } from './core/services/reminder.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -22,14 +23,16 @@ import { ToastrService } from 'ngx-toastr';
   imports: [Navbar, RouterOutlet, Loader],
   animations: [routeAnimations]
 })
-export class App  {
-
+export class App implements OnInit {
   isLoading = true;
+  isLoggedIn = false;
+  quickActionIcon = 'fitness_center';
 
   constructor(
     private router: Router,
     private reminderService: ReminderService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService
   ) {
     this.reminderService.start();
     window.addEventListener('app-reminder', ((event: Event) => {
@@ -42,11 +45,9 @@ export class App  {
     }, 300);
 
     this.router.events.subscribe(event => {
-
       if (event instanceof NavigationStart) {
         this.isLoading = true;
       }
-
       if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
@@ -57,4 +58,15 @@ export class App  {
     });
   }
 
+  ngOnInit() {
+    this.isLoggedIn = !!localStorage.getItem('token');
+    this.authService.isLoggedIn$.subscribe((loggedIn: boolean) => {
+      this.isLoggedIn = loggedIn;
+    });
+  }
+
+  quickAction() {
+    // Navigate to workout quick start
+    this.router.navigate(['/member/workouts']);
+  }
 }

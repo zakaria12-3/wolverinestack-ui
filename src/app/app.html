@@ -1,46 +1,72 @@
 <div id="app-content" [class.blur-active]="isLoading">
-  <!-- Top Navigation Shell -->
+  <!-- Top Navigation Shell (replaces app-navbar) -->
   <app-navbar></app-navbar>
 
   <!-- Main Content Canvas -->
-  <main class="lg:ml-64 pt-20 pb-28 px-4 sm:px-gutter max-w-container-max mx-auto min-h-screen">
+  <main class="lg:ml-0 pt-20 pb-28 px-4 sm:px-gutter max-w-container-max mx-auto min-h-screen">
     <div [@routeAnimations]="o.activatedRouteData?.['animation']">
       <router-outlet #o="outlet"></router-outlet>
     </div>
   </main>
 
-  <!-- Bottom Navigation (Mobile) -->
-  <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex items-center justify-around px-2 py-1.5 pb-safe bg-surface/80 backdrop-blur-xl border-t border-white/10 overflow-x-auto gap-1">
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">home</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Home</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/member/workouts" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">fitness_center</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Lifts</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/member/nutrition" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">nutrition</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Macros</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/member/dashboard" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">monitoring</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Stats</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/ai-chat" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">auto_awesome</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">AI Coach</span>
-    </a>
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0" routerLink="/messages" routerLinkActive="text-primary-fixed-dim">
-      <span class="material-symbols-outlined text-lg sm:text-xl">chat</span>
-      <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Chat</span>
-    </a>
-  </nav>
+  <!-- Bottom Navigation (Mobile) - Only show when authenticated -->
+  @if (isLoggedIn) {
+    <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex items-center justify-around px-2 py-1.5 pb-safe bg-surface/80 backdrop-blur-xl border-t border-white/10 overflow-x-auto gap-1">
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0"
+         routerLink="/member/dashboard"
+         routerLinkActive="text-primary-fixed-dim">
+        <span class="material-symbols-outlined text-lg sm:text-xl">monitoring</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Dashboard</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0"
+         routerLink="/member/workouts"
+         routerLinkActive="text-primary-fixed-dim">
+        <span class="material-symbols-outlined text-lg sm:text-xl">fitness_center</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Workouts</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0"
+         routerLink="/member/nutrition"
+         routerLinkActive="text-primary-fixed-dim">
+        <span class="material-symbols-outlined text-lg sm:text-xl">nutrition</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Nutrition</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0"
+         routerLink="/ai-chat"
+         routerLinkActive="text-primary-fixed-dim">
+        <span class="material-symbols-outlined text-lg sm:text-xl">auto_awesome</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">AI Coach</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2 min-w-0"
+         routerLink="/profile"
+         routerLinkActive="text-primary-fixed-dim">
+        <span class="material-symbols-outlined text-lg sm:text-xl">person</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5 truncate max-w-[40px]">Profile</span>
+      </a>
+    </nav>
 
-  <!-- Floating Action Button (Mobile) -->
-  <button class="fixed bottom-24 right-gutter w-14 h-14 bg-primary-container text-on-primary shadow-2xl rounded-lg flex items-center justify-center active:scale-90 transition-transform z-40 lg:hidden neon-glow-primary card-hover" routerLink="/member/workouts">
-    <span class="material-symbols-outlined text-3xl">fitness_center</span>
-  </button>
+    <!-- Floating Action Button (Mobile) -->
+    <button class="fixed bottom-24 right-gutter w-14 h-14 bg-primary-container text-on-primary shadow-2xl rounded-lg flex items-center justify-center active:scale-90 transition-transform z-40 lg:hidden neon-glow-primary card-hover"
+            (click)="quickAction()">
+      <span class="material-symbols-outlined text-3xl">{{ quickActionIcon }}</span>
+    </button>
+  }
+
+  <!-- Unauthenticated Bottom Nav -->
+  @if (!isLoggedIn) {
+    <nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex items-center justify-around px-2 py-1.5 pb-safe bg-surface/80 backdrop-blur-xl border-t border-white/10">
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/">
+        <span class="material-symbols-outlined text-lg sm:text-xl">home</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5">Home</span>
+      </a>
+      <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-90 transition-all duration-150 p-2" routerLink="/login">
+        <span class="material-symbols-outlined text-lg sm:text-xl">login</span>
+        <span class="font-label-caps text-[7px] sm:text-[8px] uppercase mt-0.5">Sign In</span>
+      </a>
+      <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary rounded-lg p-3 active:scale-90 transition-all" routerLink="/signup">
+        <span class="material-symbols-outlined text-lg">bolt</span>
+      </a>
+    </nav>
+  }
 </div>
 
 <div class="loader-overlay" [class.active]="isLoading">

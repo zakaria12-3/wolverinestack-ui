@@ -1,0 +1,78 @@
+<nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl">
+  <div class="max-w-container-max mx-auto px-4 sm:px-gutter h-16 flex items-center justify-between">
+    <!-- Brand -->
+    <a routerLink="/" class="flex items-center gap-3 group">
+      <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-primary-container text-sm">bolt</span>
+      </div>
+      <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter hidden sm:block">WOLVERINE STACK</span>
+      <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter sm:hidden">WS</span>
+    </a>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Theme Toggle -->
+      <button
+        (click)="toggleTheme()"
+        class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary-container/30 transition-all active:scale-90"
+        [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        @if (isDarkMode) {
+          <span class="material-symbols-outlined text-sm">light_mode</span>
+        } @else {
+          <span class="material-symbols-outlined text-sm">dark_mode</span>
+        }
+      </button>
+
+      @if (isLoggedIn) {
+        <!-- Notifications (placeholder) -->
+        <button class="w-9 h-9 rounded-lg bg-surface-container-high border border-white/5 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary-container/30 transition-all active:scale-90">
+          <span class="material-symbols-outlined text-sm">notifications</span>
+        </button>
+
+        <!-- Dashboard -->
+        <a [routerLink]="getDashboardLink()"
+           class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-high border border-white/5 text-on-surface-variant hover:text-primary hover:border-primary-container/30 transition-all text-xs font-label-caps uppercase tracking-wider active:scale-95">
+          <span class="material-symbols-outlined text-sm">dashboard</span>
+          Dashboard
+        </a>
+
+        <!-- Profile / Logout -->
+        <div class="relative group">
+          <button class="w-9 h-9 rounded-lg bg-primary-container/20 border border-primary-container/30 flex items-center justify-center text-primary-container text-xs font-bold active:scale-90 transition-transform">
+            {{ getInitials() }}
+          </button>
+          <!-- Dropdown -->
+          <div class="absolute right-0 top-full mt-2 w-48 glass-panel rounded-xl border border-white/10 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-2xl">
+            <a routerLink="/profile" class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors">
+              <span class="material-symbols-outlined text-sm">person</span>
+              Profile
+            </a>
+            <a routerLink="/ai-chat" class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors">
+              <span class="material-symbols-outlined text-sm">auto_awesome</span>
+              AI Coach
+            </a>
+            <a routerLink="/member/nutrition" class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors">
+              <span class="material-symbols-outlined text-sm">restaurant</span>
+              Nutrition
+            </a>
+            <hr class="border-white/5 my-1">
+            <button (click)="logout()" class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface-variant hover:text-error hover:bg-error/5 transition-colors w-full text-left">
+              <span class="material-symbols-outlined text-sm">logout</span>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Login / Signup -->
+        <a routerLink="/login" class="text-xs font-label-caps text-on-surface-variant hover:text-primary transition-colors uppercase tracking-wider px-2">
+          Sign In
+        </a>
+        <a routerLink="/signup" class="btn-primary text-xs px-4 py-2">
+          <span class="material-symbols-outlined text-xs">bolt</span>
+          Join Free
+        </a>
+      }
+    </div>
+  </div>
+</nav>

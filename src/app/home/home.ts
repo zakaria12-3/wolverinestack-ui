@@ -10,6 +10,7 @@ interface Slide {
   quote: string;
   stat: string;
   image: string;
+  fallbackColor: string;
 }
 
 @Component({
@@ -32,6 +33,9 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   studiesLoading = false;
   studiesError = false;
 
+  // Track which images failed to load
+  failedImages: Set<number> = new Set();
+
   // Wolverine Stack — Wolverine character slideshow
   slides: Slide[] = [
     {
@@ -39,21 +43,24 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       era: 'Weapon X',
       quote: "I'm the best there is at what I do. But what I do best isn't very nice.",
       stat: 'ADAMANTIUM CLAWS',
-      image: 'images/wolverine-1.jpg'
+      image: 'https://upload.wikimedia.org/wikipedia/en/9/96/Wolverine_%28James_%27Logan%27_Howlett%29.png',
+      fallbackColor: 'linear-gradient(135deg, #0D0D1A 0%, #1a0f00 40%, #2a1a00 100%)'
     },
     {
       name: 'Berserker',
       era: 'Unleash the Beast',
       quote: 'Pain lets you know you\'re still alive. Push through it, and you\'ll come out stronger on the other side.',
       stat: 'BERSERKER RAGE',
-      image: 'images/wolverine-2.jpg'
+      image: 'https://upload.wikimedia.org/wikipedia/en/5/47/Wolverine_%28James_%27Logan%27_Howlett%29_-_Hugh_Jackman.jpg',
+      fallbackColor: 'linear-gradient(135deg, #0D0D1A 0%, #2a1a00 40%, #0D0D1A 100%)'
     },
     {
       name: 'Healing Factor',
       era: 'Recover & Rise',
       quote: 'The strength of the wolf is the pack, and the strength of the pack is the wolf.',
       stat: 'MUTANT REGENERATION',
-      image: 'images/wolverine-3.jpg'
+      image: 'https://upload.wikimedia.org/wikipedia/en/6/6c/Wolverine_%28James_%27Logan%27_Howlett%29_-_X-Men_Film_Series.jpg',
+      fallbackColor: 'linear-gradient(135deg, #1a0f00 0%, #0D0D1A 50%, #0D0D1A 100%)'
     },
   ];
 
@@ -126,6 +133,11 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     this.isTransitioning = true;
     this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
     setTimeout(() => { this.isTransitioning = false; }, 200);
+  }
+
+  onImageError(index: number) {
+    this.failedImages.add(index);
+    this.cd.detectChanges();
   }
 
   @HostListener('window:scroll', [])
