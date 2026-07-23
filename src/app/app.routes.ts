@@ -132,6 +132,12 @@ export const routes: Routes = [
     data: { animation: 'FadeSlidePage' }
   },
   {
+    path: 'ai-chat',
+    loadComponent: () => import('./features/shared/ai-chat/ai-chat').then(m => m.AiChat),
+    canActivate: [authGuard],
+    data: { animation: 'FadeSlidePage' }
+  },
+  {
     path: 'messages',
     loadComponent: () => import('./features/shared/messages/messages').then(m => m.Messages),
     canActivate: [authGuard],

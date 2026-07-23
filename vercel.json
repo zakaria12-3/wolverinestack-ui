@@ -1,33 +1,18 @@
 {
-  "name": "wolverinestack-ui",
-  "framework": "angular",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/frontend/browser",
-  "installCommand": "npm ci",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/images/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
-  ]
+  ],
+  "github": {
+    "silent": true
+  }
 }
