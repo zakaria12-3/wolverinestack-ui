@@ -224,6 +224,7 @@ export class WorkoutTracking implements OnInit {
     this.resetPlanForm();
     this.viewMode = 'create';
     this.showManualExercise = false;
+    this.libraryQuery = '';
     this.searchExercises();
   }
 
@@ -239,17 +240,10 @@ export class WorkoutTracking implements OnInit {
       sessionsPerWeek: plan.sessionsPerWeek || 3,
       estimatedDailyCalories: plan.estimatedDailyCalories || 2200,
       exercises: (plan.exercises || []).map((ex: any) => ({
-        exerciseName: ex.exerciseName || '',
-        description: ex.description || '',
-        instructions: ex.instructions || '',
-        sets: ex.sets || 3,
-        reps: ex.reps || 10,
-        durationSeconds: ex.durationSeconds || 0,
-        restSeconds: ex.restSeconds || 60,
-        muscleGroup: ex.muscleGroup || 'General',
-        equipment: ex.equipment || 'Bodyweight',
-        orderIndex: ex.orderIndex || 1,
-        imageUrl: ex.imageUrl || ''
+        exerciseName: ex.exerciseName || '', description: ex.description || '', instructions: ex.instructions || '',
+        sets: ex.sets || 3, reps: ex.reps || 10, durationSeconds: ex.durationSeconds || 0, restSeconds: ex.restSeconds || 60,
+        muscleGroup: ex.muscleGroup || 'General', equipment: ex.equipment || 'Bodyweight',
+        orderIndex: ex.orderIndex || 1, imageUrl: ex.imageUrl || ''
       }))
     };
     this.viewMode = 'edit';
@@ -373,22 +367,13 @@ export class WorkoutTracking implements OnInit {
     }
     this.http.post(
       `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets`,
-      {
-        setType: this.currentSet.setType,
-        weightKg: this.currentSet.weightKg || null,
-        reps: this.currentSet.reps || null,
-        rpe: this.currentSet.rpe,
-        notes: this.currentSet.notes
-      },
+      { setType: this.currentSet.setType, weightKg: this.currentSet.weightKg || null, reps: this.currentSet.reps || null, rpe: this.currentSet.rpe, notes: this.currentSet.notes },
       this.getHeaders()
     ).subscribe({
       next: (updatedExercise: any) => {
         this.updateExerciseInSession(updatedExercise);
-        // Check if any set in the response is a new PR
         const prSet = updatedExercise.sets?.find((s: any) => s.isPersonalRecord);
-        if (prSet) {
-          this.triggerPrCelebration(updatedExercise.exerciseName, prSet.weightKg || 0, prSet.reps || 0);
-        }
+        if (prSet) this.triggerPrCelebration(updatedExercise.exerciseName, prSet.weightKg || 0, prSet.reps || 0);
         this.resetCurrentSet();
         this.toastr.success('Set logged! 💪');
         this.cdr.detectChanges();
@@ -401,13 +386,7 @@ export class WorkoutTracking implements OnInit {
     if (!this.editingSet || this.editingSet.setId !== setId) return;
     this.http.put(
       `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets/${setId}`,
-      {
-        setType: this.currentSet.setType,
-        weightKg: this.currentSet.weightKg || null,
-        reps: this.currentSet.reps || null,
-        rpe: this.currentSet.rpe,
-        notes: this.currentSet.notes
-      },
+      { setType: this.currentSet.setType, weightKg: this.currentSet.weightKg || null, reps: this.currentSet.reps || null, rpe: this.currentSet.rpe, notes: this.currentSet.notes },
       this.getHeaders()
     ).subscribe({
       next: (updatedExercise: any) => {
@@ -423,48 +402,26 @@ export class WorkoutTracking implements OnInit {
 
   startEditSet(exercise: SessionExercise, set: ExerciseSet) {
     this.editingSet = { exerciseId: exercise.id, setId: set.id! };
-    this.currentSet = {
-      weightKg: set.weightKg || 0,
-      reps: set.reps || 0,
-      setType: set.setType || 'NORMAL',
-      rpe: set.rpe,
-      notes: set.notes || ''
-    };
+    this.currentSet = { weightKg: set.weightKg || 0, reps: set.reps || 0, setType: set.setType || 'NORMAL', rpe: set.rpe, notes: set.notes || '' };
   }
 
-  cancelEditSet() {
-    this.editingSet = null;
-    this.resetCurrentSet();
-  }
+  cancelEditSet() { this.editingSet = null; this.resetCurrentSet(); }
 
   deleteSet(exerciseId: number, setId: number) {
     if (!confirm('Delete this set?')) return;
-    this.http.delete(
-      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets/${setId}`,
-      this.getHeaders()
-    ).subscribe({
-      next: (updatedExercise: any) => {
-        this.updateExerciseInSession(updatedExercise);
-        this.toastr.info('Set deleted');
-        this.cdr.detectChanges();
-      },
-      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete set'))
-    });
+    this.http.delete(`${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets/${setId}`, this.getHeaders())
+      .subscribe({
+        next: (updatedExercise: any) => { this.updateExerciseInSession(updatedExercise); this.toastr.info('Set deleted'); this.cdr.detectChanges(); },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete set'))
+      });
   }
 
   quickAddSet(exerciseId: number, weightKg: number, reps: number) {
-    this.http.post(
-      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets`,
-      { setType: 'NORMAL', weightKg, reps },
-      this.getHeaders()
-    ).subscribe({
-      next: (updatedExercise: any) => {
-        this.updateExerciseInSession(updatedExercise);
-        this.toastr.success(`${reps}×${weightKg}kg logged`);
-        this.cdr.detectChanges();
-      },
-      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log quick set'))
-    });
+    this.http.post(`${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets`, { setType: 'NORMAL', weightKg, reps }, this.getHeaders())
+      .subscribe({
+        next: (updatedExercise: any) => { this.updateExerciseInSession(updatedExercise); this.toastr.success(`${reps}×${weightKg}kg logged`); this.cdr.detectChanges(); },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log quick set'))
+      });
   }
 
   duplicateLastSet(exerciseId: number) {
@@ -477,9 +434,7 @@ export class WorkoutTracking implements OnInit {
   private updateExerciseInSession(updatedExercise: any) {
     if (!this.activeSession?.sessionExercises) return;
     const idx = this.activeSession.sessionExercises.findIndex((e: any) => e.id === updatedExercise.id);
-    if (idx >= 0) {
-      this.activeSession.sessionExercises[idx] = updatedExercise;
-    }
+    if (idx >= 0) this.activeSession.sessionExercises[idx] = updatedExercise;
   }
 
   // ======== Complete Session ========
@@ -489,29 +444,17 @@ export class WorkoutTracking implements OnInit {
     const exercises = this.getSessionExercises();
     const totalSets = exercises.reduce((sum, ex) => sum + ((ex as any).sets?.length || 0), 0);
     if (totalSets === 0 && !confirm('No sets logged. Complete anyway?')) return;
-
-    this.http.post(
-      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/complete`,
-      {},
-      this.getHeaders()
-    ).subscribe({
-      next: () => {
-        this.toastr.success('Workout complete! 🎉');
-        this.activeSession = null;
-        this.viewMode = 'sessions';
-        this.loadSessions();
-      },
-      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to complete session'))
-    });
+    this.http.post(`${environment.apiUrl}/member/sessions/${this.activeSession.id}/complete`, {}, this.getHeaders())
+      .subscribe({
+        next: () => { this.toastr.success('Workout complete! 🎉'); this.activeSession = null; this.viewMode = 'sessions'; this.loadSessions(); },
+        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to complete session'))
+      });
   }
 
   deleteSession(sessionId: number) {
     if (!confirm('Delete this session? This cannot be undone.')) return;
     this.http.delete(`${environment.apiUrl}/member/sessions/${sessionId}`, this.getHeaders())
-      .subscribe({
-        next: () => { this.toastr.success('Session deleted'); this.loadSessions(); },
-        error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete session'))
-      });
+      .subscribe({ next: () => { this.toastr.success('Session deleted'); this.loadSessions(); }, error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete session')) });
   }
 
   // ======== Exercise Library (Wger) ========
@@ -519,24 +462,17 @@ export class WorkoutTracking implements OnInit {
   searchExercises() {
     this.isLoadingExercises = true;
     this.exerciseLibrary.searchExercises(this.libraryQuery).subscribe({
-      next: (exercises) => { this.exerciseResults = exercises; this.isLoadingExercises = false; },
+      next: (exercises) => { this.exerciseResults = exercises; this.isLoadingExercises = false; this.cdr.detectChanges(); },
       error: () => { this.exerciseResults = []; this.isLoadingExercises = false; }
     });
   }
 
   addExerciseFromLibrary(exercise: ExerciseLibraryItem) {
     this.planForm.exercises.push({
-      exerciseName: exercise.name,
-      description: exercise.description,
-      instructions: exercise.description,
-      sets: 3,
-      reps: 10,
-      durationSeconds: 0,
-      restSeconds: 60,
-      muscleGroup: exercise.muscleGroup,
-      equipment: exercise.equipment,
-      orderIndex: this.planForm.exercises.length + 1,
-      imageUrl: exercise.imageUrl
+      exerciseName: exercise.name, description: exercise.description, instructions: exercise.description,
+      sets: 3, reps: 10, durationSeconds: 0, restSeconds: 60,
+      muscleGroup: exercise.muscleGroup, equipment: exercise.equipment,
+      orderIndex: this.planForm.exercises.length + 1, imageUrl: exercise.imageUrl
     });
     this.toastr.success(`${exercise.name} added`);
   }
@@ -564,20 +500,23 @@ export class WorkoutTracking implements OnInit {
   searchSessionExercises() {
     this.isLoadingSessionExercises = true;
     this.exerciseLibrary.searchExercises(this.sessionLibraryQuery).subscribe({
-      next: (exercises) => { this.sessionExerciseResults = exercises; this.isLoadingSessionExercises = false; },
+      next: (exercises) => { this.sessionExerciseResults = exercises; this.isLoadingSessionExercises = false; this.cdr.detectChanges(); },
       error: () => { this.sessionExerciseResults = []; this.isLoadingSessionExercises = false; }
     });
   }
 
+  /** Toggle session exercise browser — auto-loads exercises on first open. */
+  toggleSessionBrowse(): void {
+    this.showSessionExerciseSearch = !this.showSessionExerciseSearch;
+    if (this.showSessionExerciseSearch && this.sessionExerciseResults.length === 0) {
+      this.searchSessionExercises();
+    }
+  }
+
   selectSessionExercise(exercise: ExerciseLibraryItem) {
     this.currentExercise = {
-      exerciseName: exercise.name,
-      muscleGroup: exercise.muscleGroup,
-      equipment: exercise.equipment,
-      imageUrl: exercise.imageUrl || '',
-      targetSets: 3,
-      targetReps: 10,
-      notes: exercise.description || ''
+      exerciseName: exercise.name, muscleGroup: exercise.muscleGroup, equipment: exercise.equipment,
+      imageUrl: exercise.imageUrl || '', targetSets: 3, targetReps: 10, notes: exercise.description || ''
     };
     this.showSessionExerciseSearch = false;
     this.toastr.info(`Selected: ${exercise.name}`);
@@ -593,18 +532,10 @@ export class WorkoutTracking implements OnInit {
     return min < 1 ? '< 1 min' : `${min} min`;
   }
 
-  formatDate(d: string) {
-    if (!d) return '—';
-    return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
-
+  formatDate(d: string) { if (!d) return '—'; return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
   formatGoal(goal: string): string { return goal.replace(/_/g, ' '); }
   planExerciseCount(): number { return this.planForm.exercises.length; }
-
-  isEditingThisSet(exerciseId: number, setId: number): boolean {
-    return this.editingSet?.exerciseId === exerciseId && this.editingSet?.setId === setId;
-  }
-
+  isEditingThisSet(exerciseId: number, setId: number): boolean { return this.editingSet?.exerciseId === exerciseId && this.editingSet?.setId === setId; }
   getSetTypeLabel(t: string): string { return t ? t.charAt(0) + t.slice(1).toLowerCase() : 'Normal'; }
   formatWeightKg(w: number | null): string { return w ? `${w} kg` : 'BW'; }
 
@@ -615,58 +546,22 @@ export class WorkoutTracking implements OnInit {
     this.confettiParticles = this.generateConfettiParticles(60);
     this.showPrCelebration = true;
     this.cdr.detectChanges();
-
-    // Auto-hide after 3s
-    setTimeout(() => {
-      this.showPrCelebration = false;
-      this.currentPrDetails = null;
-      this.confettiParticles = [];
-      this.cdr.detectChanges();
-    }, 3000);
+    setTimeout(() => { this.showPrCelebration = false; this.currentPrDetails = null; this.confettiParticles = []; this.cdr.detectChanges(); }, 3000);
   }
 
   private generateConfettiParticles(count: number): ConfettiParticle[] {
     const colors = ['#FFB800', '#FFD700', '#FF6B35', '#00DBE9', '#CCF200', '#FF4D6D', '#7B2FF7', '#00E676'];
     const particles: ConfettiParticle[] = [];
     for (let i = 0; i < count; i++) {
-      particles.push({
-        id: i,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        x: Math.random() * 100 + '%',
-        size: 4 + Math.random() * 10,
-        duration: 1.5 + Math.random() * 1.5,
-        delay: Math.random() * 0.8,
-        rotation: 360 + Math.random() * 720,
-        drift: -150 + Math.random() * 300
-      });
+      particles.push({ id: i, color: colors[Math.floor(Math.random() * colors.length)], x: Math.random() * 100 + '%', size: 4 + Math.random() * 10, duration: 1.5 + Math.random() * 1.5, delay: Math.random() * 0.8, rotation: 360 + Math.random() * 720, drift: -150 + Math.random() * 300 });
     }
     return particles;
   }
 
-  private resetCurrentExercise() {
-    this.currentExercise = { exerciseName: '', muscleGroup: '', equipment: '', imageUrl: '', targetSets: 3, targetReps: 10, notes: '' };
-  }
-
-  private resetCurrentSet() {
-    this.currentSet = { weightKg: 0, reps: 10, setType: 'NORMAL', rpe: null, notes: '' };
-  }
-
-  private resetPlanForm() {
-    this.planForm = {
-      name: '', description: '', goal: 'GENERAL_FITNESS', difficulty: 'BEGINNER',
-      durationWeeks: 4, sessionsPerWeek: 3, estimatedDailyCalories: 2200, exercises: []
-    };
-  }
-
-  private reorderExercises() {
-    this.planForm.exercises.forEach((exercise, index) => exercise.orderIndex = index + 1);
-  }
-
-  private defaultExercise(): PlanExercise {
-    return { exerciseName: '', description: '', instructions: '', sets: 3, reps: 10, durationSeconds: 0, restSeconds: 60, muscleGroup: 'General', equipment: 'Bodyweight', orderIndex: 1, imageUrl: '' };
-  }
-
-  private errorMessage(err: any, fallback: string): string {
-    return typeof err?.error === 'string' ? err.error : err?.error?.message || fallback;
-  }
+  private resetCurrentExercise() { this.currentExercise = { exerciseName: '', muscleGroup: '', equipment: '', imageUrl: '', targetSets: 3, targetReps: 10, notes: '' }; }
+  private resetCurrentSet() { this.currentSet = { weightKg: 0, reps: 10, setType: 'NORMAL', rpe: null, notes: '' }; }
+  private resetPlanForm() { this.planForm = { name: '', description: '', goal: 'GENERAL_FITNESS', difficulty: 'BEGINNER', durationWeeks: 4, sessionsPerWeek: 3, estimatedDailyCalories: 2200, exercises: [] }; }
+  private reorderExercises() { this.planForm.exercises.forEach((exercise, index) => exercise.orderIndex = index + 1); }
+  private defaultExercise(): PlanExercise { return { exerciseName: '', description: '', instructions: '', sets: 3, reps: 10, durationSeconds: 0, restSeconds: 60, muscleGroup: 'General', equipment: 'Bodyweight', orderIndex: 1, imageUrl: '' }; }
+  private errorMessage(err: any, fallback: string): string { return typeof err?.error === 'string' ? err.error : err?.error?.message || fallback; }
 }
