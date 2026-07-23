@@ -76,6 +76,17 @@
   opacity: 1;
 }
 
+/* ─── Search bar ─── */
+.history-search:focus {
+  border-color: rgba(255, 184, 0, 0.3) !important;
+}
+
+.history-search::placeholder {
+  color: rgba(197, 201, 172, 0.4);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+}
+
 /* Individual conversation row */
 .history-item {
   display: flex;

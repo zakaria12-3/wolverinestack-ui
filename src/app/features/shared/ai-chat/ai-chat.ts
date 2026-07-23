@@ -20,6 +20,8 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
 
   // -- Chat History Sidebar --
   conversations: SavedConversation[] = [];
+  filteredConversations: SavedConversation[] = [];
+  searchQuery = '';
   currentConversationId = ChatHistoryService.generateId();
   showHistory = false;
   editingTitleId: string | null = null;
@@ -76,11 +78,33 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
       // Reset transient UI state when closing sidebar
       this.deleteConfirmId = null;
       this.editingTitleId = null;
+      this.clearSearch();
     }
   }
 
   private loadConversationList(): void {
     this.conversations = this.chatHistory.getAll();
+    this.applyFilter();
+  }
+
+  /** Filter conversations by search query (matches title + message content). */
+  applyFilter(): void {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) {
+      this.filteredConversations = this.conversations;
+      return;
+    }
+    this.filteredConversations = this.conversations.filter((conv) => {
+      if (conv.title.toLowerCase().includes(q)) return true;
+      return conv.messages.some((m) =>
+        m.content.toLowerCase().includes(q)
+      );
+    });
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.applyFilter();
   }
 
   /** Start a brand-new conversation. */

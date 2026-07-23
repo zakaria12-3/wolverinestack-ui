@@ -22,16 +22,51 @@
       </div>
     </div>
 
+    <!-- Search Bar -->
+    <div class="px-3 py-2 border-b border-white/5">
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant/40 pointer-events-none">search</span>
+        <input
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilter()"
+          placeholder="Search conversations..."
+          class="history-search w-full bg-surface-container-high border border-white/5 rounded-lg text-xs text-primary placeholder-on-surface-variant/40 pl-7 pr-7 py-1.5 outline-none transition-all focus:border-primary-container/40 focus:bg-surface-container"
+        />
+        @if (searchQuery) {
+          <button
+            class="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-on-surface-variant/40 hover:text-primary transition-colors"
+            (click)="clearSearch()"
+            title="Clear search"
+          >
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        }
+      </div>
+    </div>
+
     <!-- Conversation List -->
     <div class="flex-1 overflow-y-auto custom-scrollbar px-2 py-2 space-y-1">
-      @if (conversations.length === 0) {
+      @if (searchQuery && filteredConversations.length === 0) {
+        <!-- No results for search -->
+        <div class="text-center py-8 px-3">
+          <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">search_off</span>
+          <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No matching conversations</p>
+          <button
+            class="mt-2 text-[10px] text-primary-container hover:underline font-label-caps"
+            (click)="clearSearch()"
+          >
+            Clear search
+          </button>
+        </div>
+      } @else if (conversations.length === 0) {
+        <!-- Empty state -->
         <div class="text-center py-8 px-3">
           <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">chat_history</span>
           <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No saved conversations yet</p>
         </div>
       }
 
-      @for (conv of conversations; track conv.id) {
+      @for (conv of filteredConversations; track conv.id) {
         <div
           class="history-item group"
           [class.history-item-active]="conv.id === currentConversationId"
@@ -107,7 +142,11 @@
 
     <!-- Footer -->
     <div class="px-3 py-2 border-t border-white/5 text-[9px] text-on-surface-variant/40 font-label-caps text-center">
-      {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
+      @if (searchQuery) {
+        {{ filteredConversations.length }} of {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
+      } @else {
+        {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
+      }
     </div>
   </div>
 
