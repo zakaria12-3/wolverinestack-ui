@@ -20,19 +20,12 @@ export class AiChatService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  /** Send a message to the AI fitness coach and get a reply */
+  /**
+   * Send a message to the role-aware chatbot endpoint.
+   * The backend enriches the prompt with the user's fitness goal,
+   * activity level, and profile context for personalized replies.
+   */
   sendMessage(message: string): Observable<string> {
-    return this.http
-      .post<{ reply: string }>(
-        `${this.API}/ai/chat`,
-        { message },
-        { headers: this.getHeaders() }
-      )
-      .pipe(map(res => res.reply));
-  }
-
-  /** Send a message to the role-aware chatbot (includes goal context) */
-  sendChatbotMessage(message: string): Observable<string> {
     return this.http
       .post<{ reply: string }>(
         `${this.API}/chat`,
