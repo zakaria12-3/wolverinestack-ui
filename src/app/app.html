@@ -1,9 +1,12 @@
 <div id="app-content" [class.blur-active]="isLoading">
-  <!-- Top Navigation Shell (replaces app-navbar) -->
+  <!-- Desktop Sidebar (hidden on mobile) -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Top Navigation Shell -->
   <app-navbar></app-navbar>
 
-  <!-- Main Content Canvas -->
-  <main class="lg:ml-0 pt-20 pb-28 px-4 sm:px-gutter max-w-container-max mx-auto min-h-screen">
+  <!-- Main Content Canvas (shifted right for sidebar on desktop) -->
+  <main class="lg:pl-60 pt-16 pb-28 px-4 sm:px-gutter max-w-container-max mx-auto min-h-screen">
     <div [@routeAnimations]="o.activatedRouteData?.['animation']">
       <router-outlet #o="outlet"></router-outlet>
     </div>

@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 
 import { Navbar } from './navbar/navbar';
+import { Sidebar } from './sidebar/sidebar';
 import { Loader } from './loader/loader';
 import { routeAnimations } from './shared/animations';
 import { ReminderService } from './core/services/reminder.service';
@@ -20,7 +21,7 @@ import { AuthService } from './core/services/auth.service';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
   standalone: true,
-  imports: [Navbar, RouterOutlet, Loader],
+  imports: [Navbar, Sidebar, RouterOutlet, Loader],
   animations: [routeAnimations]
 })
 export class App implements OnInit {
@@ -66,7 +67,6 @@ export class App implements OnInit {
   }
 
   quickAction() {
-    // Navigate to workout quick start
     this.router.navigate(['/member/workouts']);
   }
 }

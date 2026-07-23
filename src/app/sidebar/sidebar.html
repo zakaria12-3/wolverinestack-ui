@@ -1,19 +1,97 @@
-<div class="glass-sidebar min-h-screen" @fadeSlide>
-  
-  <div class="px-6 mb-8 mt-4 text-xs font-bold uppercase tracking-widest text-slate-400">
-    Menu
+<nav class="sidebar-container">
+  <!-- Brand -->
+  <a routerLink="/" class="sidebar-brand">
+    <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/30 flex items-center justify-center">
+      <span class="material-symbols-outlined text-primary-container text-sm">bolt</span>
+    </div>
+    <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter">WS</span>
+  </a>
+
+  @if (isLoggedIn) {
+    <!-- Session Info -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">SESSION</span>
+      <div class="flex items-center gap-2 px-3 py-2">
+        <div class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></div>
+        <span class="font-body-md text-sm text-primary">Active</span>
+      </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="sidebar-section">
+      <span class="sidebar-label">NAVIGATION</span>
+      <div class="sidebar-nav">
+        <a [routerLink]="getDashboardLink()" routerLinkActive="sidebar-link-active" class="sidebar-link">
+          <span class="material-symbols-outlined">monitoring</span>
+          <span>Dashboard</span>
+        </a>
+        @if (isMember()) {
+          <a routerLink="/member/workouts" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">fitness_center</span>
+            <span>Workouts</span>
+          </a>
+          <a routerLink="/member/nutrition" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">restaurant</span>
+            <span>Nutrition</span>
+          </a>
+          <a routerLink="/member/measurements" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">monitor_weight</span>
+            <span>Measurements</span>
+          </a>
+          <a routerLink="/feed" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">forum</span>
+            <span>Feed</span>
+          </a>
+        }
+        @if (isAdmin()) {
+          <a routerLink="/admin/dashboard" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">shield</span>
+            <span>Admin</span>
+          </a>
+          <a routerLink="/feed" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">forum</span>
+            <span>Feed</span>
+          </a>
+        }
+        <a routerLink="/ai-chat" routerLinkActive="sidebar-link-active" class="sidebar-link">
+          <span class="material-symbols-outlined">auto_awesome</span>
+          <span>AI Coach</span>
+        </a>
+        <a routerLink="/messages" routerLinkActive="sidebar-link-active" class="sidebar-link">
+          <span class="material-symbols-outlined">chat</span>
+          <span>Messages</span>
+        </a>
+        <a routerLink="/search" routerLinkActive="sidebar-link-active" class="sidebar-link">
+          <span class="material-symbols-outlined">search</span>
+          <span>Search</span>
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- Account -->
+  <div class="sidebar-section sidebar-bottom">
+    <span class="sidebar-label">ACCOUNT</span>
+    <div class="sidebar-nav">
+      @if (isLoggedIn) {
+        <a routerLink="/profile" routerLinkActive="sidebar-link-active" class="sidebar-link">
+          <span class="material-symbols-outlined">person</span>
+          <span>Profile</span>
+        </a>
+        <a routerLink="/" class="sidebar-link" (click)="logout(); $event.preventDefault()">
+          <span class="material-symbols-outlined">logout</span>
+          <span>Sign Out</span>
+        </a>
+      } @else {
+        <a routerLink="/login" class="sidebar-link">
+          <span class="material-symbols-outlined">login</span>
+          <span>Sign In</span>
+        </a>
+        <a routerLink="/signup" class="sidebar-link sidebar-link-cta">
+          <span class="material-symbols-outlined">bolt</span>
+          <span>Join Free</span>
+        </a>
+      }
+    </div>
   </div>
-
-  <nav class="nav-menu">
-    @for(item of _items; track item.title){
-      <button class="w-full text-left flex items-center justify-start gap-4 mb-2 hover:bg-white/5 transition-colors" [routerLink]="item.path" routerLinkActive="active bg-gradient-to-r from-blue-500/20 to-transparent text-blue-400 border-l-2 border-blue-400">
-        <ng-icon hlm [name]="item.icon" class="text-xl" />
-        <span class="font-medium text-sm">{{ item.title }}</span>
-      </button>
-    }
-  </nav>
-
-</div>
-<div class="dashboard-content">
-  <ng-content />
-</div>
+</nav>

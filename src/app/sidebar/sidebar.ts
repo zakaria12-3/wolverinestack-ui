@@ -1,65 +1,53 @@
-import { Component } from '@angular/core';
-import {HlmSidebarImports} from '@spartan-ng/helm/sidebar';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {lucideCalendar, lucideHouse, lucideInbox, lucideSearch, lucideSettings} from '@ng-icons/lucide';
-import {HlmIcon} from '@spartan-ng/helm/icon';
-import {RouterLink} from '@angular/router';
-import {animate, style, transition, trigger} from '@angular/animations';
-
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [HlmSidebarImports, NgIcon, HlmIcon,RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
-  standalone:true,
-  animations: [
-    trigger('fadeSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(15px)' }),
-        animate('650ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ],
-  providers: [
-    provideIcons({
-      lucideHouse,
-      lucideInbox,
-      lucideCalendar,
-      lucideSearch,
-      lucideSettings,
-    }),
-  ],
+  styleUrls: ['./sidebar.css'],
+  standalone: true,
 })
-export class Sidebar {
-  protected readonly _items = [
-    {
-      title: 'Home',
-      url: '#',
-      icon: 'lucideHouse',
-      path:'',
-    },
-    {
-      title: 'Inbox',
-      url: '#',
-      icon: 'lucideInbox',
-    },
-    {
-      title: 'Calendar',
-      path: '/c',
-      icon: 'lucideCalendar',
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: 'lucideSearch',
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: 'lucideSettings',
-    },
-  ];
+export class Sidebar implements OnInit {
+  isLoggedIn = false;
+  role: string | null = null;
 
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.isLoggedIn = !!localStorage.getItem('token');
+    this.role = this.authService.getRole();
+    this.authService.isLoggedIn$.subscribe((loggedIn: boolean) => {
+      this.isLoggedIn = loggedIn;
+      this.role = this.authService.getRole();
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+
+  getDashboardLink(): string {
+    if (this.role === 'ADMIN') return '/admin/dashboard';
+    if (this.role === 'TRAINER') return '/trainer/dashboard';
+    return '/member/dashboard';
+  }
+
+  isAdmin(): boolean {
+    return this.role === 'ADMIN';
+  }
+
+  isMember(): boolean {
+    return this.role === 'MEMBER';
+  }
+
+  isTrainer(): boolean {
+    return this.role === 'TRAINER';
+  }
 }
-
