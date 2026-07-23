@@ -1,99 +1,224 @@
-<div class="min-h-[calc(100vh-12rem)] flex flex-col">
-  <!-- Header -->
-  <div class="flex items-center gap-3 mb-4 sm:mb-6">
-    <div class="w-10 h-10 rounded-xl bg-primary-container/20 border border-primary-container/30 flex items-center justify-center">
-      <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
+<div class="flex gap-0 h-full" style="min-height: calc(100vh - 10rem);">
+  <!-- ─── Chat History Sidebar ─── -->
+  <div class="history-sidebar" [class.history-open]="showHistory">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-3 py-3 border-b border-white/5">
+      <span class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">History</span>
+      <div class="flex items-center gap-1">
+        <button
+          class="w-7 h-7 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all active:scale-90"
+          (click)="newConversation()"
+          title="New conversation"
+        >
+          <span class="material-symbols-outlined text-lg">add</span>
+        </button>
+        <button
+          class="w-7 h-7 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all active:scale-90"
+          (click)="showHistory = false"
+          title="Close sidebar"
+        >
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
     </div>
-    <div>
-      <h1 class="font-headline-md text-headline-md text-primary tracking-tight">AI Coach</h1>
-      <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Powered by Wolverine Stack AI</p>
-    </div>
-  </div>
 
-  <!-- Chat Messages -->
-  <div #chatContainer class="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pr-1 mb-4 min-h-0 custom-scrollbar" style="max-height: calc(100vh - 300px);">
-    <!-- Welcome Suggestions (only before first user message) -->
-    @if (messages.length === 1 && !isLoading) {
-      <div class="glass-panel p-4 sm:p-5 rounded-xl border border-primary-container/10">
-        <p class="text-on-surface-variant text-sm mb-3 font-medium">Quick questions to get started:</p>
-        <div class="flex flex-wrap gap-2">
-          @for (suggestion of suggestions; track suggestion) {
+    <!-- Conversation List -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar px-2 py-2 space-y-1">
+      @if (conversations.length === 0) {
+        <div class="text-center py-8 px-3">
+          <span class="material-symbols-outlined text-3xl text-on-surface-variant/30 block mb-2">chat_history</span>
+          <p class="font-label-caps text-[10px] text-on-surface-variant/50 uppercase tracking-widest">No saved conversations yet</p>
+        </div>
+      }
+
+      @for (conv of conversations; track conv.id) {
+        <div
+          class="history-item group"
+          [class.history-item-active]="conv.id === currentConversationId"
+        >
+          @if (editingTitleId === conv.id) {
+            <!-- Inline rename -->
+            <div class="flex items-center gap-1 p-1">
+              <input
+                #renameInput
+                [(ngModel)]="editingTitleValue"
+                (keyup.enter)="saveRename(conv.id)"
+                (keyup.escape)="cancelRename()"
+                (blur)="saveRename(conv.id)"
+                class="flex-1 bg-surface text-xs text-primary border border-primary-container/30 rounded px-2 py-1 outline-none"
+                autofocus
+              />
+            </div>
+          } @else {
+            <!-- Normal row -->
             <button
-              class="px-3 py-1.5 rounded-lg bg-surface-container-high border border-white/5 text-xs text-on-surface-variant hover:text-primary hover:border-primary-container/40 hover:bg-primary-container/10 transition-all active:scale-95"
-              (click)="useSuggestion(suggestion)"
+              class="history-item-btn"
+              (click)="loadConversation(conv.id)"
             >
-              {{ suggestion }}
+              <span class="material-symbols-outlined text-sm shrink-0">chat</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs text-primary truncate">{{ conv.title }}</p>
+                <p class="text-[9px] text-on-surface-variant/50 font-label-caps">
+                  {{ conv.messageCount }} msg · {{ formatSidebarDate(conv.updatedAt) }}
+                </p>
+              </div>
             </button>
+            <!-- Actions (visible on hover) -->
+            <div class="history-item-actions">
+              @if (deleteConfirmId === conv.id) {
+                <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+                  <button
+                    class="w-6 h-6 rounded flex items-center justify-center text-error hover:bg-error/10 transition-all"
+                    (click)="deleteConversation(conv.id)"
+                    title="Confirm delete"
+                  >
+                    <span class="material-symbols-outlined text-sm">check</span>
+                  </button>
+                  <button
+                    class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-primary transition-all"
+                    (click)="deleteConfirmId = null"
+                    title="Cancel"
+                  >
+                    <span class="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+              } @else {
+                <button
+                  class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-primary transition-all"
+                  (click)="startRename(conv.id); $event.stopPropagation()"
+                  title="Rename"
+                >
+                  <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+                <button
+                  class="w-6 h-6 rounded flex items-center justify-center text-on-surface-variant hover:text-error transition-all"
+                  (click)="deleteConfirmId = conv.id; $event.stopPropagation()"
+                  title="Delete"
+                >
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              }
+            </div>
           }
         </div>
-      </div>
-    }
+      }
+    </div>
 
-    <!-- Message Bubbles -->
-    @for (msg of messages; track trackByTimestamp($index, msg)) {
-      <div class="flex" [ngClass]="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-        @if (msg.role === 'assistant') {
-          <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/20 flex items-center justify-center shrink-0 mr-2 self-end">
-            <span class="material-symbols-outlined text-sm text-primary-container">auto_awesome</span>
-          </div>
-        }
-        <div
-          class="max-w-[85%] sm:max-w-[75%] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm leading-relaxed"
-          [ngClass]="msg.role === 'user'
-            ? 'bg-primary-container text-on-primary rounded-br-sm'
-            : 'bg-surface-container-high border border-white/5 text-on-surface rounded-bl-sm'"
-        >
-          <p class="whitespace-pre-wrap">{{ msg.content }}</p>
-          <p class="text-[10px] mt-1 opacity-40 text-right">
-            {{ msg.timestamp | date:'HH:mm' }}
-          </p>
-        </div>
-        @if (msg.role === 'user') {
-          <div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0 ml-2 self-end">
-            <span class="material-symbols-outlined text-sm text-on-primary">person</span>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- Typing Indicator -->
-    @if (isLoading) {
-      <div class="flex justify-start">
-        <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/20 flex items-center justify-center shrink-0 mr-2">
-          <span class="material-symbols-outlined text-sm text-primary-container">auto_awesome</span>
-        </div>
-        <div class="bg-surface-container-high border border-white/5 rounded-xl rounded-bl-sm px-4 py-3">
-          <div class="flex gap-1.5">
-            <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 0ms"></div>
-            <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 150ms"></div>
-            <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 300ms"></div>
-          </div>
-        </div>
-      </div>
-    }
+    <!-- Footer -->
+    <div class="px-3 py-2 border-t border-white/5 text-[9px] text-on-surface-variant/40 font-label-caps text-center">
+      {{ conversations.length }} conversation{{ conversations.length !== 1 ? 's' : '' }}
+    </div>
   </div>
 
-  <!-- Input Bar -->
-  <div class="glass-panel rounded-xl p-2 sm:p-3 border border-white/5">
-    <div class="flex items-center gap-2">
-      <input
-        [(ngModel)]="inputMessage"
-        (keyup.enter)="sendMessage()"
-        placeholder="Ask your AI coach anything..."
-        class="flex-1 bg-transparent border-none text-sm text-primary placeholder-on-surface-variant/50 focus:outline-none px-2"
-        [disabled]="isLoading"
-      />
+  <!-- ─── Main Chat Area ─── -->
+  <div class="flex-1 flex flex-col min-w-0 px-1 sm:px-4">
+    <!-- Header with sidebar toggle -->
+    <div class="flex items-center gap-3 mb-4 sm:mb-6">
       <button
-        class="btn-primary !p-2.5 !rounded-xl flex items-center justify-center disabled:opacity-40"
-        (click)="sendMessage()"
-        [disabled]="!inputMessage.trim() || isLoading"
+        class="w-9 h-9 rounded-xl bg-surface-container-high border border-white/5 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary-container/30 transition-all active:scale-90"
+        (click)="toggleHistory()"
+        title="Chat history"
       >
-        @if (isLoading) {
-          <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
-        } @else {
-          <span class="material-symbols-outlined text-lg">send</span>
-        }
+        <span class="material-symbols-outlined">history</span>
       </button>
+      <div class="w-10 h-10 rounded-xl bg-primary-container/20 border border-primary-container/30 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
+      </div>
+      <div>
+        <h1 class="font-headline-md text-headline-md text-primary tracking-tight">AI Coach</h1>
+        <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Powered by Wolverine Stack AI</p>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div
+      #chatContainer
+      class="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pr-1 mb-4 min-h-0 custom-scrollbar"
+      style="max-height: calc(100vh - 300px);"
+    >
+      <!-- Welcome Suggestions (only before first user message) -->
+      @if (messages.length === 1 && !isLoading) {
+        <div class="glass-panel p-4 sm:p-5 rounded-xl border border-primary-container/10">
+          <p class="text-on-surface-variant text-sm mb-3 font-medium">Quick questions to get started:</p>
+          <div class="flex flex-wrap gap-2">
+            @for (suggestion of suggestions; track suggestion) {
+              <button
+                class="px-3 py-1.5 rounded-lg bg-surface-container-high border border-white/5 text-xs text-on-surface-variant hover:text-primary hover:border-primary-container/40 hover:bg-primary-container/10 transition-all active:scale-95"
+                (click)="useSuggestion(suggestion)"
+              >
+                {{ suggestion }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Message Bubbles -->
+      @for (msg of messages; track trackByTimestamp($index, msg)) {
+        <div class="flex" [ngClass]="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+          @if (msg.role === 'assistant') {
+            <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/20 flex items-center justify-center shrink-0 mr-2 self-end">
+              <span class="material-symbols-outlined text-sm text-primary-container">auto_awesome</span>
+            </div>
+          }
+          <div
+            class="max-w-[85%] sm:max-w-[75%] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm leading-relaxed"
+            [ngClass]="msg.role === 'user'
+              ? 'bg-primary-container text-on-primary rounded-br-sm'
+              : 'bg-surface-container-high border border-white/5 text-on-surface rounded-bl-sm'"
+          >
+            <p class="whitespace-pre-wrap">{{ msg.content }}</p>
+            <p class="text-[10px] mt-1 opacity-40 text-right">
+              {{ msg.timestamp | date:'HH:mm' }}
+            </p>
+          </div>
+          @if (msg.role === 'user') {
+            <div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0 ml-2 self-end">
+              <span class="material-symbols-outlined text-sm text-on-primary">person</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Typing Indicator -->
+      @if (isLoading) {
+        <div class="flex justify-start">
+          <div class="w-8 h-8 rounded-lg bg-primary-container/20 border border-primary-container/20 flex items-center justify-center shrink-0 mr-2">
+            <span class="material-symbols-outlined text-sm text-primary-container">auto_awesome</span>
+          </div>
+          <div class="bg-surface-container-high border border-white/5 rounded-xl rounded-bl-sm px-4 py-3">
+            <div class="flex gap-1.5">
+              <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 0ms"></div>
+              <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 150ms"></div>
+              <div class="w-2 h-2 rounded-full bg-primary-container/60 animate-bounce" style="animation-delay: 300ms"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Input Bar -->
+    <div class="glass-panel rounded-xl p-2 sm:p-3 border border-white/5">
+      <div class="flex items-center gap-2">
+        <input
+          [(ngModel)]="inputMessage"
+          (keyup.enter)="sendMessage()"
+          placeholder="Ask your AI coach anything..."
+          class="flex-1 bg-transparent border-none text-sm text-primary placeholder-on-surface-variant/50 focus:outline-none px-2"
+          [disabled]="isLoading"
+        />
+        <button
+          class="btn-primary !p-2.5 !rounded-xl flex items-center justify-center disabled:opacity-40"
+          (click)="sendMessage()"
+          [disabled]="!inputMessage.trim() || isLoading"
+        >
+          @if (isLoading) {
+            <span class="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+          } @else {
+            <span class="material-symbols-outlined text-lg">send</span>
+          }
+        </button>
+      </div>
     </div>
   </div>
 </div>

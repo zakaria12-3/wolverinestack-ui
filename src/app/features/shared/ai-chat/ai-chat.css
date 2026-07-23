@@ -41,3 +41,150 @@
 .animate-bounce:nth-child(1) { animation-delay: 0ms; }
 .animate-bounce:nth-child(2) { animation-delay: 150ms; }
 .animate-bounce:nth-child(3) { animation-delay: 300ms; }
+
+/* =========================================================
+   CHAT HISTORY SIDEBAR
+   ========================================================= */
+
+.history-sidebar {
+  --sidebar-width: 280px;
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: rgba(10, 10, 22, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              margin 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Collapsed state */
+.history-sidebar:not(.history-open) {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  border-right: none;
+  overflow: hidden;
+}
+
+.history-sidebar.history-open {
+  width: var(--sidebar-width);
+  opacity: 1;
+}
+
+/* Individual conversation row */
+.history-item {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.history-item-active {
+  background: rgba(255, 184, 0, 0.08);
+  border: 1px solid rgba(255, 184, 0, 0.15);
+}
+
+.history-item-active:hover {
+  background: rgba(255, 184, 0, 0.12);
+}
+
+.history-item-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+  min-width: 0;
+  transition: background 0.15s ease;
+}
+
+.history-item-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Action buttons (edit/delete) — hidden by default, shown on row hover */
+.history-item-actions {
+  display: none;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+.history-item:hover .history-item-actions {
+  display: flex;
+}
+
+/* ─── Mobile responsive: slide overlay instead of inline sidebar ─── */
+@media (max-width: 768px) {
+  .history-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100vh;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(10, 10, 22, 0.97);
+    backdrop-filter: blur(12px);
+    transition: opacity 0.3s ease;
+    padding: 0 !important;
+    border-right: none;
+  }
+
+  .history-sidebar.history-open {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+/* ─── Sidebar entrance animation ─── */
+@keyframes sidebarSlideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: var(--sidebar-width);
+    opacity: 1;
+  }
+}
+
+.history-sidebar.history-open {
+  animation: sidebarSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes sidebarSlideOver {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .history-sidebar.history-open {
+    animation: sidebarSlideOver 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
