@@ -471,4 +471,25 @@
       </div>
     </div>
   </div>
+
+  <!-- ==================== PR CELEBRATION CONFETTI ==================== -->
+  <div *ngIf="showPrCelebration" class="pr-celebration-overlay">
+    <div *ngFor="let p of confettiParticles" class="confetti-piece"
+         [style.--confetti-color]="p.color"
+         [style.--confetti-x]="p.x"
+         [style.--confetti-size.px]="p.size"
+         [style.--confetti-duration.s]="p.duration"
+         [style.--confetti-delay.s]="p.delay"
+         [style.--confetti-rotation.deg]="p.rotation"
+         [style.--confetti-drift.px]="p.drift">
+    </div>
+  </div>
+
+  <!-- PR Banner -->
+  <div *ngIf="showPrCelebration && currentPrDetails" class="pr-banner">
+    <span class="material-symbols-outlined pr-banner-icon">military_tech</span>
+    <div class="pr-banner-title">NEW PR!</div>
+    <div class="pr-banner-subtitle">{{ currentPrDetails.exerciseName }} &middot; {{ currentPrDetails.weight }}kg &times; {{ currentPrDetails.reps }} reps</div>
+  </div>
+
 </div>

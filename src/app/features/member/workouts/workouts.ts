@@ -22,6 +22,17 @@ interface PlanExercise {
   imageUrl?: string;
 }
 
+interface ConfettiParticle {
+  id: number;
+  color: string;
+  x: string;
+  size: number;
+  duration: number;
+  delay: number;
+  rotation: number;
+  drift: number;
+}
+
 interface ExerciseSet {
   id?: number;
   setIndex: number;
@@ -112,6 +123,11 @@ export class WorkoutTracking implements OnInit {
   };
 
   editingSet: { exerciseId: number; setId: number } | null = null;
+
+  // PR Celebration
+  showPrCelebration = false;
+  confettiParticles: ConfettiParticle[] = [];
+  currentPrDetails: { exerciseName: string; weight: number; reps: number } | null = null;
 
   // Session exercise search (Wger API)
   showSessionExerciseSearch = false;
@@ -368,6 +384,11 @@ export class WorkoutTracking implements OnInit {
     ).subscribe({
       next: (updatedExercise: any) => {
         this.updateExerciseInSession(updatedExercise);
+        // Check if any set in the response is a new PR
+        const prSet = updatedExercise.sets?.find((s: any) => s.isPersonalRecord);
+        if (prSet) {
+          this.triggerPrCelebration(updatedExercise.exerciseName, prSet.weightKg || 0, prSet.reps || 0);
+        }
         this.resetCurrentSet();
         this.toastr.success('Set logged! 💪');
         this.cdr.detectChanges();
@@ -586,6 +607,41 @@ export class WorkoutTracking implements OnInit {
 
   getSetTypeLabel(t: string): string { return t ? t.charAt(0) + t.slice(1).toLowerCase() : 'Normal'; }
   formatWeightKg(w: number | null): string { return w ? `${w} kg` : 'BW'; }
+
+  // ======== PR Celebration ========
+
+  triggerPrCelebration(exerciseName: string, weight: number, reps: number) {
+    this.currentPrDetails = { exerciseName, weight, reps };
+    this.confettiParticles = this.generateConfettiParticles(60);
+    this.showPrCelebration = true;
+    this.cdr.detectChanges();
+
+    // Auto-hide after 3s
+    setTimeout(() => {
+      this.showPrCelebration = false;
+      this.currentPrDetails = null;
+      this.confettiParticles = [];
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+
+  private generateConfettiParticles(count: number): ConfettiParticle[] {
+    const colors = ['#FFB800', '#FFD700', '#FF6B35', '#00DBE9', '#CCF200', '#FF4D6D', '#7B2FF7', '#00E676'];
+    const particles: ConfettiParticle[] = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        id: i,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        x: Math.random() * 100 + '%',
+        size: 4 + Math.random() * 10,
+        duration: 1.5 + Math.random() * 1.5,
+        delay: Math.random() * 0.8,
+        rotation: 360 + Math.random() * 720,
+        drift: -150 + Math.random() * 300
+      });
+    }
+    return particles;
+  }
 
   private resetCurrentExercise() {
     this.currentExercise = { exerciseName: '', muscleGroup: '', equipment: '', imageUrl: '', targetSets: 3, targetReps: 10, notes: '' };
