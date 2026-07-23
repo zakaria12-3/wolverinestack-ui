@@ -19,7 +19,7 @@
   <div *ngIf="dashboard && !isLoading" class="space-y-6">
     <!-- Quick Log Banner -->
     <div *ngIf="quickLogStatus && (quickLogStatus.missedWorkout || quickLogStatus.missedMeals)"
-         class="bg-surface-container-low border border-primary-container/30 rounded-xl p-md card-hover">
+         class="bg-surface-container-low border border-primary-container/30 rounded-xl p-md card-hover card-enter">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-3xl text-primary-container">history</span>
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <section class="card-elevated p-5 md:p-6" style="background: linear-gradient(135deg, rgba(255, 184, 0, 0.08), transparent 34%), rgba(18, 18, 42, 0.96);">
+    <section class="card-elevated p-5 md:p-6 card-enter" style="background: linear-gradient(135deg, rgba(255, 184, 0, 0.08), transparent 34%), rgba(18, 18, 42, 0.96);">
       <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div class="min-w-0">
           <span class="font-label-caps text-secondary-fixed-dim block mb-3">ELITE PERFORMANCE DASHBOARD</span>
@@ -75,7 +75,7 @@
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
       <main class="space-y-6 min-w-0">
         <section class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <article class="card-elevated flex flex-col items-center justify-center text-center">
+          <article class="card-elevated flex flex-col items-center justify-center text-center card-enter">
             <div class="calorie-ring" [style.background]="getCalorieRingStyle()">
               <div class="calorie-ring-inner">
                 <span class="font-label-caps text-on-surface-variant">Calories</span>
@@ -88,13 +88,13 @@
               <div class="mini-stat"><span>{{ clampPercent(dashboard.nutrition.caloriePercent) }}%</span><small>complete</small></div>
             </div>
           </article>
-          <article class="card-elevated">
+          <article class="card-elevated card-enter">
             <div class="section-heading">
               <div>
                 <span class="font-label-caps text-secondary-fixed-dim">TODAY'S FUEL</span>
                 <h2 class="font-headline-md text-primary">Macro Progress</h2>
               </div>
-              <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/nutrition">
+              <button class="btn-outline text-xs flex items-center justify-center gap-1 whitespace-nowrap" routerLink="/member/nutrition">
                 <span class="material-symbols-outlined text-sm">add</span> Log Meal
               </button>
             </div>
@@ -118,13 +118,13 @@
           </article>
         </section>
 
-        <section class="card-elevated">
+        <section class="card-elevated card-enter">
           <div class="section-heading">
             <div>
               <span class="font-label-caps text-secondary-fixed-dim">WORKOUT VOLUME</span>
               <h2 class="font-headline-md text-primary">Training Overview</h2>
             </div>
-            <button class="btn-outline text-xs flex items-center justify-center gap-1" routerLink="/member/workouts">
+            <button class="btn-outline text-xs flex items-center justify-center gap-1 whitespace-nowrap" routerLink="/member/workouts">
               <span class="material-symbols-outlined text-sm">arrow_forward</span> View Workouts
             </button>
           </div>
@@ -163,7 +163,7 @@
       </main>
 
       <aside class="space-y-6 min-w-0">
-        <section class="card-elevated text-center" style="background: linear-gradient(180deg, rgba(255, 184, 0, 0.09), transparent 40%), rgba(18, 18, 42, 0.92);">
+        <section class="card-elevated text-center card-enter" style="background: linear-gradient(180deg, rgba(255, 184, 0, 0.09), transparent 40%), rgba(18, 18, 42, 0.92);">
           <div class="avatar-badge">{{ getInitials(dashboard.profile.username) }}</div>
           <h2 class="font-headline-md text-primary mt-4">{{ dashboard.profile.username }}</h2>
           <p class="font-label-caps text-on-surface-variant mt-1">{{ dashboard.profile.email }}</p>
@@ -247,7 +247,7 @@
           </div>
         </section>
 
-        <section class="card-elevated">
+        <section class="card-elevated card-enter">
           <div class="section-heading compact">
             <div>
               <span class="font-label-caps text-secondary-fixed-dim">MEASUREMENTS</span>
@@ -273,7 +273,7 @@
           </div>
         </section>
 
-        <section class="card-elevated" style="position: relative; overflow: hidden;">
+        <section class="card-elevated card-enter" style="position: relative; overflow: hidden;">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-primary-container">auto_awesome</span>
             <span class="font-label-caps text-primary-container">COACH AI</span>

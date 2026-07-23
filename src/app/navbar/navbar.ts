@@ -24,7 +24,7 @@ export class Navbar implements OnInit {
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
     this.role = this.authService.getRole();
-    this.isDarkMode = document.documentElement.classList.contains('light');
+    this.isDarkMode = !document.documentElement.classList.contains('light');
 
     // Watch for auth changes
     this.authService.isLoggedIn$.subscribe((loggedIn: boolean) => {
@@ -35,8 +35,8 @@ export class Navbar implements OnInit {
   }
 
   toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
     document.documentElement.classList.toggle('light');
+    this.isDarkMode = !document.documentElement.classList.contains('light');
     localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 

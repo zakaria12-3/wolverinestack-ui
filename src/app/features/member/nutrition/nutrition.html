@@ -28,14 +28,14 @@
   <!-- TODAY TAB -->
   <div *ngIf="activeTab === 'today'" class="space-y-6">
     <!-- Log Meal Form -->
-    <div *ngIf="showLogForm" class="card-elevated">
+    <div *ngIf="showLogForm" class="card-elevated card-enter">
       <div class="flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-primary-container">add_circle</span>
         <h3 class="font-headline-md text-headline-md text-primary uppercase">Log a Meal</h3>
       </div>
 
       <!-- Meal Photo Upload -->
-      <div class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5 card-hover">
+      <div class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5 card-hover card-enter">
         <div class="flex flex-col md:flex-row gap-4 items-start">
           <div class="w-28 h-28 rounded-lg border border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-background flex-shrink-0"
                [class.has-image]="mealPhotoPreview">
@@ -101,7 +101,7 @@
     </div>
 
     <!-- Macro Progress -->
-    <div *ngIf="progress" class="card-elevated">
+    <div *ngIf="progress" class="card-elevated card-enter">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary-container">monitoring</span>
@@ -114,7 +114,7 @@
         </span>
       </div>
       <div class="grid-auto-fit-sm">
-        <div class="stat-cell card-bordered" style="padding: 1.25rem 0.75rem;">
+        <div class="stat-cell card-bordered card-enter" style="padding: 1.25rem 0.75rem;">
           <div class="value">{{ progress.totalCalories }}</div>
           <div class="label">/ {{ progress.calorieGoal }} KCAL</div>
           <div class="progress-bar mt-3"><div class="progress-bar-fill" [class.bg-green-500]="progress.caloriePercent >= 100" [class.bg-primary-container]="progress.caloriePercent < 100" [style.width.%]="progress.caloriePercent"></div></div>
@@ -145,7 +145,7 @@
     <div *ngIf="meals.length > 0">
       <h2 class="font-headline-md text-headline-md text-primary uppercase mb-4">Today's Meals</h2>
       <div class="space-y-4">
-        <div *ngFor="let group of getGroupedMeals()" class="card-bordered">
+        <div *ngFor="let group of getGroupedMeals()" class="card-bordered card-enter">
           <h3 class="font-headline-md text-headline-md text-primary mb-4">{{ group.label }}</h3>
           <div class="space-y-2">
             <div *ngFor="let meal of group.items"
@@ -226,7 +226,7 @@
 
   <!-- WEEKLY TAB -->
   <div *ngIf="activeTab === 'weekly'">
-    <div *ngIf="weeklyReport" class="card-elevated">
+    <div *ngIf="weeklyReport" class="card-elevated card-enter">
       <div class="flex items-center gap-2 mb-6">
         <span class="material-symbols-outlined text-primary-container">bar_chart</span>
         <h2 class="font-headline-md text-headline-md text-primary uppercase">Weekly Nutrition Report</h2>

@@ -24,7 +24,7 @@
 
   <!-- ==================== ACTIVE WORKOUT SESSION ==================== -->
   <div *ngIf="activeSession && viewMode === 'active'">
-    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md card-hover">
+    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md card-hover card-enter">
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
           <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
@@ -83,7 +83,7 @@
       </div>
 
       <!-- Log Exercise Form with Wger Library Search -->
-      <div class="bg-surface-container-highest rounded-xl p-4 card-hover">
+      <div class="bg-surface-container-highest rounded-xl p-4 card-hover card-enter">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-label-caps text-label-caps text-primary-container uppercase">LOG EXERCISE</h3>
           <button class="btn-outline text-[9px]" (click)="showSessionExerciseSearch = !showSessionExerciseSearch">
@@ -159,7 +159,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div *ngFor="let plan of plans"
-           class="bg-surface-container-low border border-white/5 rounded-xl p-md transition-all cursor-pointer group relative card-hover"
+           class="bg-surface-container-low border border-white/5 rounded-xl p-md transition-all cursor-pointer group relative card-hover card-enter"
            (click)="loadPlanDetails(plan.id)">
         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <button class="w-7 h-7 rounded bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary transition-all text-sm"
@@ -192,7 +192,7 @@
         </div>
       </div>
 
-      <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
+      <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover card-enter">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant mb-4">No plans yet. Create your first workout plan!</p>
         <button class="btn-primary" (click)="openCreatePlan()">
@@ -217,7 +217,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left Column: Plan Details + Exercise Library -->
       <div class="lg:col-span-8 space-y-6">
-        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover card-enter">
           <h3 class="font-label-caps text-label-caps text-primary-container mb-4 uppercase">Plan Details</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">
@@ -252,7 +252,7 @@
           </div>
         </div>
 
-        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-enter">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Exercise Library</h3>
             <div class="flex gap-2">
@@ -271,7 +271,7 @@
               {{ isLoadingExercises ? '...' : 'Search' }}
             </button>
           </div>
-          <div *ngIf="showManualExercise" class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5" @slideInOut>
+          <div *ngIf="showManualExercise" class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5 card-bordered" @slideInOut>
             <h4 class="font-label-caps text-[10px] text-primary-container uppercase mb-3">Manual Exercise</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input class="input-titan" [(ngModel)]="manualExercise.exerciseName" placeholder="Exercise name *">
@@ -324,7 +324,7 @@
       </div>
 
       <div class="lg:col-span-4">
-        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24 card-hover">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24 card-hover card-enter">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Selected</h3>
             <span class="bg-surface-container-highest text-primary text-[10px] font-label-caps px-2 py-0.5 rounded">{{ planExerciseCount() }}</span>
@@ -401,7 +401,7 @@
     </div>
     <div class="space-y-3">
       <div *ngFor="let session of sessions"
-           class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group card-hover">
+           class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group card-hover card-enter">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
             <span class="material-symbols-outlined text-on-surface-variant" [class.text-secondary-fixed-dim]="!session.completed" [class.text-primary-container]="session.completed">
@@ -429,7 +429,7 @@
           </button>
         </div>
       </div>
-      <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover">
+      <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover card-enter">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant">No sessions yet. Start a workout!</p>
       </div>

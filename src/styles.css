@@ -356,7 +356,10 @@ html.light ::-webkit-scrollbar-thumb { background: var(--color-surface-container
 .status-badge.pending { background: rgba(197, 201, 172, 0.1); color: #c5c9ac; border: 1px solid rgba(197, 201, 172, 0.2); }
 .status-badge.inactive { background: rgba(255, 180, 171, 0.1); color: #ffb4ab; border: 1px solid rgba(255, 180, 171, 0.2); }
 
-/* ---- Animations ---- */
+/* =========================================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================= */
+
 @keyframes pulse-gold {
   0% { box-shadow: 0 0 0 0 rgba(255, 184, 0, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(255, 184, 0, 0); }
@@ -371,8 +374,55 @@ html.light ::-webkit-scrollbar-thumb { background: var(--color-surface-container
 }
 .pulse-amber { animation: pulse-amber 2s infinite; }
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+
+/* Card entrance — slides up with fade + stagger */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-enter {
+  animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.card-enter:nth-child(1) { animation-delay: 0.05s; }
+.card-enter:nth-child(2) { animation-delay: 0.12s; }
+.card-enter:nth-child(3) { animation-delay: 0.19s; }
+.card-enter:nth-child(4) { animation-delay: 0.26s; }
+.card-enter:nth-child(5) { animation-delay: 0.33s; }
+.card-enter:nth-child(6) { animation-delay: 0.40s; }
+.card-enter:nth-child(7) { animation-delay: 0.47s; }
+.card-enter:nth-child(8) { animation-delay: 0.54s; }
+
+/* Fade in — opacity only */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in { animation: fadeIn 0.4s ease both; }
+
+/* Scale bump — button press feedback */
+.bump:active { animation: bump 0.15s ease; }
+@keyframes bump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Shimmer loading skeleton */
+@keyframes shimmer-loading {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-loading {
+  background: linear-gradient(90deg, rgba(42,42,66,0.5) 25%, rgba(48,48,80,0.7) 50%, rgba(42,42,66,0.5) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-loading 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
 
 /* ---- Card Hover Effect (scale + gold glow) ---- */
 .card-hover {
@@ -386,9 +436,7 @@ html.light ::-webkit-scrollbar-thumb { background: var(--color-surface-container
   box-shadow: 0 0 24px rgba(255, 184, 0, 0.18);
   border-color: rgba(255, 184, 0, 0.35) !important;
 }
-.card-hover:active {
-  transform: scale(0.99);
-}
+.card-hover:active { transform: scale(0.99); }
 
 /* ---- Card Hover variants ---- */
 .card-hover-glow {
@@ -566,6 +614,156 @@ html.light ::-webkit-scrollbar-thumb { background: var(--color-surface-container
 
 /* ---- Wolverine Gold Utility ---- */
 .text-wolverine-gold { color: #FFB800; }
+
+/* =========================================================
+   BOTTOM MOBILE NAVIGATION
+   ========================================================= */
+.bottom-nav-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.35rem 0.5rem;
+  padding-bottom: calc(0.35rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(13, 13, 26, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 0;
+  animation: bottomNavEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes bottomNavEnter {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@media (min-width: 1024px) {
+  .bottom-nav-mobile { display: none; }
+}
+
+.bottom-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.35rem 0.4rem;
+  min-width: 0;
+  flex: 1;
+  color: #c5c9ac;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 8px;
+  position: relative;
+}
+
+.bottom-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bottom-nav-link:active {
+  transform: scale(0.92);
+}
+
+.bottom-nav-link .material-symbols-outlined {
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-link:hover .material-symbols-outlined {
+  transform: scale(1.12);
+}
+
+.bottom-nav-link.router-link-active {
+  color: #FFB800;
+}
+
+.bottom-nav-link.router-link-active .bottom-nav-label {
+  color: #FFB800;
+}
+
+.bottom-nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.bottom-nav-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFB800;
+  color: #2b1a00;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 18px rgba(255, 184, 0, 0.25);
+  animation: ctaPulse 2s ease-in-out infinite;
+}
+
+.bottom-nav-cta:active {
+  transform: scale(0.9);
+}
+
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(255, 184, 0, 0.25); }
+  50%      { box-shadow: 0 0 28px rgba(255, 184, 0, 0.45); }
+}
+
+/* ---- Floating Action Button (Mobile) ---- */
+.fab-mobile {
+  position: fixed;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  right: 1.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  background: #FFB800;
+  color: #2b1a00;
+  box-shadow: 0 4px 20px rgba(255, 184, 0, 0.35);
+  border: none;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fabEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fabEnter {
+  from { transform: scale(0) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.fab-mobile:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(255, 184, 0, 0.5);
+}
+
+.fab-mobile:active {
+  transform: scale(0.92);
+}
+
+@media (min-width: 1024px) {
+  .fab-mobile { display: none; }
+}
 
 /* =========================================================
    CONTRA-INSPIRED RESPONSIVE GRID HELPERS
