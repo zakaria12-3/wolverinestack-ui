@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ExerciseLibraryItem {
   id: string;
@@ -13,87 +14,92 @@ export interface ExerciseLibraryItem {
 
 @Injectable({ providedIn: 'root' })
 export class ExerciseLibraryService {
-  private readonly apiUrl = 'https://wger.de/api/v2/exerciseinfo/';
-
-  private readonly fallbackExercises: ExerciseLibraryItem[] = [
-    {
-      id: 'manual-push-up',
-      name: 'Push-up',
-      description: 'Bodyweight press from a plank position with controlled lowering and full arm extension.',
-      muscleGroup: 'Chest',
-      equipment: 'Bodyweight',
-      imageUrl: ''
-    },
-    {
-      id: 'manual-squat',
-      name: 'Bodyweight Squat',
-      description: 'Lower the hips back and down, keep the chest tall, then drive through the feet to stand.',
-      muscleGroup: 'Legs',
-      equipment: 'Bodyweight',
-      imageUrl: ''
-    },
-    {
-      id: 'manual-plank',
-      name: 'Forearm Plank',
-      description: 'Hold a straight line from shoulders to ankles while bracing the core.',
-      muscleGroup: 'Core',
-      equipment: 'Bodyweight',
-      imageUrl: ''
-    }
-  ];
-
   constructor(private http: HttpClient) {}
 
+  /**
+   * Search exercises via the backend proxy (which calls the wger API).
+   * This avoids CORS issues and provides cleaned data with proper image URLs.
+   */
   searchExercises(query = ''): Observable<ExerciseLibraryItem[]> {
-    const term = encodeURIComponent(query.trim());
-    const url = `${this.apiUrl}?language=2&limit=24${term ? `&term=${term}` : ''}`;
+    const params: string[] = [];
+    if (query.trim()) params.push(`query=${encodeURIComponent(query.trim())}`);
+    params.push('limit=30');
 
-    return this.http.get<any>(url).pipe(
+    const url = `${environment.apiUrl}/public/exercises/search?${params.join('&')}`;
+
+    return this.http.get<{ results: any[] }>(url).pipe(
       map(response => this.mapResults(response?.results || [])),
-      map(results => results.length ? results : this.filterFallback(query)),
-      catchError(() => of(this.filterFallback(query)))
+      catchError(() => {
+        console.warn('[ExerciseLibrary] Backend proxy failed, using fallback');
+        return of(this.filterFallback(query));
+      })
     );
   }
 
   private mapResults(results: any[]): ExerciseLibraryItem[] {
     return results
-      .map(item => {
-        const image = (item.images || []).find((img: any) => img?.image)?.image || '';
-        const muscles = [
-          ...(item.muscles || []).map((muscle: any) => muscle?.name),
-          ...(item.muscles_secondary || []).map((muscle: any) => muscle?.name)
-        ].filter(Boolean);
-        const equipment = (item.equipment || []).map((piece: any) => piece?.name).filter(Boolean);
-
-        return {
-          id: String(item.id),
-          name: item.name || 'Exercise',
-          description: this.stripHtml(item.description || ''),
-          muscleGroup: muscles.join(', ') || item.category?.name || 'General',
-          equipment: equipment.join(', ') || 'Bodyweight',
-          imageUrl: image
-        };
-      })
-      .filter(item => item.name && item.description);
+      .map(item => ({
+        id: item.id || String(Math.random()),
+        name: item.name || 'Exercise',
+        description: item.description || '',
+        muscleGroup: item.muscleGroup || 'General',
+        equipment: item.equipment || 'Bodyweight',
+        imageUrl: item.imageUrl || ''
+      }))
+      .filter(item => item.name && item.name !== 'Exercise');
   }
 
   private filterFallback(query: string): ExerciseLibraryItem[] {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) {
-      return this.fallbackExercises;
-    }
-    return this.fallbackExercises.filter(item =>
-      item.name.toLowerCase().includes(normalized) ||
-      item.muscleGroup.toLowerCase().includes(normalized) ||
-      item.equipment.toLowerCase().includes(normalized)
-    );
-  }
+    const fallbacks: ExerciseLibraryItem[] = [
+      {
+        id: 'fb-push-up',
+        name: 'Push-up',
+        description: 'Bodyweight press from a plank position with controlled lowering and full arm extension.',
+        muscleGroup: 'Chest',
+        equipment: 'Bodyweight',
+        imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 'fb-squat',
+        name: 'Bodyweight Squat',
+        description: 'Lower the hips back and down, keep the chest tall, then drive through the feet to stand.',
+        muscleGroup: 'Legs',
+        equipment: 'Bodyweight',
+        imageUrl: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 'fb-plank',
+        name: 'Forearm Plank',
+        description: 'Hold a straight line from shoulders to ankles while bracing the core.',
+        muscleGroup: 'Core',
+        equipment: 'Bodyweight',
+        imageUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 'fb-pull-up',
+        name: 'Pull-up',
+        description: 'Hang from a bar with an overhand grip, pull yourself up until your chin clears the bar.',
+        muscleGroup: 'Back',
+        equipment: 'Pull-up bar',
+        imageUrl: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?auto=format&fit=crop&w=400&q=80'
+      },
+      {
+        id: 'fb-dumbbell-curl',
+        name: 'Dumbbell Bicep Curl',
+        description: 'Stand with dumbbells at your sides, curl the weights toward your shoulders while keeping your elbows pinned.',
+        muscleGroup: 'Arms',
+        equipment: 'Dumbbell',
+        imageUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=400&q=80'
+      },
+    ];
 
-  private stripHtml(value: string): string {
-    return value
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const q = query.trim().toLowerCase();
+    if (!q) return fallbacks;
+
+    return fallbacks.filter(item =>
+      item.name.toLowerCase().includes(q) ||
+      item.muscleGroup.toLowerCase().includes(q) ||
+      item.equipment.toLowerCase().includes(q)
+    );
   }
 }
