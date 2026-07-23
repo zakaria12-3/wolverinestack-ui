@@ -36,14 +36,14 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   // Track which images failed to load
   failedImages: Set<number> = new Set();
 
-  // Wolverine Stack — Wolverine character slideshow
+  // Wolverine Stack slideshow — images from public/images/
   slides: Slide[] = [
     {
       name: 'The Wolverine',
       era: 'Weapon X',
       quote: "I'm the best there is at what I do. But what I do best isn't very nice.",
       stat: 'ADAMANTIUM CLAWS',
-      image: 'https://upload.wikimedia.org/wikipedia/en/9/96/Wolverine_%28James_%27Logan%27_Howlett%29.png',
+      image: 'images/wolverine-1.jpg',
       fallbackColor: 'linear-gradient(135deg, #0D0D1A 0%, #1a0f00 40%, #2a1a00 100%)'
     },
     {
@@ -51,7 +51,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       era: 'Unleash the Beast',
       quote: 'Pain lets you know you\'re still alive. Push through it, and you\'ll come out stronger on the other side.',
       stat: 'BERSERKER RAGE',
-      image: 'https://upload.wikimedia.org/wikipedia/en/5/47/Wolverine_%28James_%27Logan%27_Howlett%29_-_Hugh_Jackman.jpg',
+      image: 'images/wolverine-2.jpg',
       fallbackColor: 'linear-gradient(135deg, #0D0D1A 0%, #2a1a00 40%, #0D0D1A 100%)'
     },
     {
@@ -59,7 +59,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       era: 'Recover & Rise',
       quote: 'The strength of the wolf is the pack, and the strength of the pack is the wolf.',
       stat: 'MUTANT REGENERATION',
-      image: 'https://upload.wikimedia.org/wikipedia/en/6/6c/Wolverine_%28James_%27Logan%27_Howlett%29_-_X-Men_Film_Series.jpg',
+      image: 'images/wolverine-3.jpg',
       fallbackColor: 'linear-gradient(135deg, #1a0f00 0%, #0D0D1A 50%, #0D0D1A 100%)'
     },
   ];
