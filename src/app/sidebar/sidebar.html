@@ -26,6 +26,10 @@
           <span>Dashboard</span>
         </a>
         @if (isMember()) {
+          <a routerLink="/member/progress" routerLinkActive="sidebar-link-active" class="sidebar-link">
+            <span class="material-symbols-outlined">military_tech</span>
+            <span>PRs</span>
+          </a>
           <a routerLink="/member/workouts" routerLinkActive="sidebar-link-active" class="sidebar-link">
             <span class="material-symbols-outlined">fitness_center</span>
             <span>Workouts</span>

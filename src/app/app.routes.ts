@@ -95,6 +95,12 @@ export const routes: Routes = [
     data: { role: 'MEMBER', animation: 'FadeSlidePage' }
   },
   {
+    path: 'member/progress',
+    loadComponent: () => import('./features/member/progress/progress').then(m => m.ProgressTracking),
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'MEMBER', animation: 'FadeSlidePage' }
+  },
+  {
     path: 'member/meal-planner',
     loadComponent: () => import('./features/member/meal-planner/meal-planner').then(m => m.MealPlanner),
     canActivate: [authGuard, roleGuard],
