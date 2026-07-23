@@ -22,10 +22,11 @@
     </div>
   </div>
 
-  <!-- ==================== ACTIVE WORKOUT SESSION ==================== -->
+  <!-- ==================== HEVY-STYLE ACTIVE SESSION ==================== -->
   <div *ngIf="activeSession && viewMode === 'active'">
-    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-md mb-md card-hover card-enter">
-      <div class="flex justify-between items-center mb-6">
+    <!-- Session Header Bar -->
+    <div class="bg-surface-container-low border border-secondary-fixed-dim/30 rounded-xl p-4 md:p-5 mb-4 card-hover card-enter">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div class="flex items-center gap-3">
           <div class="w-3 h-3 rounded-full bg-secondary-fixed-dim timer-pulse"></div>
           <div>
@@ -33,120 +34,242 @@
             <p class="font-label-caps text-[10px] text-on-surface-variant">
               Duration: {{ getDuration(activeSession.startedAt) }}
               <span *ngIf="activeSession.planName"> · {{ activeSession.planName }}</span>
+              <span *ngIf="getSessionExercises().length"> · {{ getSessionExercises().length }} exercises</span>
             </p>
           </div>
         </div>
-        <button class="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-caps text-[10px] font-bold hover:brightness-110 transition-all active:scale-95"
+        <button class="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-caps text-[10px] font-bold hover:brightness-110 transition-all active:scale-95 flex items-center gap-1 flex-shrink-0"
                 (click)="completeSession()">
           <span class="material-symbols-outlined text-sm">check</span> Complete
         </button>
       </div>
 
-      <!-- Logged Exercises with Wger Images -->
-      <div *ngIf="activeSession.logEntries?.length" class="mb-6 space-y-3">
-        <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">EXERCISES</h3>
-        <div *ngFor="let entry of activeSession.logEntries"
-             class="bg-surface-container-high rounded-xl overflow-hidden border border-white/5 flex flex-col sm:flex-row card-hover">
-          <!-- Exercise Image Thumbnail -->
-          <div class="sm:w-32 h-24 sm:h-auto bg-surface-container-highest overflow-hidden flex-shrink-0">
-            <ng-container *ngIf="entry.imageUrl && !hasImageFailed(entry.exerciseName)">
-              <img [src]="entry.imageUrl" [alt]="entry.exerciseName"
-                   class="w-full h-full object-cover"
-                   loading="lazy"
-                   (error)="markImageFailed(entry.exerciseName)">
-            </ng-container>
-            <div *ngIf="!entry.imageUrl || hasImageFailed(entry.exerciseName)" class="flex items-center justify-center w-full h-full">
-              <span class="material-symbols-outlined text-3xl text-on-surface-variant">fitness_center</span>
-            </div>
-          </div>
-          <!-- Exercise Info -->
-          <div class="flex-1 p-4 flex flex-col justify-center">
-            <div class="flex items-start justify-between gap-2">
-              <div>
-                <h4 class="font-headline-md text-headline-md text-primary">{{ entry.exerciseName }}</h4>
-                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                  <span *ngIf="entry.muscleGroup" class="font-label-caps text-[8px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">{{ entry.muscleGroup }}</span>
-                  <span *ngIf="entry.equipment" class="font-label-caps text-[8px] text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded">{{ entry.equipment }}</span>
-                </div>
-              </div>
-              <div class="text-right flex-shrink-0">
-                <div class="font-data-metric text-[22px] text-primary tracking-tight">
-                  {{ entry.actualSets || entry.targetSets || '-' }}×{{ entry.actualReps || entry.targetReps || '-' }}
-                </div>
-                <div class="font-label-caps text-[9px] text-primary-container" *ngIf="entry.weightKg">{{ entry.weightKg }} kg</div>
-                <div *ngIf="entry.actualSets" class="font-label-caps text-[9px] text-secondary-fixed-dim mt-1">✓ LOGGED</div>
-                <div *ngIf="!entry.actualSets && entry.targetSets" class="font-label-caps text-[9px] text-on-surface-variant">PENDING</div>
-              </div>
-            </div>
-          </div>
+      <!-- Session Stats Row -->
+      <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2" *ngIf="getSessionExercises().length">
+        <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
+          <div class="font-data-metric text-[18px] text-primary">{{ getSessionExercises().length }}</div>
+          <div class="font-label-caps text-[7px] text-on-surface-variant">EXERCISES</div>
+        </div>
+        <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
+          <div class="font-data-metric text-[18px] text-primary">{{ getTotalExerciseSets() }}</div>
+          <div class="font-label-caps text-[7px] text-on-surface-variant">TOTAL SETS</div>
+        </div>
+        <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
+          <div class="font-data-metric text-[18px] text-primary">{{ getTotalExerciseReps() }}</div>
+          <div class="font-label-caps text-[7px] text-on-surface-variant">TOTAL REPS</div>
+        </div>
+        <div class="bg-surface-container-highest/50 rounded-lg p-2 text-center">
+          <div class="font-data-metric text-[18px] text-primary">{{ getTotalExerciseVolume() }}</div>
+          <div class="font-label-caps text-[7px] text-on-surface-variant">VOLUME (KG)</div>
         </div>
       </div>
+    </div>
 
-      <!-- Log Exercise Form with Wger Library Search -->
-      <div class="bg-surface-container-highest rounded-xl p-4 card-hover card-enter">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-label-caps text-label-caps text-primary-container uppercase">LOG EXERCISE</h3>
-          <button class="btn-outline text-[9px]" (click)="showSessionExerciseSearch = !showSessionExerciseSearch">
-            <span class="material-symbols-outlined text-sm">search</span> {{ showSessionExerciseSearch ? 'Close Library' : 'Browse Library' }}
-          </button>
-        </div>
-
-        <!-- Exercise Library Search (collapsible) with Wger Images -->
-        <div *ngIf="showSessionExerciseSearch" class="mb-4 bg-background rounded-lg p-3 border border-white/5" @slideInOut>
-          <div class="flex gap-2 mb-3">
-            <input class="input-titan flex-1 text-sm" [(ngModel)]="sessionLibraryQuery"
-                   placeholder="Search exercises by name, muscle, equipment..." (keyup.enter)="searchSessionExercises()">
-            <button class="btn-primary text-[10px]" (click)="searchSessionExercises()" [disabled]="isLoadingSessionExercises">
-              {{ isLoadingSessionExercises ? '...' : 'Search' }}
-            </button>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[240px] overflow-y-auto custom-scrollbar">
-            <div *ngFor="let ex of sessionExerciseResults"
-                 class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-primary-container/50 transition-all group"
-                 (click)="selectSessionExercise(ex)">
-              <div class="h-16 bg-surface-container-highest overflow-hidden">
-                <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.name)">
-                  <img [src]="ex.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
-                       (error)="markImageFailed(ex.name)">
+    <!-- HEVY-STYLE: Per-Exercise Cards with Set Rows -->
+    <div class="space-y-4 mb-6">
+      <div *ngFor="let exercise of getSessionExercises()" class="card-enter">
+        <div class="bg-surface-container-low border border-white/5 rounded-xl overflow-hidden card-hover">
+          <!-- Exercise Header -->
+          <div class="flex items-center justify-between p-4 bg-surface-container-high/30 border-b border-white/5">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-lg bg-background border border-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <ng-container *ngIf="exercise.imageUrl && !hasImageFailed(exercise.exerciseName)">
+                  <img [src]="exercise.imageUrl" class="w-full h-full object-cover" loading="lazy" (error)="markImageFailed(exercise.exerciseName)">
                 </ng-container>
-                <div *ngIf="!ex.imageUrl || hasImageFailed(ex.name)" class="flex items-center justify-center h-full">
-                  <span class="material-symbols-outlined text-on-surface-variant">fitness_center</span>
+                <span *ngIf="!exercise.imageUrl || hasImageFailed(exercise.exerciseName)" class="material-symbols-outlined text-primary-container text-sm">fitness_center</span>
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-headline-md text-[16px] text-primary truncate">{{ exercise.exerciseName }}</h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span *ngIf="exercise.muscleGroup" class="font-label-caps text-[8px] text-on-surface-variant">{{ exercise.muscleGroup }}</span>
+                  <span *ngIf="exercise.previousBestWeight" class="font-label-caps text-[8px] text-primary-container">PR: {{ exercise.previousBestWeight }}kg × {{ exercise.previousBestReps }}</span>
                 </div>
               </div>
-              <div class="p-2">
-                <div class="font-label-caps text-[9px] text-primary truncate">{{ ex.name }}</div>
-              </div>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <span class="font-label-caps text-[9px] text-on-surface-variant bg-surface-container-highest px-2 py-1 rounded">{{ exercise.completedSetCount }}/{{ exercise.targetSets || '∞' }} sets</span>
+              <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error transition-colors text-sm"
+                      (click)="removeExercise(exercise.id)" title="Remove exercise">
+                <span class="material-symbols-outlined text-sm">close</span>
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Manual Input Form -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-          <div>
-            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">EXERCISE</label>
-            <input class="input-titan w-full text-sm" [(ngModel)]="currentExercise.exerciseName" placeholder="Bench Press">
-          </div>
-          <div>
-            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">SETS</label>
-            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.sets" min="1">
-          </div>
-          <div>
-            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">REPS</label>
-            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.reps" min="1">
-          </div>
-          <div>
-            <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1">WEIGHT (KG)</label>
-            <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.weightKg" min="0" step="0.5">
-          </div>
-          <div class="flex items-end">
-            <button class="btn-primary w-full text-xs" (click)="logExercise()">
-              <span class="material-symbols-outlined text-sm">add</span> Log
-            </button>
+          <!-- HEVY-STYLE: Set Rows Table -->
+          <div class="p-4">
+            <!-- Set Header -->
+            <div *ngIf="exercise.sets?.length" class="grid grid-cols-[2rem_1fr_1fr_1.5fr_2rem] gap-2 mb-2 px-1">
+              <div class="font-label-caps text-[7px] text-on-surface-variant/40 uppercase tracking-wider">#</div>
+              <div class="font-label-caps text-[7px] text-on-surface-variant/40 uppercase tracking-wider text-right">Weight</div>
+              <div class="font-label-caps text-[7px] text-on-surface-variant/40 uppercase tracking-wider text-right">Reps</div>
+              <div class="font-label-caps text-[7px] text-on-surface-variant/40 uppercase tracking-wider text-right">1RM</div>
+              <div></div>
+            </div>
+
+            <!-- Set Rows -->
+            <div *ngFor="let set of exercise.sets; let si = index"
+                 class="grid grid-cols-[2rem_1fr_1fr_1.5fr_2rem] gap-2 items-center py-2 px-1 rounded-lg transition-all hover:bg-surface-container-highest/30 group"
+                 [class.bg-primary-container/5]="set.isPersonalRecord"
+                 [class.border-l-2]="set.isPersonalRecord"
+                 [class.border-primary-container]="set.isPersonalRecord">
+
+              <!-- Set Index with PR badge -->
+              <div class="flex items-center gap-1">
+                <span class="font-label-caps text-[10px] text-on-surface-variant/60">{{ set.setIndex }}</span>
+                <span *ngIf="set.isPersonalRecord" class="material-symbols-outlined text-[10px] text-primary-container" title="Personal Record!">military_tech</span>
+              </div>
+
+              <!-- Weight (editable inline) -->
+              <div class="text-right">
+                <input *ngIf="isEditingThisSet(exercise.id, set.id!)" type="number" class="w-16 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-right focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.weightKg" step="0.5" min="0">
+                <span *ngIf="!isEditingThisSet(exercise.id, set.id!)" class="font-headline-md text-[15px] text-primary">{{ set.weightKg ? set.weightKg + '' : 'BW' }}</span>
+              </div>
+
+              <!-- Reps (editable inline) -->
+              <div class="text-right">
+                <input *ngIf="isEditingThisSet(exercise.id, set.id!)" type="number" class="w-14 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-right focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.reps" min="0">
+                <span *ngIf="!isEditingThisSet(exercise.id, set.id!)" class="font-headline-md text-[15px] text-primary">{{ set.reps }}</span>
+              </div>
+
+              <!-- Estimated 1RM -->
+              <div class="text-right">
+                <span class="font-label-caps text-[11px] text-on-surface-variant/50">
+                  {{ set.weightKg && set.reps ? (set.weightKg * (1 + set.reps / 30)).toFixed(0) : '—' }}
+                </span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-0.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors text-[10px]"
+                        (click)="startEditSet(exercise, set)" title="Edit set">
+                  <span class="material-symbols-outlined text-[12px]">edit</span>
+                </button>
+                <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error transition-colors text-[10px]"
+                        (click)="deleteSet(exercise.id, set.id!)" title="Delete set">
+                  <span class="material-symbols-outlined text-[12px]">close</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline Edit / Add Set Form -->
+            <div class="mt-3 pt-3 border-t border-white/5">
+              <!-- Edit Mode -->
+              <div *ngIf="editingSet && isEditingThisSet(exercise.id, editingSet.setId)" class="flex flex-wrap items-end gap-2">
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">TYPE</label>
+                  <select class="bg-background border border-white/10 rounded text-[10px] text-primary p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.setType">
+                    <option value="NORMAL">Normal</option>
+                    <option value="WARMUP">Warmup</option>
+                    <option value="FAILURE">Failure</option>
+                    <option value="DROPSET">Dropset</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">KG</label>
+                  <input type="number" class="w-16 bg-background border border-white/10 rounded text-primary text-[11px] p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.weightKg" step="0.5" min="0">
+                </div>
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">REPS</label>
+                  <input type="number" class="w-14 bg-background border border-white/10 rounded text-primary text-[11px] p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.reps" min="0">
+                </div>
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">RPE</label>
+                  <input type="number" class="w-12 bg-background border border-white/10 rounded text-primary text-[11px] p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.rpe" min="1" max="10" step="0.5">
+                </div>
+                <button class="btn-primary text-[9px] px-3 py-1.5" (click)="updateSet(exercise.id, editingSet.setId)">
+                  <span class="material-symbols-outlined text-[11px]">save</span> Save
+                </button>
+                <button class="btn-outline text-[9px] px-3 py-1.5" (click)="cancelEditSet()">Cancel</button>
+              </div>
+
+              <!-- Add Set Mode (default) -->
+              <div *ngIf="!editingSet" class="flex flex-wrap items-end gap-2">
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">KG</label>
+                  <input type="number" class="w-16 bg-background border border-white/10 rounded text-primary text-[11px] p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.weightKg" step="0.5" min="0"
+                         (keyup.enter)="addSet(exercise.id)">
+                </div>
+                <div>
+                  <label class="font-label-caps text-[7px] text-on-surface-variant block mb-0.5">REPS</label>
+                  <input type="number" class="w-14 bg-background border border-white/10 rounded text-primary text-[11px] p-1 focus:border-primary-container focus:ring-0" [(ngModel)]="currentSet.reps" min="0"
+                         (keyup.enter)="addSet(exercise.id)">
+                </div>
+                <button class="btn-primary text-[9px] px-4 py-1.5" (click)="addSet(exercise.id)">
+                  <span class="material-symbols-outlined text-[11px]">add</span> Add Set
+                </button>
+                <button class="btn-outline text-[9px] px-3 py-1.5" (click)="duplicateLastSet(exercise.id)"
+                        [disabled]="!exercise.sets?.length" title="Repeat last set">
+                  <span class="material-symbols-outlined text-[11px]">repeat</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Add New Exercise to Session (Hevy-style) -->
+    <div class="bg-surface-container-low border border-dashed border-white/10 rounded-xl p-4 card-hover card-enter">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-label-caps text-label-caps text-primary-container uppercase flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">add_circle</span> Add Exercise
+        </h3>
+        <button class="btn-outline text-[9px]" (click)="showSessionExerciseSearch = !showSessionExerciseSearch">
+          <span class="material-symbols-outlined text-sm">search</span> {{ showSessionExerciseSearch ? 'Close' : 'Browse' }}
+        </button>
+      </div>
+
+      <!-- Wger Exercise Library Search -->
+      <div *ngIf="showSessionExerciseSearch" class="mb-4 bg-background rounded-lg p-3 border border-white/5" @slideInOut>
+        <div class="flex gap-2 mb-3">
+          <input class="input-titan flex-1 text-sm" [(ngModel)]="sessionLibraryQuery"
+                 placeholder="Search exercises..." (keyup.enter)="searchSessionExercises()">
+          <button class="btn-primary text-[10px]" (click)="searchSessionExercises()" [disabled]="isLoadingSessionExercises">
+            {{ isLoadingSessionExercises ? '...' : 'Search' }}
+          </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-[240px] overflow-y-auto custom-scrollbar">
+          <div *ngFor="let ex of sessionExerciseResults"
+               class="bg-surface-container-high rounded-lg overflow-hidden border border-white/5 cursor-pointer hover:border-primary-container/50 transition-all group"
+               (click)="selectSessionExercise(ex)">
+            <div class="h-14 bg-surface-container-highest overflow-hidden">
+              <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.name)">
+                <img [src]="ex.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" (error)="markImageFailed(ex.name)">
+              </ng-container>
+              <div *ngIf="!ex.imageUrl || hasImageFailed(ex.name)" class="flex items-center justify-center h-full">
+                <span class="material-symbols-outlined text-on-surface-variant">fitness_center</span>
+              </div>
+            </div>
+            <div class="p-1.5"><div class="font-label-caps text-[8px] text-primary truncate">{{ ex.name }}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Add Form -->
+      <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
+        <div class="sm:col-span-2">
+          <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1 uppercase">Exercise Name</label>
+          <input class="input-titan w-full text-sm" [(ngModel)]="currentExercise.exerciseName" placeholder="e.g. Bench Press"
+                 (keyup.enter)="addExerciseToSession()">
+        </div>
+        <div>
+          <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1 uppercase">Sets</label>
+          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.targetSets" min="1" placeholder="3">
+        </div>
+        <div>
+          <label class="font-label-caps text-[8px] text-on-surface-variant block mb-1 uppercase">Reps</label>
+          <input type="number" class="input-titan w-full text-sm" [(ngModel)]="currentExercise.targetReps" min="1" placeholder="10">
+        </div>
+        <div>
+          <button class="btn-primary w-full text-xs flex items-center justify-center gap-1" (click)="addExerciseToSession()">
+            <span class="material-symbols-outlined text-sm">playlist_add</span> Add
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- ... rest of the page unchanged (plans, create/edit, history) ... -->
 
   <!-- ==================== PLAN BROWSING ==================== -->
   <div *ngIf="viewMode === 'plans'">
@@ -156,27 +279,19 @@
         <span class="material-symbols-outlined text-sm">add</span> New Plan
       </button>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div *ngFor="let plan of plans"
            class="bg-surface-container-low border border-white/5 rounded-xl p-md transition-all cursor-pointer group relative card-hover card-enter"
            (click)="loadPlanDetails(plan.id)">
         <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <button class="w-7 h-7 rounded bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary-container hover:text-on-primary transition-all text-sm"
-                  (click)="openEditPlan(plan); $event.stopPropagation()">
-            <span class="material-symbols-outlined text-sm">edit</span>
-          </button>
+                  (click)="openEditPlan(plan); $event.stopPropagation()"><span class="material-symbols-outlined text-sm">edit</span></button>
           <button class="w-7 h-7 rounded bg-surface-container-highest text-error flex items-center justify-center hover:bg-error hover:text-white transition-all text-sm"
-                  (click)="deletePlan(plan.id, $event)">
-            <span class="material-symbols-outlined text-sm">delete</span>
-          </button>
+                  (click)="deletePlan(plan.id, $event)"><span class="material-symbols-outlined text-sm">delete</span></button>
         </div>
-
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary-container">
-              {{ plan.difficulty === 'BEGINNER' ? 'eco' : plan.difficulty === 'INTERMEDIATE' ? 'trending_up' : 'whatshot' }}
-            </span>
+            <span class="material-symbols-outlined text-primary-container">{{ plan.difficulty === 'BEGINNER' ? 'eco' : plan.difficulty === 'INTERMEDIATE' ? 'trending_up' : 'whatshot' }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="font-headline-md text-headline-md text-primary truncate">{{ plan.name }}</h3>
@@ -186,18 +301,13 @@
         <p class="font-body-md text-on-surface-variant text-sm mb-4 line-clamp-2">{{ plan.description || 'No description' }}</p>
         <div class="flex justify-between items-center pt-3 border-t border-white/5">
           <span class="font-label-caps text-[9px] text-on-surface-variant">{{ plan.exercises?.length || 0 }} exercises</span>
-          <button class="btn-primary text-[10px] px-4 py-2" (click)="startPlan(plan.id); $event.stopPropagation()">
-            <span class="material-symbols-outlined text-sm">play_arrow</span> Start
-          </button>
+          <button class="btn-primary text-[10px] px-4 py-2" (click)="startPlan(plan.id); $event.stopPropagation()"><span class="material-symbols-outlined text-sm">play_arrow</span> Start</button>
         </div>
       </div>
-
       <div *ngIf="plans.length === 0" class="col-span-full bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover card-enter">
         <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4 block">fitness_center</span>
         <p class="font-body-md text-on-surface-variant mb-4">No plans yet. Create your first workout plan!</p>
-        <button class="btn-primary" (click)="openCreatePlan()">
-          <span class="material-symbols-outlined text-sm">add</span> Create Plan
-        </button>
+        <button class="btn-primary" (click)="openCreatePlan()"><span class="material-symbols-outlined text-sm">add</span> Create Plan</button>
       </div>
     </div>
   </div>
@@ -206,70 +316,36 @@
   <div *ngIf="viewMode === 'create' || viewMode === 'edit'">
     <div class="mb-6">
       <div class="flex items-center gap-3 mb-2">
-        <button class="text-on-surface-variant hover:text-primary transition-colors" (click)="cancelPlanForm()">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </button>
+        <button class="text-on-surface-variant hover:text-primary transition-colors" (click)="cancelPlanForm()"><span class="material-symbols-outlined">arrow_back</span></button>
         <h2 class="font-headline-md text-headline-md text-primary">{{ isEditing ? 'Edit Plan' : 'Create Plan' }}</h2>
       </div>
       <p class="font-body-md text-on-surface-variant">Build a plan from the illustrated exercise library or add custom movements manually.</p>
     </div>
-
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- Left Column: Plan Details + Exercise Library -->
+      <!-- Left: Plan Details + Library -->
       <div class="lg:col-span-8 space-y-6">
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-hover card-enter">
           <h3 class="font-label-caps text-label-caps text-primary-container mb-4 uppercase">Plan Details</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Plan Name</label>
-              <input class="input-titan w-full" [(ngModel)]="planForm.name" placeholder="e.g. Push Pull Legs">
-            </div>
-            <div class="md:col-span-2">
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Description</label>
-              <textarea class="input-titan w-full min-h-[80px] resize-y" [(ngModel)]="planForm.description"
-                        placeholder="Describe the plan's goals and target audience..."></textarea>
-            </div>
-            <div>
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Goal</label>
-              <select class="input-titan w-full" [(ngModel)]="planForm.goal">
-                <option *ngFor="let g of goals" [value]="g">{{ formatGoal(g) }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Difficulty</label>
-              <select class="input-titan w-full" [(ngModel)]="planForm.difficulty">
-                <option *ngFor="let d of difficulties" [value]="d">{{ d }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Sessions/Week</label>
-              <input type="number" class="input-titan w-full" [(ngModel)]="planForm.sessionsPerWeek" min="1" max="7">
-            </div>
-            <div>
-              <label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Duration (Weeks)</label>
-              <input type="number" class="input-titan w-full" [(ngModel)]="planForm.durationWeeks" min="1" max="52">
-            </div>
+            <div class="md:col-span-2"><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Plan Name</label><input class="input-titan w-full" [(ngModel)]="planForm.name" placeholder="e.g. Push Pull Legs"></div>
+            <div class="md:col-span-2"><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Description</label><textarea class="input-titan w-full min-h-[80px] resize-y" [(ngModel)]="planForm.description" placeholder="Describe the plan's goals and target audience..."></textarea></div>
+            <div><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Goal</label><select class="input-titan w-full" [(ngModel)]="planForm.goal"><option *ngFor="let g of goals" [value]="g">{{ formatGoal(g) }}</option></select></div>
+            <div><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Difficulty</label><select class="input-titan w-full" [(ngModel)]="planForm.difficulty"><option *ngFor="let d of difficulties" [value]="d">{{ d }}</option></select></div>
+            <div><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Sessions/Week</label><input type="number" class="input-titan w-full" [(ngModel)]="planForm.sessionsPerWeek" min="1" max="7"></div>
+            <div><label class="font-label-caps text-[9px] text-on-surface-variant block mb-1 uppercase">Duration (Weeks)</label><input type="number" class="input-titan w-full" [(ngModel)]="planForm.durationWeeks" min="1" max="52"></div>
           </div>
         </div>
-
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md card-enter">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-label-caps text-label-caps text-primary-container uppercase">Exercise Library</h3>
             <div class="flex gap-2">
-              <button class="btn-outline text-[9px]" (click)="showManualExercise = !showManualExercise">
-                <span class="material-symbols-outlined text-sm">add</span> Manual
-              </button>
-              <button class="btn-outline text-[9px]" (click)="searchExercises()" [disabled]="isLoadingExercises">
-                <span class="material-symbols-outlined text-sm">refresh</span>
-              </button>
+              <button class="btn-outline text-[9px]" (click)="showManualExercise = !showManualExercise"><span class="material-symbols-outlined text-sm">add</span> Manual</button>
+              <button class="btn-outline text-[9px]" (click)="searchExercises()" [disabled]="isLoadingExercises"><span class="material-symbols-outlined text-sm">refresh</span></button>
             </div>
           </div>
           <div class="flex gap-2 mb-4">
-            <input class="input-titan flex-1" [(ngModel)]="libraryQuery" placeholder="Search exercises, muscles, equipment..."
-                   (keyup.enter)="searchExercises()">
-            <button class="btn-primary text-[10px]" (click)="searchExercises()" [disabled]="isLoadingExercises">
-              {{ isLoadingExercises ? '...' : 'Search' }}
-            </button>
+            <input class="input-titan flex-1" [(ngModel)]="libraryQuery" placeholder="Search exercises..." (keyup.enter)="searchExercises()">
+            <button class="btn-primary text-[10px]" (click)="searchExercises()" [disabled]="isLoadingExercises">{{ isLoadingExercises ? '...' : 'Search' }}</button>
           </div>
           <div *ngIf="showManualExercise" class="bg-surface-container-high rounded-lg p-4 mb-4 border border-white/5 card-bordered" @slideInOut>
             <h4 class="font-label-caps text-[10px] text-primary-container uppercase mb-3">Manual Exercise</h4>
@@ -280,9 +356,7 @@
               <input class="input-titan" [(ngModel)]="manualExercise.imageUrl" placeholder="Image URL (optional)">
               <textarea class="input-titan md:col-span-2" [(ngModel)]="manualExercise.description" placeholder="Description"></textarea>
             </div>
-            <button class="btn-primary w-full mt-3 text-xs" (click)="addManualExercise()">
-              <span class="material-symbols-outlined text-sm">add</span> Add Exercise
-            </button>
+            <button class="btn-primary w-full mt-3 text-xs" (click)="addManualExercise()"><span class="material-symbols-outlined text-sm">add</span> Add Exercise</button>
           </div>
           <div *ngIf="isLoadingExercises" class="text-center py-8">
             <div class="animate-spin w-8 h-8 border-2 border-primary-container border-t-transparent rounded-full mx-auto mb-3"></div>
@@ -294,17 +368,10 @@
                  (click)="addExerciseFromLibrary(exercise)">
               <div class="h-36 bg-surface-container-highest overflow-hidden relative">
                 <ng-container *ngIf="exercise.imageUrl && !hasImageFailed(exercise.name)">
-                  <img [src]="exercise.imageUrl" [alt]="exercise.name"
-                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                       loading="lazy"
-                       (error)="markImageFailed(exercise.name)">
+                  <img [src]="exercise.imageUrl" [alt]="exercise.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" (error)="markImageFailed(exercise.name)">
                 </ng-container>
-                <div *ngIf="!exercise.imageUrl || hasImageFailed(exercise.name)" class="flex items-center justify-center h-full">
-                  <span class="material-symbols-outlined text-4xl text-on-surface-variant">fitness_center</span>
-                </div>
-                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span class="material-symbols-outlined text-4xl text-primary-container">add_circle</span>
-                </div>
+                <div *ngIf="!exercise.imageUrl || hasImageFailed(exercise.name)" class="flex items-center justify-center h-full"><span class="material-symbols-outlined text-4xl text-on-surface-variant">fitness_center</span></div>
+                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-primary-container">add_circle</span></div>
               </div>
               <div class="p-3">
                 <h4 class="font-headline-md text-[14px] text-primary truncate">{{ exercise.name }}</h4>
@@ -322,7 +389,7 @@
           </div>
         </div>
       </div>
-
+      <!-- Right: Selected Exercises -->
       <div class="lg:col-span-4">
         <div class="bg-surface-container-low border border-white/5 rounded-xl p-md sticky top-24 card-hover card-enter">
           <div class="flex items-center justify-between mb-4">
@@ -335,58 +402,32 @@
             <p class="font-label-caps text-[9px] text-on-surface-variant mt-1">Search the library above and click to add.</p>
           </div>
           <div class="space-y-2 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
-            <div *ngFor="let ex of planForm.exercises; let i = index"
-                 class="bg-surface-container-high rounded-lg p-3 border border-white/5 group">
+            <div *ngFor="let ex of planForm.exercises; let i = index" class="bg-surface-container-high rounded-lg p-3 border border-white/5 group">
               <div class="flex items-start gap-2">
                 <div class="w-10 h-10 rounded bg-surface-container-highest overflow-hidden flex-shrink-0">
-                  <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.exerciseName)">
-                    <img [src]="ex.imageUrl" class="w-full h-full object-cover" loading="lazy"
-                         (error)="markImageFailed(ex.exerciseName)">
-                  </ng-container>
-                  <div *ngIf="!ex.imageUrl || hasImageFailed(ex.exerciseName)" class="flex items-center justify-center h-full">
-                    <span class="material-symbols-outlined text-sm text-on-surface-variant">fitness_center</span>
-                  </div>
+                  <ng-container *ngIf="ex.imageUrl && !hasImageFailed(ex.exerciseName)"><img [src]="ex.imageUrl" class="w-full h-full object-cover" loading="lazy" (error)="markImageFailed(ex.exerciseName)"></ng-container>
+                  <div *ngIf="!ex.imageUrl || hasImageFailed(ex.exerciseName)" class="flex items-center justify-center h-full"><span class="material-symbols-outlined text-sm text-on-surface-variant">fitness_center</span></div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="font-headline-md text-[13px] text-primary truncate">{{ ex.exerciseName }}</div>
-                  <div class="font-label-caps text-[8px] text-on-surface-variant mt-0.5">
-                    {{ ex.muscleGroup }} · {{ ex.equipment }}
-                    <span class="ml-1 text-primary-container">{{ ex.sets }}×{{ ex.reps }}</span>
-                  </div>
+                  <div class="font-label-caps text-[8px] text-on-surface-variant mt-0.5">{{ ex.muscleGroup }} · {{ ex.equipment }} <span class="ml-1 text-primary-container">{{ ex.sets }}×{{ ex.reps }}</span></div>
                 </div>
                 <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors text-[10px]"
-                          (click)="moveExercise(i, -1)" [disabled]="i === 0">↑</button>
-                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors text-[10px]"
-                          (click)="moveExercise(i, 1)" [disabled]="i === planForm.exercises.length - 1">↓</button>
-                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error transition-colors text-[10px]"
-                          (click)="removeExercise(i)">×</button>
+                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors text-[10px]" (click)="moveExercise(i, -1)" [disabled]="i === 0">↑</button>
+                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-primary transition-colors text-[10px]" (click)="moveExercise(i, 1)" [disabled]="i === planForm.exercises.length - 1">↓</button>
+                  <button class="w-6 h-6 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:text-error transition-colors text-[10px]" (click)="removeFromPlan(i)">×</button>
                 </div>
               </div>
               <div class="flex gap-2 mt-2 ml-12">
-                <label class="flex items-center gap-1">
-                  <span class="font-label-caps text-[7px] text-on-surface-variant">Sets</span>
-                  <input type="number" class="w-12 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0"
-                         [(ngModel)]="ex.sets" min="1">
-                </label>
-                <label class="flex items-center gap-1">
-                  <span class="font-label-caps text-[7px] text-on-surface-variant">Reps</span>
-                  <input type="number" class="w-12 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0"
-                         [(ngModel)]="ex.reps" min="0">
-                </label>
-                <label class="flex items-center gap-1 flex-1">
-                  <span class="font-label-caps text-[7px] text-on-surface-variant">Rest</span>
-                  <input type="number" class="w-14 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0"
-                         [(ngModel)]="ex.restSeconds" min="0">
-                </label>
+                <label class="flex items-center gap-1"><span class="font-label-caps text-[7px] text-on-surface-variant">Sets</span><input type="number" class="w-12 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0" [(ngModel)]="ex.sets" min="1"></label>
+                <label class="flex items-center gap-1"><span class="font-label-caps text-[7px] text-on-surface-variant">Reps</span><input type="number" class="w-12 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0" [(ngModel)]="ex.reps" min="0"></label>
+                <label class="flex items-center gap-1 flex-1"><span class="font-label-caps text-[7px] text-on-surface-variant">Rest</span><input type="number" class="w-14 bg-background border border-white/10 rounded text-primary text-[11px] p-1 text-center focus:border-primary-container focus:ring-0" [(ngModel)]="ex.restSeconds" min="0"></label>
               </div>
             </div>
           </div>
           <div class="flex gap-3 mt-4 pt-4 border-t border-white/5">
             <button class="btn-outline text-[10px] flex-1" (click)="cancelPlanForm()">Cancel</button>
-            <button class="btn-primary text-[10px] flex-1" (click)="savePlan()" [disabled]="isCreating">
-              {{ isCreating ? 'Saving...' : (isEditing ? 'Update Plan' : 'Create Plan') }}
-            </button>
+            <button class="btn-primary text-[10px] flex-1" (click)="savePlan()" [disabled]="isCreating">{{ isCreating ? 'Saving...' : (isEditing ? 'Update Plan' : 'Create Plan') }}</button>
           </div>
         </div>
       </div>
@@ -404,9 +445,7 @@
            class="bg-surface-container-low border border-white/5 rounded-xl p-md flex justify-between items-center hover:bg-surface-container transition-colors group card-hover card-enter">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant" [class.text-secondary-fixed-dim]="!session.completed" [class.text-primary-container]="session.completed">
-              {{ session.completed ? 'check_circle' : 'pending' }}
-            </span>
+            <span class="material-symbols-outlined text-on-surface-variant" [class.text-secondary-fixed-dim]="!session.completed" [class.text-primary-container]="session.completed">{{ session.completed ? 'check_circle' : 'pending' }}</span>
           </div>
           <div>
             <div class="font-body-md text-primary">{{ session.sessionName || 'Workout' }}</div>
@@ -414,19 +453,16 @@
               {{ formatDate(session.startedAt) }}
               <span *ngIf="session.durationMinutes"> · {{ session.durationMinutes }} min</span>
               <span *ngIf="session.caloriesBurned"> · {{ session.caloriesBurned }} kcal</span>
+              <span *ngIf="session.totalExercises"> · {{ session.completedExercises }}/{{ session.totalExercises }} ex</span>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <div *ngIf="session.completed"
-               class="bg-primary-container/10 text-primary-container px-3 py-1 rounded font-label-caps text-[9px]">COMPLETED</div>
-          <div *ngIf="!session.completed"
-               class="bg-secondary-fixed-dim/10 text-secondary-fixed-dim px-3 py-1 rounded font-label-caps text-[9px]">
-               <span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim inline-block mr-1 animate-pulse"></span>IN PROGRESS</div>
+          <div *ngIf="session.completed" class="bg-primary-container/10 text-primary-container px-3 py-1 rounded font-label-caps text-[9px]">COMPLETED</div>
+          <div *ngIf="!session.completed" class="bg-secondary-fixed-dim/10 text-secondary-fixed-dim px-3 py-1 rounded font-label-caps text-[9px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim inline-block mr-1 animate-pulse"></span>IN PROGRESS</div>
           <button class="w-7 h-7 rounded bg-surface-container-highest text-on-surface-variant flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:text-error text-sm"
-                  (click)="deleteSession(session.id)">
-            <span class="material-symbols-outlined text-sm">delete</span>
-          </button>
+                  (click)="deleteSession(session.id)"><span class="material-symbols-outlined text-sm">delete</span></button>
         </div>
       </div>
       <div *ngIf="sessions.length === 0" class="bg-surface-container-low border border-dashed border-white/10 rounded-xl text-center py-16 card-hover card-enter">

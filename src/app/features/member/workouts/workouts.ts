@@ -22,6 +22,39 @@ interface PlanExercise {
   imageUrl?: string;
 }
 
+interface ExerciseSet {
+  id?: number;
+  setIndex: number;
+  setType: string;
+  weightKg: number | null;
+  reps: number | null;
+  rpe: number | null;
+  durationSeconds: number | null;
+  distanceMeters: number | null;
+  notes: string;
+  isPersonalRecord?: boolean;
+  previousBestWeight?: number;
+  previousBestReps?: number;
+}
+
+interface SessionExercise {
+  id: number;
+  exerciseName: string;
+  muscleGroup: string;
+  equipment: string;
+  imageUrl: string;
+  targetSets: number;
+  targetReps: number;
+  completedSetCount: number;
+  totalReps: number;
+  totalVolume: number;
+  orderIndex: number;
+  notes: string;
+  sets: ExerciseSet[];
+  previousBestWeight?: number;
+  previousBestReps?: number;
+}
+
 @Component({
   selector: 'app-workout-tracking',
   standalone: true,
@@ -58,14 +91,27 @@ export class WorkoutTracking implements OnInit {
   isLoading = false;
   isCreating = false;
 
-  // Current exercise for logging during session
+  // Hevy-style: add exercise shell, then log sets individually
   currentExercise = {
     exerciseName: '',
-    sets: 4,
-    reps: 10,
-    weightKg: 0,
+    muscleGroup: '',
+    equipment: '',
+    imageUrl: '',
+    targetSets: 3,
+    targetReps: 10,
     notes: ''
   };
+
+  // Per-set form
+  currentSet = {
+    weightKg: 0,
+    reps: 10,
+    setType: 'NORMAL' as string,
+    rpe: null as number | null,
+    notes: ''
+  };
+
+  editingSet: { exerciseId: number; setId: number } | null = null;
 
   // Session exercise search (Wger API)
   showSessionExerciseSearch = false;
@@ -94,7 +140,6 @@ export class WorkoutTracking implements OnInit {
   difficulties = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   goals = ['GENERAL_FITNESS', 'LOSE_WEIGHT', 'BUILD_MUSCLE', 'INCREASE_STRENGTH', 'IMPROVE_ENDURANCE', 'FLEXIBILITY'];
 
-  // Tracks images that failed to load so the template can show fallback icons
   failedImages: Set<string> = new Set();
 
   constructor(
@@ -114,30 +159,36 @@ export class WorkoutTracking implements OnInit {
   ngOnInit() {
     this.loadPlans();
     this.loadSessions();
-
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadPlanDetails(+id);
-    }
+    if (id) this.loadPlanDetails(+id);
   }
 
-  markImageFailed(exerciseName: string) {
-    this.failedImages.add(exerciseName);
+  getSessionExercises(): SessionExercise[] {
+    return this.activeSession?.sessionExercises || [];
   }
 
-  hasImageFailed(exerciseName: string): boolean {
-    return this.failedImages.has(exerciseName);
+  getTotalExerciseSets(): number {
+    return this.getSessionExercises().reduce((sum, ex) => sum + ((ex as any).sets?.length || 0), 0);
   }
+
+  getTotalExerciseReps(): number {
+    return this.getSessionExercises().reduce((sum, ex) => sum + ((ex as any).totalReps || 0), 0);
+  }
+
+  getTotalExerciseVolume(): string {
+    const vol = this.getSessionExercises().reduce((sum, ex) => sum + ((ex as any).totalVolume || 0), 0);
+    return vol.toFixed(0);
+  }
+
+  markImageFailed(exerciseName: string) { this.failedImages.add(exerciseName); }
+  hasImageFailed(exerciseName: string): boolean { return this.failedImages.has(exerciseName); }
 
   // ======== Plan CRUD ========
 
   loadPlans() {
     this.http.get(`${environment.apiUrl}/member/plans`, this.getHeaders())
       .subscribe({
-        next: (data: any) => {
-          this.plans = data || [];
-          this.cdr.detectChanges();
-        },
+        next: (data: any) => { this.plans = data || []; this.cdr.detectChanges(); },
         error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to load workout plans'))
       });
   }
@@ -146,16 +197,8 @@ export class WorkoutTracking implements OnInit {
     this.isLoading = true;
     this.http.get(`${environment.apiUrl}/member/plans/${id}`, this.getHeaders())
       .subscribe({
-        next: (data: any) => {
-          this.selectedPlan = data;
-          this.viewMode = 'plans';
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.toastr.error(this.errorMessage(err, 'Failed to load workout plan'));
-        }
+        next: (data: any) => { this.selectedPlan = data; this.viewMode = 'plans'; this.isLoading = false; this.cdr.detectChanges(); },
+        error: (err) => { this.isLoading = false; this.toastr.error(this.errorMessage(err, 'Failed to load workout plan')); }
       });
   }
 
@@ -198,74 +241,42 @@ export class WorkoutTracking implements OnInit {
     this.searchExercises();
   }
 
-  cancelPlanForm() {
-    this.viewMode = 'plans';
-    this.resetPlanForm();
-  }
+  cancelPlanForm() { this.viewMode = 'plans'; this.resetPlanForm(); }
 
   savePlan() {
-    if (!this.planForm.name.trim()) {
-      this.toastr.error('Plan name is required');
-      return;
-    }
-    if (!this.planForm.exercises.length) {
-      this.toastr.error('Add at least one exercise');
-      return;
-    }
-
+    if (!this.planForm.name.trim()) { this.toastr.error('Plan name is required'); return; }
+    if (!this.planForm.exercises.length) { this.toastr.error('Add at least one exercise'); return; }
     this.isCreating = true;
     const body = { ...this.planForm };
     body.exercises.forEach((ex, i) => ex.orderIndex = i + 1);
-
     const headers = { headers: new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`) };
-
     const request = this.isEditing
       ? this.http.put(`${environment.apiUrl}/member/plans/${this.editPlanId}`, body, headers)
       : this.http.post(`${environment.apiUrl}/member/plans`, body, headers);
-
     request.subscribe({
-      next: () => {
-        this.toastr.success(this.isEditing ? 'Plan updated!' : 'Plan created!');
-        this.isCreating = false;
-        this.viewMode = 'plans';
-        this.loadPlans();
-      },
-      error: (err: any) => {
-        this.isCreating = false;
-        this.toastr.error(this.errorMessage(err, 'Failed to save plan'));
-      }
+      next: () => { this.toastr.success(this.isEditing ? 'Plan updated!' : 'Plan created!'); this.isCreating = false; this.viewMode = 'plans'; this.loadPlans(); },
+      error: (err: any) => { this.isCreating = false; this.toastr.error(this.errorMessage(err, 'Failed to save plan')); }
     });
   }
 
   deletePlan(planId: number, event?: Event) {
-    if (event) {
-      event.stopPropagation();
-    }
+    if (event) event.stopPropagation();
     if (!confirm('Delete this workout plan? This cannot be undone.')) return;
-
     this.http.delete(`${environment.apiUrl}/member/plans/${planId}`, this.getHeaders())
       .subscribe({
-        next: () => {
-          this.toastr.success('Plan deleted');
-          this.loadPlans();
-        },
+        next: () => { this.toastr.success('Plan deleted'); this.loadPlans(); },
         error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete plan'))
       });
   }
 
-  startPlan(planId: number) {
-    this.startNewSession(planId);
-  }
+  startPlan(planId: number) { this.startNewSession(planId); }
 
-  // ======== Session Management ========
+  // ======== SESSION MANAGEMENT ========
 
   loadSessions() {
     this.http.get(`${environment.apiUrl}/member/sessions`, this.getHeaders())
       .subscribe({
-        next: (data: any) => {
-          this.sessions = data || [];
-          this.cdr.detectChanges();
-        },
+        next: (data: any) => { this.sessions = data || []; this.cdr.detectChanges(); },
         error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to load workout history'))
       });
   }
@@ -286,45 +297,177 @@ export class WorkoutTracking implements OnInit {
     });
   }
 
-  logExercise() {
-    if (!this.currentExercise.exerciseName || this.currentExercise.weightKg <= 0) {
-      this.toastr.error('Please enter exercise name and weight');
+  // ======== HEVY-STYLE: Add Exercise Shell ========
+
+  addExerciseToSession() {
+    if (!this.currentExercise.exerciseName) {
+      this.toastr.error('Please enter exercise name');
       return;
     }
+    if (!this.activeSession?.id) { this.toastr.error('No active session'); return; }
 
-    if (!this.activeSession?.id) {
-      this.toastr.error('No active session');
-      return;
-    }
-
+    const exercises = this.getSessionExercises();
     const payload = {
       exerciseName: this.currentExercise.exerciseName,
-      actualSets: this.currentExercise.sets,
-      actualReps: this.currentExercise.reps,
-      weightKg: this.currentExercise.weightKg,
-      notes: this.currentExercise.notes,
-      targetSets: this.currentExercise.sets,
-      targetReps: this.currentExercise.reps,
-      orderIndex: (this.activeSession.logEntries || []).length + 1
+      muscleGroup: this.currentExercise.muscleGroup,
+      equipment: this.currentExercise.equipment,
+      imageUrl: this.currentExercise.imageUrl,
+      targetSets: this.currentExercise.targetSets,
+      targetReps: this.currentExercise.targetReps,
+      orderIndex: exercises.length + 1,
+      notes: this.currentExercise.notes
     };
 
     this.http.post(
-      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/log`,
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises`,
       payload,
       this.getHeaders()
     ).subscribe({
       next: (res: any) => {
         this.activeSession = res;
-        this.currentExercise = { exerciseName: '', sets: 4, reps: 10, weightKg: 0, notes: '' };
-        this.toastr.success('Exercise logged!');
+        this.resetCurrentExercise();
+        this.toastr.success('Exercise added! Now log your sets below.');
         this.cdr.detectChanges();
       },
-      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log exercise'))
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to add exercise'))
     });
   }
 
+  removeExercise(exerciseId: number) {
+    if (!confirm('Remove this exercise from the session? Sets will be lost.')) return;
+    this.http.delete(
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}`,
+      this.getHeaders()
+    ).subscribe({
+      next: (res: any) => {
+        this.activeSession = res;
+        this.toastr.info('Exercise removed');
+        this.cdr.detectChanges();
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to remove exercise'))
+    });
+  }
+
+  // ======== HEVY-STYLE: Per-Set Logging ========
+
+  addSet(exerciseId: number) {
+    if (this.currentSet.weightKg <= 0 && this.currentSet.reps <= 0) {
+      this.toastr.error('Enter weight or reps');
+      return;
+    }
+    this.http.post(
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets`,
+      {
+        setType: this.currentSet.setType,
+        weightKg: this.currentSet.weightKg || null,
+        reps: this.currentSet.reps || null,
+        rpe: this.currentSet.rpe,
+        notes: this.currentSet.notes
+      },
+      this.getHeaders()
+    ).subscribe({
+      next: (updatedExercise: any) => {
+        this.updateExerciseInSession(updatedExercise);
+        this.resetCurrentSet();
+        this.toastr.success('Set logged! 💪');
+        this.cdr.detectChanges();
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log set'))
+    });
+  }
+
+  updateSet(exerciseId: number, setId: number) {
+    if (!this.editingSet || this.editingSet.setId !== setId) return;
+    this.http.put(
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets/${setId}`,
+      {
+        setType: this.currentSet.setType,
+        weightKg: this.currentSet.weightKg || null,
+        reps: this.currentSet.reps || null,
+        rpe: this.currentSet.rpe,
+        notes: this.currentSet.notes
+      },
+      this.getHeaders()
+    ).subscribe({
+      next: (updatedExercise: any) => {
+        this.updateExerciseInSession(updatedExercise);
+        this.editingSet = null;
+        this.resetCurrentSet();
+        this.toastr.success('Set updated');
+        this.cdr.detectChanges();
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to update set'))
+    });
+  }
+
+  startEditSet(exercise: SessionExercise, set: ExerciseSet) {
+    this.editingSet = { exerciseId: exercise.id, setId: set.id! };
+    this.currentSet = {
+      weightKg: set.weightKg || 0,
+      reps: set.reps || 0,
+      setType: set.setType || 'NORMAL',
+      rpe: set.rpe,
+      notes: set.notes || ''
+    };
+  }
+
+  cancelEditSet() {
+    this.editingSet = null;
+    this.resetCurrentSet();
+  }
+
+  deleteSet(exerciseId: number, setId: number) {
+    if (!confirm('Delete this set?')) return;
+    this.http.delete(
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets/${setId}`,
+      this.getHeaders()
+    ).subscribe({
+      next: (updatedExercise: any) => {
+        this.updateExerciseInSession(updatedExercise);
+        this.toastr.info('Set deleted');
+        this.cdr.detectChanges();
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete set'))
+    });
+  }
+
+  quickAddSet(exerciseId: number, weightKg: number, reps: number) {
+    this.http.post(
+      `${environment.apiUrl}/member/sessions/${this.activeSession.id}/exercises/${exerciseId}/sets`,
+      { setType: 'NORMAL', weightKg, reps },
+      this.getHeaders()
+    ).subscribe({
+      next: (updatedExercise: any) => {
+        this.updateExerciseInSession(updatedExercise);
+        this.toastr.success(`${reps}×${weightKg}kg logged`);
+        this.cdr.detectChanges();
+      },
+      error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to log quick set'))
+    });
+  }
+
+  duplicateLastSet(exerciseId: number) {
+    const exercises = this.getSessionExercises().find(e => e.id === exerciseId);
+    if (!exercises?.sets?.length) return;
+    const lastSet = exercises.sets[exercises.sets.length - 1];
+    this.quickAddSet(exerciseId, lastSet.weightKg || 0, lastSet.reps || 0);
+  }
+
+  private updateExerciseInSession(updatedExercise: any) {
+    if (!this.activeSession?.sessionExercises) return;
+    const idx = this.activeSession.sessionExercises.findIndex((e: any) => e.id === updatedExercise.id);
+    if (idx >= 0) {
+      this.activeSession.sessionExercises[idx] = updatedExercise;
+    }
+  }
+
+  // ======== Complete Session ========
+
   completeSession() {
     if (!this.activeSession?.id) return;
+    const exercises = this.getSessionExercises();
+    const totalSets = exercises.reduce((sum, ex) => sum + ((ex as any).sets?.length || 0), 0);
+    if (totalSets === 0 && !confirm('No sets logged. Complete anyway?')) return;
 
     this.http.post(
       `${environment.apiUrl}/member/sessions/${this.activeSession.id}/complete`,
@@ -343,30 +486,20 @@ export class WorkoutTracking implements OnInit {
 
   deleteSession(sessionId: number) {
     if (!confirm('Delete this session? This cannot be undone.')) return;
-
     this.http.delete(`${environment.apiUrl}/member/sessions/${sessionId}`, this.getHeaders())
       .subscribe({
-        next: () => {
-          this.toastr.success('Session deleted');
-          this.loadSessions();
-        },
+        next: () => { this.toastr.success('Session deleted'); this.loadSessions(); },
         error: (err) => this.toastr.error(this.errorMessage(err, 'Failed to delete session'))
       });
   }
 
-  // ======== Exercise Library (Wger API — Plan Builder) ========
+  // ======== Exercise Library (Wger) ========
 
   searchExercises() {
     this.isLoadingExercises = true;
     this.exerciseLibrary.searchExercises(this.libraryQuery).subscribe({
-      next: (exercises) => {
-        this.exerciseResults = exercises;
-        this.isLoadingExercises = false;
-      },
-      error: () => {
-        this.exerciseResults = [];
-        this.isLoadingExercises = false;
-      }
+      next: (exercises) => { this.exerciseResults = exercises; this.isLoadingExercises = false; },
+      error: () => { this.exerciseResults = []; this.isLoadingExercises = false; }
     });
   }
 
@@ -388,23 +521,14 @@ export class WorkoutTracking implements OnInit {
   }
 
   addManualExercise() {
-    if (!this.manualExercise.exerciseName.trim()) {
-      this.toastr.error('Exercise name is required');
-      return;
-    }
-    this.planForm.exercises.push({
-      ...this.manualExercise,
-      orderIndex: this.planForm.exercises.length + 1
-    });
+    if (!this.manualExercise.exerciseName.trim()) { this.toastr.error('Exercise name is required'); return; }
+    this.planForm.exercises.push({ ...this.manualExercise, orderIndex: this.planForm.exercises.length + 1 });
     this.manualExercise = this.defaultExercise();
     this.showManualExercise = false;
     this.toastr.success('Exercise added');
   }
 
-  removeExercise(index: number) {
-    this.planForm.exercises.splice(index, 1);
-    this.reorderExercises();
-  }
+  removeFromPlan(index: number) { this.planForm.exercises.splice(index, 1); this.reorderExercises(); }
 
   moveExercise(index: number, direction: -1 | 1) {
     const nextIndex = index + direction;
@@ -414,24 +538,26 @@ export class WorkoutTracking implements OnInit {
     this.reorderExercises();
   }
 
-  // ======== Session Exercise Search (Wger — Active Session) ========
+  // ======== Session Exercise Search (Wger) ========
 
   searchSessionExercises() {
     this.isLoadingSessionExercises = true;
     this.exerciseLibrary.searchExercises(this.sessionLibraryQuery).subscribe({
-      next: (exercises) => {
-        this.sessionExerciseResults = exercises;
-        this.isLoadingSessionExercises = false;
-      },
-      error: () => {
-        this.sessionExerciseResults = [];
-        this.isLoadingSessionExercises = false;
-      }
+      next: (exercises) => { this.sessionExerciseResults = exercises; this.isLoadingSessionExercises = false; },
+      error: () => { this.sessionExerciseResults = []; this.isLoadingSessionExercises = false; }
     });
   }
 
   selectSessionExercise(exercise: ExerciseLibraryItem) {
-    this.currentExercise.exerciseName = exercise.name;
+    this.currentExercise = {
+      exerciseName: exercise.name,
+      muscleGroup: exercise.muscleGroup,
+      equipment: exercise.equipment,
+      imageUrl: exercise.imageUrl || '',
+      targetSets: 3,
+      targetReps: 10,
+      notes: exercise.description || ''
+    };
     this.showSessionExerciseSearch = false;
     this.toastr.info(`Selected: ${exercise.name}`);
   }
@@ -451,24 +577,28 @@ export class WorkoutTracking implements OnInit {
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  formatGoal(goal: string): string {
-    return goal.replace(/_/g, ' ');
+  formatGoal(goal: string): string { return goal.replace(/_/g, ' '); }
+  planExerciseCount(): number { return this.planForm.exercises.length; }
+
+  isEditingThisSet(exerciseId: number, setId: number): boolean {
+    return this.editingSet?.exerciseId === exerciseId && this.editingSet?.setId === setId;
   }
 
-  planExerciseCount(): number {
-    return this.planForm.exercises.length;
+  getSetTypeLabel(t: string): string { return t ? t.charAt(0) + t.slice(1).toLowerCase() : 'Normal'; }
+  formatWeightKg(w: number | null): string { return w ? `${w} kg` : 'BW'; }
+
+  private resetCurrentExercise() {
+    this.currentExercise = { exerciseName: '', muscleGroup: '', equipment: '', imageUrl: '', targetSets: 3, targetReps: 10, notes: '' };
+  }
+
+  private resetCurrentSet() {
+    this.currentSet = { weightKg: 0, reps: 10, setType: 'NORMAL', rpe: null, notes: '' };
   }
 
   private resetPlanForm() {
     this.planForm = {
-      name: '',
-      description: '',
-      goal: 'GENERAL_FITNESS',
-      difficulty: 'BEGINNER',
-      durationWeeks: 4,
-      sessionsPerWeek: 3,
-      estimatedDailyCalories: 2200,
-      exercises: []
+      name: '', description: '', goal: 'GENERAL_FITNESS', difficulty: 'BEGINNER',
+      durationWeeks: 4, sessionsPerWeek: 3, estimatedDailyCalories: 2200, exercises: []
     };
   }
 
@@ -477,19 +607,7 @@ export class WorkoutTracking implements OnInit {
   }
 
   private defaultExercise(): PlanExercise {
-    return {
-      exerciseName: '',
-      description: '',
-      instructions: '',
-      sets: 3,
-      reps: 10,
-      durationSeconds: 0,
-      restSeconds: 60,
-      muscleGroup: 'General',
-      equipment: 'Bodyweight',
-      orderIndex: 1,
-      imageUrl: ''
-    };
+    return { exerciseName: '', description: '', instructions: '', sets: 3, reps: 10, durationSeconds: 0, restSeconds: 60, muscleGroup: 'General', equipment: 'Bodyweight', orderIndex: 1, imageUrl: '' };
   }
 
   private errorMessage(err: any, fallback: string): string {
