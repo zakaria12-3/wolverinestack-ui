@@ -41,6 +41,7 @@
             <div class="flex items-center gap-1 p-1">
               <input
                 #renameInput
+                name="rename"
                 [(ngModel)]="editingTitleValue"
                 (keyup.enter)="saveRename(conv.id)"
                 (keyup.escape)="cancelRename()"

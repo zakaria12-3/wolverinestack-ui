@@ -153,14 +153,18 @@ export class AiChat implements OnInit, AfterViewInit, OnDestroy {
   /** Auto-save the current messages to localStorage. */
   private autoSaveCurrent(): void {
     if (this.messages.length <= 1) return; // don't save empty or welcome-only chats
-    this.chatHistory.save({
-      id: this.currentConversationId,
-      title: ChatHistoryService.deriveTitle(this.messages),
-      messages: this.messages,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      messageCount: this.messages.filter((m) => m.role === 'user').length,
-    });
+    try {
+      this.chatHistory.save({
+        id: this.currentConversationId,
+        title: ChatHistoryService.deriveTitle(this.messages),
+        messages: this.messages,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        messageCount: this.messages.filter((m) => m.role === 'user').length,
+      });
+    } catch (_) {
+      // localStorage may be full or unavailable — silently ignore
+    }
   }
 
   /** Format the date for display in the sidebar list. */
